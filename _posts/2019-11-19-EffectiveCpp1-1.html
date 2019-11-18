@@ -1,0 +1,24 @@
+---
+layout: post
+title: "[Effective C++]C++을 언어들의 연합체로 바라보는 안목은 필수"
+subtitle: "C++에 왔으면 C++의 법을 따릅시다, 첫 번째 이야기"
+date: 2019-11-19
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">C++을 언어들의 연합체로 바라보는 안목은 필수</h2>
+
+<p>오늘날의 C++은 다중패러다임 프로그래밍 언어(multiparadigm programming language)로 절차적(procedural) 프로그래밍을 기본으로 하여 객체 지향(object-oriented), 함수식(functional), 일반화(generic) 프로그래밍을 포함하여 메타프로그래밍(metaprogramming) 개념까지 지원하고 있습니다. 따라서 C++은 여러 언어들의 연합체(federation)로 보고 하위 언어(sublanguage)의 규칙을 알면 됩니다.</p>
+
+<p>
+    <strong>C</strong> - C++은 C를 기본으로 하고 있습니다. 블록, 문장, 선행 처리자, 기본제공 데이터타입, 배열, 포인터 등 모든 것이 C에서 왔습니다.<br>
+    <strong>객체 지향 개념의 C++</strong> - '클래스를 쓰는 C'에 관한 것이 해당됩니다. 클래스(생성자와 소멸자 개념까지), 캡슐화, 상속, 다형성, 가상 함수(동적 바인딩) 등입니다.<br>
+    <strong>템플릿 C++</strong> - C++의 일반화 프로그래밍 부분입니다. 저마다의 용도에 맞춘 템플릿 구문을 이용해 새로운 프로그래밍 패러다임인 템플릿 메타프로그래밍(template metaprogramming: TMP)가 파생되었습니다.<br>
+    <strong>STL</strong> - 템플릿 라이브러리입니다. 컨테이너(container), 반복자(iterator), 알고리즘(algorithm)과 함수 객체(function object)가 얽혀 돌아갑니다. 나름대로 독특한 사용규약이 있습니다.
+</p>
+
+<br>
+
+<h3 class="section-heading" style="color: red">정리</h3>
+
+<p>C++을 사용한 효과적인 프로그래밍 규칙은 경우에 따라 달라집니다. 그 경우란, 바로 C++의 어떤 부분을 사용하느냐입니다.</p>
