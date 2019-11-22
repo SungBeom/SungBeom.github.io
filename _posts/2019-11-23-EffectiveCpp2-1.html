@@ -1,0 +1,79 @@
+---
+layout: post
+title: "[Effective C++]C++이 은근슬쩍 만들어 호출해 버리는 함수들에 촉각을 세우자"
+subtitle: "생성자, 소멸자 및 대입 연산자, 첫 번째 이야기"
+date: 2019-11-23 00:56:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">생성자, 소멸자, 대입 연산자란</h2>
+
+<p>
+    <strong>생성자</strong> - 새로운 객체를 메모리에 만드는 데 필요한 과정을 제어하고 객체의 초기화를 맡는 함수<br>
+    <strong>소멸자</strong> - 객체를 없앰과 동시에 그 객체가 메모리에서 적절히 사라질 수 있도록 하는 과정을 제어하는 함수<br>
+    <strong>대입 연산자</strong> - 기존의 객체에 다른 객체의 값을 줄 때 사용하는 함수<br>
+</p>
+
+<p>
+    우리들이 만드는 거의 모든 C++ 클래스에 한 개 이상 꼭 들어 있는 것들이 생성자와 소멸자, 대입 연산자입니다.
+    잘 만들어진 클래스라면 반드시 갖고 있게 되는 대표적인 이 함수들을 어떻게 하면 멋지게 모아둘 수 있을까요?
+</p>
+
+<h2 class="section-heading">컴파일러가 빈 클래스에 하는 일</h2>
+
+<p>
+    클래스가 비어 있지만(empty) 비어 있는 게 아닌 때가 있습니다.
+    C++(컴파일러)이 빈 클래스를 훑고 지나갈 때라고 말씀드릴 수 있겠네요.
+    기본 생성자(default constructor), 복사 생성자(copy constructor), 복사 대입 연산자(copy assignment operator), 소멸자(destructor)는 사용자가 클래스 안에 직접 선언해 넣지 않으면 컴파일러가 저절로 기본형으로 선언해 주도록 되어 있습니다.
+    이들은 모두 public 멤버이며 inline 함수입니다.
+</p>
+
+<p>
+    여러분이 다음과 같이 썼다면<br>
+    class Empty{};<br>
+    다음과 같이 쓴 것과 근본적으로 대동소이하다는 이야기입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Empty&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Empty()&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;생성자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Empty(<span style="color:#ff3399">const</span>&nbsp;Empty<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;rhs)&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;생성자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;~Empty()&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;소멸자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Empty<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;<span style="color:#ff3399">operator</span><span style="color:#ff3399">=</span>(<span style="color:#ff3399">const</span>&nbsp;Empty<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;rhs)&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;대입&nbsp;연산자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이들은 꼭 필요하다고 컴파일러가 판단할 때만 만들어지도록 되어 있지만, 필요한 조건이 그리 대단한 것도 아닙니다.
+    이들이 만들어지는 조건을 만족하는 코드는 다음과 같습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">Empty&nbsp;e1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;생성자,&nbsp;소멸자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Empty&nbsp;e2(e1);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;생성자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">e2&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;e1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;대입&nbsp;</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    기본 생성자와 소멸자가 하는 일은 일차적으로 컴파일러에게 "배후의 코드"를 깔 수 있는 자리를 마련하는 것입니다.
+    기본 클래스 및 비정적 데이터 멤버의 생성자와 소멸자를 호출하는 코드가 여기서 생기는 거지요.<br>
+    <i>이때 소멸자는 이 클래스가 상속한 기본 클래스의 소멸자가 가상 소멸자로 되어 있지 않으면 역시 비가상 소멸자로 만들어집니다.</i>
+</p>
+
+<p>
+    컴파일러가 몰래 만들어낸 복사 생성자/복사 대입 연산자가 하는 일은 아주 단순합니다.
+    원본 객체의 비정적 데이터를 사본 객체 쪽으로 그냥 복사하는 것이 전부지요.
+    복사 생성자는 각 비트를 그대로 복사해 오는 것으로 만들어지고, 복사 대입 연산자도 근본적으로 동작 원리가 똑같습니다.
+    하지만 복사 대입 연산자의 동작의 최종 결과 코드가 '적법해야(legal)'하고 '이치에 닿아야만(reasonable)' 합니다.
+    둘 중 어느 검사도 통과하지 못하면 컴파일러는 operator=의 자동생성을 거부해 버립니다.
+</p>
+
+<p>
+    예를 들어 참조자를 데이터 멤버로 갖고 있는 클래스에 대입 연산은 '컴파일 거부'됩니다.
+    참조자 자체가 바뀔수도, 참조하는 객체가 바뀔수도 없기 때문입니다.
+    따라서 이런 경우에는 여러분이 직접 복사 대입 연산자를 정의해 주어야 합니다.
+    데이터 멤버가 상수 객체인 경우에도 C++ 컴파일러가 비슷하게 동작하니 꼭 주의하세요. 
+</p>
+
+<p>
+    <i>복사 대입 연산자를 private로 선언한 기본 클래스로부터 파생된 클래스의 경우, 이 클래스는 암시적 복사 대입 연산자를 가질 수 없습니다.
+    컴파일러가 거부해 버리니까요.
+    파생 클래스에 대해 컴파일러가 만들어 주는 복사 대입 연산자는 기본 클래스 부분을 맡도록 되어 있긴 하지만, 이렇게 하더라도 파생 클래스 쪽에서 호출할 권한이 없는 멤버 함수는 암시적 복사 대입 연산자가 어떻게 호출할 수는 없습니다.</i>
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    컴파일러는 경우에 따라 클래스에 대해 기본 생성자, 복사 생성자, 복사 대입 연산자, 소멸자를 암시적으로 만들어 놓을 수 있습니다.
+</p>
