@@ -6,7 +6,7 @@ date: 2019-11-24 01:43:00
 background: '/img/posts/EffectiveCpp.jpg'
 ---
 
-<h2 class="section-heading"></h2>
+<h2 class="section-heading">컴파일러가 만들어낸 복사 생성자, 복사 대입 연산자</h2>
 
 <p>
     경우에 따라 특정 객체가 사본(copy)를 만드는 것 자체가 이치에 맞지 않는 경우가 있습니다.
@@ -19,6 +19,8 @@ background: '/img/posts/EffectiveCpp.jpg'
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">HomeForSale&nbsp;h1;</div><div style="padding:0 6px; white-space:pre; line-height:130%">HomeForSale&nbsp;h2;</div><div style="padding:0 6px; white-space:pre; line-height:130%">HomeForSale&nbsp;h3(h1);&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;생성자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">h1&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;h2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;대입&nbsp;연산자</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">컴파일러의 복사를 막는 방법</h2>
 
 <p>
     해결의 열쇠는 컴파일러가 생성하는 함수는 모두 공개된다는, 즉 public 멤버가 된다는 사실입니다.
