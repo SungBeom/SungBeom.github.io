@@ -1,0 +1,78 @@
+---
+layout: post
+title: "[Effective C++]컴파일러가 만들어낸 함수가 필요 없으면 확실히 이들의 사용을 금해 버리자"
+subtitle: "생성자, 소멸자 및 대입 연산자, 네 번째 이야기"
+date: 2019-11-25 01:43:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading"></h2>
+
+<p>
+    경우에 따라 특정 객체가 사본(copy)를 만드는 것 자체가 이치에 맞지 않는 경우가 있습니다.
+    유일해야만 하는 객체들이 그렇습니다.
+    예를 들어 매물로 내놓은 가옥을 나타내는 클래스가 있다고 칩시다.<br>
+    class HomeForSale { ... };<br>
+    일반적인 경우만 놓고 볼 때, 어떤 클래스에서 특정한 종류의 기능을 지원하지 않았으면 하는 의도를 반영하는 방법은 그런 기능을 제공하는 함수를 선언하지 않는 것입니다.
+    하지만 이 전략은 복사 생성자와 복사 대입 연산자에 대해서는 불가능합니다.
+    복사 생성자와 복사 대입 연산자는 사용자가 선언하지 않고 외부에서 이들을 호출하려고 하면 컴파일러가 대신 이들을 선언해 버리기 때문입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">HomeForSale&nbsp;h1;</div><div style="padding:0 6px; white-space:pre; line-height:130%">HomeForSale&nbsp;h2;</div><div style="padding:0 6px; white-space:pre; line-height:130%">HomeForSale&nbsp;h3(h1);&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;생성자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">h1&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;h2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;대입&nbsp;연산자</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    해결의 열쇠는 컴파일러가 생성하는 함수는 모두 공개된다는, 즉 public 멤버가 된다는 사실입니다.
+    복사 생성자와 복사 대입 연산자가 저절로 만들어지는 것을 막기 위해 사용자가 직접 선언하되, 이를 private 멤버로 선언하도록 합시다.
+    일단 클래스 멤버 함수가 명시적으로 선언되기 때문에, 컴파일러는 자신의 기본 버전을 만들 수 없게 되지요.
+    이 함수들이 <strong>비공개(private)</strong>의 접근성을 가지므로, 외부로부터의 호출을 차단할 수 있습니다.
+</p>
+
+<p>
+    private 멤버 함수는 그 클래스의 멤버 함수 및 프렌드(friend) 함수가 호출할 수 있다는 점이 여전히 허점입니다.
+    이것까지 막으려면, 그러니까 <strong>'정의(define)'</strong>를 안 해 버리는 기지를 발휘해 보면 어떨까요?
+    정의되지 않은 함수를 누군가가 어쩌다 실수로 호출하려 했다면 분명히 링크 시점에 에러를 보게 될 테니 괜찮습니다.
+    이 기법은 C++의 iostream 라이브러리에 속한 몇몇 클래스에서도 복사 방지책으로 쓰이고 있습니다.
+    ios_base, basic_ios, sentry는 복사 생성자와 복사 대입 연산자 모두가 private 멤버로 선언된 동시에 정의되어 있지도 않을 것입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;HomeForSale&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;HomeForSale(<span style="color:#ff3399">const</span>&nbsp;HomeForSale<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;선언만&nbsp;달랑&nbsp;있습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;HomeForSale<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;<span style="color:#ff3399">operator</span><span style="color:#ff3399">=</span>(<span style="color:#ff3399">const</span>&nbsp;HomeForSale<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    사용자가 HomeForSale 객체의 복사를 시도하려고 하면 컴파일 에러가 발생할 것이고, 여러분이 깜박하고 멤버 함수 혹은 프렌드 함수 안에서 그렇게 하면 링크 에러가 발생할 것입니다.
+    링크 시점 에러를 컴파일 시점 에러로 옮길 수도 있습니다(에러 탐지는 나중으로 미루는 것보다 미리 하는 것이 좋습니다).
+    복사 생성자와 복사 대입 연산자를 private로 선언하되, 이것을 HomeForSale 자체에 넣지 말고 별도의 기본 클래스에 넣고 이것으로부터 HomeForSale을 파생시키는 것입니다.
+    그리고 그 별도의 기본 클래스는 복사 방지만 맡는다는 특별한 의미를 부여합니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Uncopyable&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">protected</span>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;파생된&nbsp;객체에&nbsp;대해서</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Uncopyable()&nbsp;{}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;생성과&nbsp;소멸을</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;~Uncopyable()&nbsp;{}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;허용합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;UnCopyable(<span style="color:#ff3399">const</span>&nbsp;Uncopyable<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;하지만&nbsp;복사는&nbsp;방지합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Uncopyable<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;<span style="color:#ff3399">operator</span><span style="color:#ff3399">=</span>(<span style="color:#ff3399">const</span>&nbsp;Uncopyable<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    복사를 막고 싶은 HomeForSale 객체는 이제 이렇게 바꿔 봅시다.
+    Uncopyable로부터 상속받게 하고 그냥 내버려 두는 것으로 끝입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;HomeForSlae:&nbsp;<span style="color:#ff3399">private</span>&nbsp;Uncopyable&nbsp;{&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;생성자도,</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사&nbsp;대입&nbsp;연산자도</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이제는&nbsp;선언되지&nbsp;않습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    컴파일러가 생성한 복사 함수는 기본 클래스의 대응 버전을 호출하게 되어 있습니다.
+    그런데 이런 호출은 지금 통하지 않게 됩니다.
+    복사 함수들이 기본 클래스에서 공개되어 있지 않기 때문입니다.
+</p>
+
+<p>
+    Uncopytable의 구현과 사용법에 대해 기술적으로 몇 가지 짚고 넘어갈 점은, Uncopyable로부터의 상속은 public일 필요가 없습니다.
+    그리고 Uncopyable의 소멸자는 가상 소멸자가 아니어도 됩니다.
+    또한 Uncopyable 클래스는 데이터 멤버가 전혀 없기 때문에 공백 기본 클래스 최적화(empty base class optimization) 기법이 먹혀 들어갈 여지도 있습니다.
+    하지만 Uncopyable 클래스는 기본 클래스이기 때문에 이 기법을 사용하면 다중 상속으로 갈 가능성이 있습니다.
+    다중 상속 시에는 공백 기본 클래스 최적화가 돌아가지 못할 때가 종종 있습니다.
+    <strong>부스트</strong> 라이브러리를 보면 Uncopyable과 똑같은 구실을 하는 noncopyable이란 무척 괜찮은 클래스를 찾을 수 있는데, 이것을 써도 됩니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    컴파일러에서 자동으로 제공하는 기능을 허용치 않으려면, 대응되는 멤버 함수를 private로 선언한 후에 구현은 하지 않은 채로 두십시오.
+    Uncopyable과 비슷한 기본 클래스를 쓰는 것도 한 방법입니다.
+</p>
