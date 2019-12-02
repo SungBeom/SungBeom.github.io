@@ -1,0 +1,100 @@
+---
+layout: post
+title: "[Effective C++]자원 관리 클래스의 복사 동작에 대해 진지하게 고찰하자"
+subtitle: "자원 관리, 두 번째 이야기"
+date: 2019-12-02 07:30:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">힙 자원 외의 자원 관리</h2>
+
+<p>
+    힙 기반 자원에 대해 <strong>자원 획득 및 초기화(RAII)</strong> 기법을 적용한 auto_ptr 및 tr1::shared_ptr 클래스를 사용하면 자원 관리를 할 수 있습니다.
+    하지만 힙에 생기지 않는 자원은 스마트 포인터로 처리해 주기엔 맞지 않습니다.
+    항상 그런 것은 아니지만, 자원 관리 클래스를 여러분 스스로 만들어야 할 경우가 있습니다.
+</p>
+
+<p>
+    Mutex 타입의 뮤텍스 객체를 조작하는 C API를 사용중이라고 가정합시다.
+    C API에서 제공하는 함수 중엔 lock 및 unlock이 있습니다.<br>
+    void lock(Mutex *pm);&nbsp;&nbsp;&nbsp;&nbsp;//pm이 가리키는 뮤텍스에 잠금을 겁니다.<br>
+    void unlock(Mutex *pm);&nbsp;&nbsp;//pm이 가리키는 해당 뮤텍스의 잠금을 풉니다.<br>
+    그런데 뮤텍스 잠금을 관리하는 클래스를 하나 만들고 싶습니다.
+    이런 용도의 클래스는 기본적으로 RAII 법칙을 따라, 생성 시에 자원을 획득하고, 소멸 시에 그 자원을 해제하도록 구성합니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Lock&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;Lock(Mutex&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pm)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;mutexPtr(pm)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;lock(mutexPtr);&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;자원을&nbsp;획득합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;~Lock()&nbsp;{&nbsp;unlock(mutexPtr);&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;자원을&nbsp;해제합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Mutex&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>mutexPtr;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    사용자는 Lock을 사용할 때 RAII 방식에 맞추어 쓰면 됩니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">Mutex&nbsp;m;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;여러분이&nbsp;쓰고&nbsp;싶은&nbsp;뮤텍스를&nbsp;정의합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%">{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;임계&nbsp;영역을&nbsp;정하기&nbsp;위해&nbsp;블록을&nbsp;만듭니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Lock&nbsp;ml(<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>m);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;뮤텍스에&nbsp;잠금을&nbsp;겁니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;임계&nbsp;영억에서&nbsp;할&nbsp;연산을&nbsp;수행합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;뮤텍스에&nbsp;걸렸던&nbsp;잠금이&nbsp;자동으로&nbsp;풀립니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    여기까진 문제가 없으나, Lock 객체가 복사된다면 어떻게 해야 할까요?<br>
+    Lock ml1(&m);&nbsp;&nbsp;&nbsp;// m에 잠금을 겁니다.<br>
+    Lock ml2(ml1);&nbsp;&nbsp;// ml1을 ml2로 복사합니다.<br>
+    이 문제를 일반화해서 정리하면 "RAII 객체가 복사될 때 어떤 동작이 이루어져야 할까요?"입니다.
+</p>
+
+<h2 class="section-heading">RAII 객체가 복사될 때의 동작</h2>
+
+<p>
+    <strong>복사를 금지합니다.</strong><br>
+    실제로, RAII 객체가 복사되도록 놔두는 것 자체가 말이 안 되는 경우가 꽤 많습니다.
+    위의 Lock 같은 클래스도 이런 부류에 속할 것 같습니다.
+    어떤 스레드 동기화 객체에 대한 '사본'이라는 게 실제로 거의 의미가 없으니까요.
+    복사하면 안 되는 RAII 클래스에 대해서는 반드시 복사가 되지 않도록 막아야 합니다.
+    이는 복사 연산(함수)을 private 멤버로 만들어서 해결할 수 있습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Lock:&nbsp;<span style="color:#ff3399">private</span>&nbsp;Uncopyable&nbsp;{&nbsp;&nbsp;<span style="color:#999999">//&nbsp;복사를&nbsp;금지합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이전과&nbsp;같습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    <strong>관리하고 있는 자원에 대해 참조 카운팅을 수행합니다.</strong><br>
+    자원을 사용하고 있는 마지막 객체가 소멸될 때까지 그 자원을 해제하지 않는 게 바람직할 경우도 종종 있습니다.
+    이럴 경우에는, 해당 자원을 참조하는 객체의 개수에 대한 카운트를 증가시키는 식으로 RAII 객체의 복사 동작을 만들어야 합니다.
+    이런 방식은 현재 tr1::shared_ptr이 사용하고 있습니다.
+    단, tr1::shared_ptr은 참조 카운트가 0이 될 때 자신이 가리키고 있던 대상을 삭제해 버리도록 기본 동작이 만들어져 있습니다.
+</p>
+
+<p>
+    다행스러운 것은 tr1::shared_ptr이 '삭제자(deleter)' 지정을 허용합니다(반면 auto_ptr에는 이 기능이 없어서, auto_ptr은 포인터를 바로 삭제해 버립니다). 여기서 삭제자란, tr1::shared_ptr이 유지하는 참조 카운트가 0이 되었을 때 호출되는 함수 혹은 함수 객체를 일컫습니다. 삭제자는 tr1::shared_ptr 생성자의 두 번째 매개변수로 선택적으로 넣어 줄 수 있습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Lock&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;Lock(Mutex&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pm)&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;shared_ptr을&nbsp;초기화하는데,&nbsp;가리킬&nbsp;포인터로</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;mutexPtr(pm,&nbsp;unlock)&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Mutex&nbsp;객체의&nbsp;포인터를&nbsp;사용하고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;삭제자로&nbsp;unlock&nbsp;함수를&nbsp;사용합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lock(mutexPtr.get());</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Mutex<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;mutexPtr;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;원시&nbsp;포인터&nbsp;대신에</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;shared_ptr을&nbsp;사용합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    여기서 중요한 점은 Lock 클래스가 이제는 소멸자를 선언하지 않는다는 점입니다.
+    클래스의 소멸자(컴파일러가 만들었든 사용자가 정의했든)는 비정적 데이터 멤버의 소멸자를 자동으로 호출하게 되어 있습니다.
+    이 '비정적 데이터 멤버'에 해당하는 것이 mutexPtr입니다.
+    mutexPtr의 소멸자는 뮤텍스의 참조 카운트가 0이 될 때 tr1::shared_ptr의 삭제자(현재의 경우엔 unlock)를 자동으로 호출할 것입니다.
+    따라서 필요 없기 때문에 선언하지 않은 코드입니다.
+</p>
+
+<p>
+    <strong>관리하고 있는 자원을 진짜로 복사합니다.</strong><br>
+    때에 따라서는 자원을 원하는 대로 복사할 수도 있습니다.
+    이때는 '자원을 다 썼을 때 각각의 사본을 확실히 해제하는 것'이 자원 관리 클래스가 필요한 유일한 명분이 되는 것이죠.
+    자원 관리 객체를 복사하면 그 객체가 둘러싸고 있는 자원까지 복사되어야 합니다.
+    즉, '깊은 복사(deep copy)'를 수행해야 합니다.
+    몇몇 구현환경에서 표준 string 타입은 복사 시에 사본은 포인터 및 포인터가 가리키는 새로운 힙 메모리를 갖게 됩니다.
+    이는 깊은 복사를 보여주는 한 예입니다.
+</p>
+
+<p>
+    <strong>관리하고 있는 자원의 소유권을 옮깁니다.</strong><br>
+    그리 흔한 경우는 아니지만, 어떤 특정한 자원에 대해 그 자원을 실제로 참조하는 RAII 객체는 딱 하나만 존재하도록 만들고 싶어서, 그 RAII 객체가 복사될 때 그 자원의 소유권을 사본 쪽으로 아예 옮겨야 할 경우도 있습니다.
+    이는 auto_ptr의 '복사' 동작입니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    RAII 객체의 복사는 그 객체가 관리하는 자원의 복사 문제를 안고 가기 때문에, 그 자원을 어떻게 복사하느냐에 따라 RAII 객체의 복사 동작이 결정됩니다.<br>
+    RAII 클래스에 구현하는 일반적인 복사 동작은 복사를 금지하거나 참조 카운팅을 해 주는 선으로 마무리하는 것입니다.
+    하지만 이 외의 방법들도 가능하니 참고해 둡시다.
+</p>
