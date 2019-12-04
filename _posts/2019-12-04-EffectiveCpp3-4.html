@@ -1,0 +1,68 @@
+---
+layout: post
+title: "[Effective C++]new 및 delete를 사용할 때는 형태를 반드시 맞추자"
+subtitle: "자원 관리, 네 번째 이야기"
+date: 2019-12-04 21:23:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">new와 delete의 동작</h2>
+
+<p>
+    new 연산자를 사용해서 <strong>표현식</strong>을 꾸미게 되면(즉, new로 어떤 객체를 동적 할당하면), 이로 인해 두 가지의 내부 동작이 진행됩니다.
+    일단 메모리가 할당됩니다(이때 operator new라는 이름의 함수가 쓰입니다).
+    그 다음, 할당된 메모리에 대해 한 개 이상의 생성자가 호출됩니다.
+</p>
+
+<p>
+    delete <strong>표현식</strong>을 쓸 경우에는(즉, delete 연산자를 사용할 때는) 또 다른 두 가지의 내부 동작이 진행됩니다.
+    우선 기존에 할당된 메모리에 대해 한 개 이상의 소멸자가 호출되고, 그 후에 메모리가 해제됩니다(이때 operator delete라는 이름의 함수가 쓰입니다).
+    여기서 delete 연산자가 적용되는 객체의 몇 개나 될까요?
+    답은 '소멸자가 호출되는 횟수'입니다.
+</p>
+
+<p>
+    다른 질문으로 삭제되는 포인터는 객체 하나만 가리킬까요, 아니면 객체의 배열을 가리킬까요?
+    이것이 핵심인데, 왜냐하면 (new로 힙에 만들어진) 단일 객체의 메모리 배치구조(layout)는 객체 배열에 대한 메모리 배치구조와 다르기 때문입니다.
+    특히, 배열을 위해 만들어지는 힙 메모리에는 대개 배열원소의 개수가 들어간다는 점이 가장 결정적인데, 이 때문에 delete 연산자는 소멸자가 몇 번 호출될지를 쉽게 알 수 있습니다.
+    반면, 단일 객체용 힙 메모리는 이런 정보가 없습니다.
+</p>
+
+<h2 class="section-heading">delete vs delete []</h2>
+
+<p>
+    어떤 포인터에 대해 delete를 적용할 때, delete 연산자로 하여금 '배열 크기 정보가 있다'는 것을 알려 줄 수 있는 건 여러분밖에 없습니다.
+    이때 대괄호 쌍([])을 delete 뒤에 붙여 주는 것입니다.
+    그제야 delete가 '포인터가 배열을 가리키고 있구나'라고 가정하게 됩니다.
+    그렇지 않으면 그냥 단일 객체라고 간주하고 맙니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>stringPtr1&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>stringPtr2&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>[<span style="color:#c10aff">100</span>];</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">delete</span>&nbsp;stringPtr1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;객체&nbsp;한&nbsp;개를&nbsp;삭제합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">delete</span>&nbsp;[]&nbsp;stringPtr2[];&nbsp;&nbsp;<span style="color:#999999">//&nbsp;객체의&nbsp;배열을&nbsp;삭제합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    new 표현식에 []를 썼으면, 여기에 대응되는 delete 표현식에도 []를 써야 한다는 아주 간단한 규칙입니다.
+    new 표현식에 []를 안 썼으면, 대응되는 delete 표현식에도 []를 안 쓰면 됩니다.
+</p>
+
+<p>
+    동적 할당된 메모리에 대한 포인터를 멤버 데이터로 갖고 있는 클래스를 만드는 중이며 이 클래스에서 제공하는 생성자도 여러 개일 경우에 특히 이 규칙을 생각해야 합니다.
+    왜냐하면 포인터 멤버를 초기화하는 부분인 생성자에서 new 형태를 똑같이 맞출 수밖에 없기 때문입니다.
+    typedef로 정의된 어떤 타입의 객체(배열)를 메모리에 생성하려고 new를 썼을 때 나중에 어떤 형태의 delete를 적어줘야 하는가에 대한 것도 생각해야 합니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">typedef</span>&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;AddressLines[<span style="color:#c10aff">4</span>];&nbsp;&nbsp;<span style="color:#999999">//&nbsp;주소는&nbsp;네&nbsp;줄로&nbsp;되어&nbsp;있고,</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;각각은&nbsp;string입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pal&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;AddressLines;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;"new&nbsp;AddressLines"는&nbsp;string*을</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;반환합니다.(new&nbsp;string[4])</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;delete&nbsp;pal;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;무슨&nbsp;일이&nbsp;생길지&nbsp;모릅니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">delete</span>&nbsp;[]&nbsp;pal;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;깔끔&nbsp;마무리</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    배열 타입을 typedef 타입으로 만들지 않는 것이 좋습니다.
+    표준 C++ 라이브러리에는 string이라든지 vector 같은 좋은 클래스 템플릿이 있어서, 잘 활용하면 동적 할당 배열이 필요해질 경우가 거의 없기 때문입니다.
+    위의 예제를 가지고 보면, AddressLines는 string의 vector로 정의해도 됩니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    new 표현식에 []를 썼으면, 대응되는 delete 표현식에도 []를 써야 합니다.
+    마찬가지로 new 표현식에 []를 안 썼으면, 대응되는 delete 표현식에도 []를 쓰지 말아야 합니다.
+</p>
