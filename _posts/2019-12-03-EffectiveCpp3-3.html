@@ -14,7 +14,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 </p>
 
 <p>
-    std::tr1::shared_ptr<Investment> pInv(createInvestment());<br>
+    std::tr1::shared_ptr&lt;Investment&gt; pInv(createInvestment());<br>
     createInvestment란 팩토리 함수를 호출한 결과(포인터)를 담기 위해 auto_ptr 혹은 tr1::shared_ptr과 같은 스마트 포인터를 사용하는 예제가 있습니다.
 </p>
 
@@ -27,7 +27,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     int days = daysHeld(pInv);&nbsp;&nbsp;// 에러!<br>
     그리고 이렇게 호출하고 싶을 텐데요.
     애석하게도 이 코드는 컴파일이 안 됩니다.
-    daysHeld 함수는 Investment* 타입의 실제 포인터를 원하는데, 여러분은 tr1::shared_ptr<Investment> 타입의 객체를 넘기고 있기 때문입니다.
+    daysHeld 함수는 Investment* 타입의 실제 포인터를 원하는데, 여러분은 tr1::shared_ptr&lt;Investment&gt; 타입의 객체를 넘기고 있기 때문입니다.
 </p>
 
 <p>
