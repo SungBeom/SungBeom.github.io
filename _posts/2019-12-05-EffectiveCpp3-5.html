@@ -1,0 +1,72 @@
+---
+layout: post
+title: "[Effective C++]new로 생성한 객체를 스마트 포인터에 저장하는 코드는 별도의 한 문장으로 만들자"
+subtitle: "자원 관리, 다섯 번째 이야기"
+date: 2019-12-05 10:46:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">컴파일러의 실행 순서에 따른 자원 누출 가능성</h2>
+
+<p>
+    처리 우선순위를 알려 주는 함수가 하나 있고, 동적으로 할당한 Widget 객체에 대해 어떤 우선순위에 따라 처리를 적용하는 함수가 하나 있다고 가정합니다.
+    자원 관리에는 객체를 사용하여, process Widget 함수는 동적 할당된 Widget 객체에 대해 스마트 포인터(여기서는 tr1::shared_ptr)를 사용하도록 만들어졌습니다.
+    여기서 포인터를 받는 tr1::shared_ptr의 생성자는 explicit로 선언되어 'new Widget' 표현식에 의해 만들어진 포인터가 tr1::shared_ptr 타입의 객체로 바꾸는 암시적인 변환이 없기 때문에, std::tr1::shared_ptr<Widget>(new Widget)으로 넘겨주어야 합니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">int</span>&nbsp;priority();</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;processWidget(<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Widget<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;pw,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;p);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">processWidget(<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Widget<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(<span style="color:#ff3399">new</span>&nbsp;Widget),&nbsp;priority());</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    위 예제에서 자원 관리 객체를 쓰고 있는데도, 마지막 문장은 자원을 흘릴 가능성이 있습니다.
+    컴파일러는 processWidget 호출 코드를 만들기 전에 우선 이 함수의 매개변수로 넘겨지는 인자를 평가(evaluate)하는 순서를 밟습니다.
+    여기서 두 번째 인자는 priority 함수의 호출문밖에 없지만, 첫 번째 인자("std::tr1::shared_ptr&lt;Widget&gt;(new Widget)")는 두 부분으로 나누어져 있습니다.
+</p>
+
+<p>
+    "new Widget" 표현식을 실행하는 부분<br>
+    tr1::shared_ptr 생성자를 호출하는 부분
+</p>
+
+<p>
+    사정이 이렇기 때문에, processWidget 함수 호출이 이루어지기 전에 컴파일러는 다음 세 가지 연산을 위한 코드를 만들어야 합니다.
+</p>
+
+<p>
+    priority를 호출합니다.<br>
+    "new Widget"을 실행합니다.<br>
+    tr1::shared_ptr 생성자를 호출합니다.
+</p>
+
+<p>
+    그런데, 여기서 각각의 연산이 실행되는 순서는 컴파일러 제작사마다 다르다는 게 문제입니다.
+    C++ 컴파일러의 경우엔 이들의 순서를 정하는 데 있어서 상당한 자유도를 갖고 있거든요(자바 및 C# 등의 언어와 다른 점 중 하나가 이 부분인데, 자바 및 C#은 매개변수의 평가 순서가 특정하게 고정되어 있습니다).
+    "new Widget" 표현식은 tr1::shared_ptr 생성자가 실행될 수 있기 전에 호출되어야 하겠지요.
+    그러나 priority의 호출은 처음에 호출될 수도 있고, 두 번째나 세 번째에 호출될 수도 있습니다.
+</p>
+
+<p>
+    1. "new Widget"을 실행합니다.<br>
+    2. priority를 호출합니다.<br>
+    3. tr1::shared_ptr 생성자를 호출합니다.<br>
+    위와 같은 순서로 결정됐을 때, priority 호출 부분에서 예외가 발생했다면 "new Widget"으로 만들어졌던 포인터가 유실됩니다.
+    그러니까 processWidget 호출 중에 자원이 누출될 가능성이 있는 이유는, 자원이 생성되는 시점("new Widget"을 통한)과 그 자원이 자원 관리 객체로 넘어가는 시점 사이에 예외가 끼어들 수 있기 때문입니다.
+</p>
+
+<p>
+    이런 문제를 피하기 위해선 Widget응 생성해서 스마트 포인터에 저장하는 코드를 별도의 문장 하나로 만들고, 그 스마트 포인터를 processWidget에 넘기는 것입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Widget<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;pw(<span style="color:#ff3399">new</span>&nbsp;Widget);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;new로&nbsp;생성한&nbsp;객체를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;스마트&nbsp;포인터에&nbsp;담는&nbsp;코드를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;하나의&nbsp;독립적인&nbsp;문장으로&nbsp;만듭니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">processWidget(pw,&nbsp;priority());&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이제는&nbsp;자원&nbsp;누출&nbsp;걱정이&nbsp;없습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    한 문장 안에 있는 연산들보다 문장과 문장 사이에 있는 연산들이 컴파일러의 재조정을 받을 여지가 적기 때문에 위의 코드는 자원 누출 가능성이 없습니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    new로 생성한 객체를 스마트 포인터에 넣는 코드는 별도의 한 문장으로 만듭시다.
+    이것이 안 되어 있으면, 예외가 발생될 때 디버깅하기 힘든 자원 누출이 초래될 수 있습니다.
+</p>
