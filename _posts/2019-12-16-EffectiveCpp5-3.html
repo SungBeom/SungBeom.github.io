@@ -1,0 +1,113 @@
+---
+layout: post
+title: "[Effective C++]내부에서 사용하는 객체에 대한 '핸들'을 반환하는 코드는 되도록 피하자"
+subtitle: "구현, 세 번째 이야기"
+date: 2019-12-16 10:57:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">핸들 반환 함수로 인한 캡슐화 수준의 변화</h2>
+
+<p>
+    사각형(rectangle)을 사용하는 어떤 응용프로그램을 만들고 있습니다.
+    사각형은 좌측 상단 및 우측 하단의 꼭짓점 두 개로 나타낼 수 있지요.
+    이것을 추상화한 Rectangle 클래스를 만들었는데, 메모리 부담을 줄이기 위해 사각형의 영역을 정의하는 꼭짓점을 별도의 구조체에 넣은 후에 Rectangle이 이 구조체를 가리키도록 하도록 구현했습니다.
+    또한 Rectangle 클래스의 사용자는 분명히 영역정보를 알아내어 쓸 때가 있을 것이므로, Rectangle 클래스에는 upperLeft 및 lowerRight 함수가 멤버 함수로 들어 있습니다.
+    사용자 정의 타입을 전달할 때는 값에 의한 전달보다 참조에 의한 전달방식을 쓰는 편이 더 효율적이므로 이들 두 멤버 함수는 (스마트) 포인터로 물어둔 Point 객체에 대한 참조자를 반환하는 형태로 만들어졌습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Point&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;점을&nbsp;나타내는&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Point(<span style="color:#4be6fa">int</span>&nbsp;x,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;y);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;setX(<span style="color:#4be6fa">int</span>&nbsp;newVal);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;setY(<span style="color:#4be6fa">int</span>&nbsp;newVal);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">struct</span>&nbsp;RectData&nbsp;{&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Rectangle에&nbsp;쓰기&nbsp;위한&nbsp;점&nbsp;데이터</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Point&nbsp;ulhc;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;좌측&nbsp;상단(upper&nbsp;left-hand&nbsp;corner)</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Point&nbsp;lrhc;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;우측&nbsp;하단(lower&nbsp;right-hand&nbsp;corner)</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Rectangle&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Point<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;upperLeft()&nbsp;<span style="color:#ff3399">const</span>&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;pData<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>ulhc;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Point<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;lowerRight()&nbsp;<span style="color:#ff3399">const</span>&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;pData<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>lrhc;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>RectData<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;pData;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    컴파일은 잘 되지만, 결정적으로 자기모순적인 코드입니다.
+    우선 upperLeft 함수와 lowerRight 함수가 상수 멤버 함수입니다.
+    원래 Rectangle의 꼭짓점 정보를 알아낼 수 있는 방법만 사용자에게 제공하고, Rectangle 객체를 수정하는 일은 할 수 없도록 설계되었으니까요.
+    그런데 이 함수들이 반환하는 건 private 멤버인 내부 데이터에 대한 참조이므로, 호출부에서 이 참조자를 써서 내부 데이터를 맘대로 수정할 수 있습니다.
+    그러니까 upperLeft나 lowerRight를 호출한 쪽은 rec의 은밀한 곳에 숨겨진 Point 데이터 멤버를 참조자로 끌어와 바꿀 수 있다는 것입니다.
+    하지만 rect은 상수 객체로 선언된 것 아닙니까?
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">Point&nbsp;coord1(<span style="color:#c10aff">0</span>,&nbsp;<span style="color:#c10aff">0</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">Point&nbsp;coord2(<span style="color:#c10aff">100</span>,&nbsp;<span style="color:#c10aff">100</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">const</span>&nbsp;Rectangle&nbsp;rec(coord1,&nbsp;coord2);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;rec은&nbsp;(0,&nbsp;0)부터&nbsp;(100,&nbsp;100)의&nbsp;영역에</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;있는&nbsp;상수&nbsp;Rectangle&nbsp;객체입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">rec.upperLeft().setX(<span style="color:#c10aff">50</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이제&nbsp;이&nbsp;rec은&nbsp;(50,&nbsp;0)부터</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;(100,&nbsp;100)의&nbsp;영역에&nbsp;있게&nbsp;됩니다!</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    우리는 여기서 두 가지 교훈을 얻을 수 있습니다.<br>
+    첫째, 클래스 데이터 멤버는 아무리 숨겨봤자 그 멤버의 참조자를 반환하는 함수들의 최대 접근도에 따라 캡슐화가 정해진다는 점입니다.
+    지금의 경우, ulhc와 lrhc는 private로 선언되어 있지만, 이들의 참조자를 반환하는 upperLeft 및 lowerRight 함수가 public 멤버 함수이기 때문에 실질적으로는 public 멤버입니다.<br>
+    둘째, 어떤 객체에서 호출한 상수 멤버 함수의 참조자 반환 값의 실제 데이터가 그 객체의 바깥에 저장되어 있다면, 이 함수의 호출부에서 그 데이터의 수정이 가능하다는 점입니다(사실 이 점은 비트수준 상수성의 한계가 가진 부수적 성질입니다).
+</p>
+
+<p>
+    참조자를 반환하는 멤버 함수만이 아닌, 포인터나 반복자를 반환하도록 되어 있었다 해도 마찬가지 이유로 인해 마찬가지 문제가 생깁니다.
+    참조자, 포인터 및 반복자는 어쨌든 모두 <strong>핸들(handle, 다른 객체에 손을 댈 수 있게 하는 매개자)</strong>이고, 어떤 객체의 내부요소에 대한 핸들을 반환하게 만들면 언제든지 그 객체의 캡슐화를 무너뜨리는 위험을 무릅쓸 수밖에 없습니다.
+    이것 때문에 상수 멤버 함수조차도 객체 상태의 변경을 허용하는 지경에까지 이를 수 있습니다.
+</p>
+
+<p>
+    어떤 객체의 '내부요소(internals)'라고 하면 데이터 멤버만이 아닌, 일반적인 수단으로 접근이 불가능한(쉽게 말해 protected 혹은 private로 선언된) 멤버 함수도 객체의 내부요소에 들어갑니다.
+    그러니 이들에 대한 핸들도 반환하지 말아야 합니다.
+    즉, 외부 공개가 차단된 멤버 함수에 대해, 이들의 포인터를 반환하는 멤버 함수를 만드는 일이 절대로 없어야 한다는 말입니다.
+    이런 함수가 하나라도 들어가는 순간부터 실질적인 접근 수준이 멤버 함수 포인터를 반환하는 함수의 접근도에 맞춰집니다.
+</p>
+
+<p>
+    멤버 함수의 포인터를 반환하는 함수가 가진 문제를 간단하게 해결하는 방법이 있는데, 반환 타입에 const 키워드를 붙여주는 것입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Rectangle&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">const</span>&nbsp;Point<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;upperLeft()&nbsp;<span style="color:#ff3399">const</span>&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;pData<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>ulhc;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">const</span>&nbsp;Point<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;lowerRight()&nbsp;<span style="color:#ff3399">const</span>&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;pData<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>lrhc;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이렇게 설계하면, 사용자는 사각형을 정의하는 꼭짓점 쌍을 읽을 수는 있지만 쓸 수는 없게 됩니다.
+    그리고 캡슐화 문제는 사용자들이 Rectangle을 구성하는 Point를 들여다보도록 하자는 것은 처음부터 알고 시작한 설계이기 때문에, 이 부분은 의도적인 캡슐화 완화라고 할 수 있겠습니다.
+    이보다 더 중요한 부분은 느슨하게 만든 데에도 <strong>제한</strong>을 두었다는 것입니다.
+    읽기 접근만 주어지고, 쓰기 접근은 여전히 금지죠.
+</p>
+
+<h2 class="section-heading">무효참조 핸들(dangling handle)</h2>
+
+<p>
+    그래도 아직 upperLeft 함수와 lowerRight 함수를 보면 내부 데이터에 대한 핸들을 반환하고 있는 부분이 남아 있습니다.
+    이것을 남겨두면 다른 쪽에서 문제가 될 수 있습니다.
+    가장 큰 문제가 <strong>무효참조 핸들(dangling handle)</strong>로서, 핸들이 있기는 하지만 그 핸들을 따라갔을 때 실제 객체의 데이터가 없는 것입니다.
+    핸들이 물고 있는 객체가 기약도 없이 어디론가 증발하는 현상은 함수가 객체를 값으로 반환할 경우에 가장 흔하게 발생됩니다.
+    예를 들어 어떤 GUI 객체의 사각 테두리 영역(bounding box)을 Rectangle 객체로 반환하는 함수가 있다고 가정합시다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;GUIObject&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">const</span>&nbsp;Rectangle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Rectangle&nbsp;객체를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;boundingBox(<span style="color:#ff3399">const</span>&nbsp;GUIObject<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;obj);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;값으로&nbsp;반환합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이 상태에서 어떤 사용자가 이 함수를 사용한다고 생각해 보세요.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">GUIObject&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pgo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pgo를&nbsp;써서&nbsp;임의의&nbsp;GUIObject를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;가리키도록&nbsp;합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">const</span>&nbsp;Point&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pUpperLeft&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pgo가&nbsp;가리키는&nbsp;GUIObject의</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>(boundingBox(<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pgo).upperLeft());&nbsp;&nbsp;<span style="color:#999999">//&nbsp;사각&nbsp;테두리&nbsp;영역으로부터</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;좌측&nbsp;상단&nbsp;꼭짓점의&nbsp;포인터를&nbsp;얻습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    마지막 문장을 보면, boundingBox 함수를 호출하면 Rectangle 임시 객체가 새로 만들어집니다.
+    다음엔 이 임시 객체에 대해 upperLeft가 호출될 텐데, 이 호출로 인해 임시 객체의 내부 데이터, 정확히 말하면 두 Point 객체 중 하나에 대한 참조자가 나옵니다.
+    마지막으로 이 참조자에 & 연산자를 건 결과 값(주소)이 pUpperLeft 포인터에 대입되는 것이죠.
+    그런데 문제는 이 문장이 끝날 무렵, boundingBox 함수의 반환 값(임시 객체)이 소멸된다는 사실입니다.
+    임시 객체가 소멸되니, 그 안에 들어 있는 Point 객체들도 덩달아 없어질 것입니다.
+    결과적으로 pUpperLeft 포인터가 가리키는 객체는 이제 날아가고 없게 됩니다.
+</p>
+
+<p>
+    객체의 내부에 대한 핸들을 반환하는 함수는 어떻게든 위험하다는 말이 이래서 나오는 것입니다.
+    핸들이 무엇이든(포인터든, 참조자든, 반복자든), 핸들에 const를 붙였든 안 붙였든, 핸들을 반환하는 함수가 상수 멤버든 아니든 상관없습니다.
+    핸들을 반환하는 함수기만 하면, 이 함수로 인해 일단 바깥으로 떨어져 나간 핸들은 그 핸들이 참조하는 객체보다 더 오래 살 위험이 있기 때문입니다.
+</p>
+
+<p>
+    그렇다고 해서 핸들을 반환하는 멤버 함수를 <strong>절대로</strong> 두지 말라는 이야기는 아닙니다.
+    어쩌다 보면 필요할 수도 있습니다.
+    예를 들어 operator[] 연산자는 string이나 vector 등의 클래스에서 개개의 원소를 참조할 수 있게 만드는 용도로 제공되고 있는데, 실제로 이 연산자는 내부적으로 해당 컨테이너에 들어 있는 개개의 원소 데이터에 대한 참조자를 반환하는 식으로 동작합니다.
+    물론 이 원소 데이터는 컨테이너가 사라질 때 같이 사라지는 데이터입니다.
+    하지만 이런 함수는 예외적인 것이지, 일반적인 규칙은 아닙니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    어떤 객체의 내부요소에 대한 핸들(참조자, 포인터, 반복자)을 반환하는 것은 되도록 피하세요.
+    캡슐화 정도를 높이고, 상수 멤버 함수가 객체의 상수성을 유지한 채로 동작할 수 있도록 하며, 무효참조 핸들이 생기는 경우를 최소화할 수 있습니다.
+</p>
