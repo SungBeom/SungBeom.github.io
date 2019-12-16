@@ -6,7 +6,7 @@ date: 2019-12-14 21:04:00
 background: '/img/posts/EffectiveCpp.jpg'
 ---
 
-<h2 class="section-heading"></h2>
+<h2 class="section-heading">변수 정의 위치에 따른 비용</h2>
 
 <p>
     생성자 혹은 소멸자를 끌고 다니는 타입으로 변수를 정의하면 반드시 물게 되는 비용이 두 개 있습니다.
@@ -51,6 +51,8 @@ background: '/img/posts/EffectiveCpp.jpg'
     이렇게 해야 쓰지도 않을 객체가 만들어졌다 없어지는 일이 생기지 않으며, 불필요한 기본 생성자 호출도 일어나지 않습니다.
     덤으로, 누가 보아도 그 변수의 의미가 명확한 상황에서 초기화가 이루어지기 때문에, 변수의 쓰임새를 문서화하는 데도 큰 도움이 됩니다.
 </p>
+
+<h2 class="section-heading">루프에서의 비용 비교</h2>
 
 <p>
     그렇다면 어떤 변수가 루프 안에서만 쓰이는 경우라면 어떨까요?
