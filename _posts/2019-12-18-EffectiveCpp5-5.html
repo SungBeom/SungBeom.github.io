@@ -1,0 +1,158 @@
+---
+layout: post
+title: "[Effective C++]인라인 함수는 미주알고주알 따져서 이해해 두자"
+subtitle: "구현, 다섯 번째 이야기"
+date: 2019-12-18 13:30:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">인라인 함수의 장단점</h2>
+
+<p>
+    인라인 함수는 <strong>훌륭한</strong> 아이디어입니다.
+    함수처럼 보이고 함수처럼 동작하는데다가, 매크로보다 훨씬 안전하고 쓰기 좋습니다.
+    함수 호출 시 발생하는 오버헤드도 걱정할 필요가 없고요.
+    대체적으로 컴파일러 최적화는 함수 호출이 없는 코드가 연속적으로 이어지는 구간에 적용되도록 설계되었기 때문에, 인라인 함수를 사용하면 컴파일러가 함수 본문에 대해 문맥별(context-specific) 최적화를 걸기가 용이해집니다.
+</p>
+
+<p>
+    그러나 인라인 함수의 아이디어는 함수 호출문을 그 함수의 본문으로 바꿔치기하자는 것이라서, 목적 코드의 크기가 커지게 됩니다.
+    메모리가 제한된 컴퓨터에서나 가상 메모리를 쓰는 환경일지라도 인라인 함수로 인해 부풀려진 코드는 성능의 걸림돌이 되기 쉽습니다.
+    반대의 경우로, 본문 길이가 굉장히 짧은 인라인 함수를 사용하면, 함수 본문에 대해 만들어지는 코드의 크기가 함수 호출문에 대해 만들어지는 코드보다 작아질 수도 있습니다.
+    이런 경우에는 목적 코드의 크기도 작아지며 명령어 캐시 적중률도 높아지지요.
+</p>
+
+<p>
+    inline은 컴파일러에 대해 <strong>'요청'</strong>하는 것이지, '명령'이 아닙니다.
+    이 요청은 inline을 붙이지 않아도 그냥 눈치껏 되는 경우도 있고 명시적으로 할 수도 있습니다.
+    우선 암시적인 방법부터 보겠습니다.
+    클래스 정의 안에 함수를 바로 정의해 넣으면 컴파일러는 그 함수를 인라인 함수 후보로 찍습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Person&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;age()&nbsp;<span style="color:#ff3399">const</span>&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;theAge;&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;암시적인&nbsp;인라인&nbsp;요청:&nbsp;age는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;클래스&nbsp;정의&nbsp;내부에서&nbsp;정의되었습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;theAge;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    인라인 함수를 선언하는 명시적인 방법은 함수 정의 앞에 inline 키워드를 붙이는 것입니다.
+    한 예로, 표준 라이브러리의 max 템플릿(&lt;algorithm&gt;에 있습니다)은 대개 다음과 같이 구현되어 있습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;명시적인&nbsp;인라인&nbsp;요청</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">inline</span>&nbsp;<span style="color:#ff3399">const</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;<span style="color:#4be6fa">std</span>::max(<span style="color:#ff3399">const</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;a,&nbsp;<span style="color:#ff3399">const</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;b)&nbsp;&nbsp;<span style="color:#999999">//&nbsp;std::max&nbsp;앞에</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">{&nbsp;<span style="color:#ff3399">return</span>&nbsp;a&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>&nbsp;b&nbsp;?&nbsp;b&nbsp;:&nbsp;a;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;"inline"이&nbsp;붙어&nbsp;있습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">템플릿의 inline</h2>
+
+<p>
+    인라인 함수는 대체적으로 헤더 파일에 들어 있어야 합니다.
+    왜냐하면 대부분의 빌드 환경에서 인라인을 컴파일 도중에 수행하기 때문입니다.
+    인라인 함수 호출을 그 함수의 본문으로 바꿔치기하려면, 일단 컴파일러는 그 함수가 어떤 형태인지 알고 있어야 하거든요.
+    템플릿 역시, 대체적으로 헤더 파일에 들어 있어야 맞습니다.
+    템플릿이 사용되는 부분에서 해당 템플릿을 인스턴스로 만들려면 그것이 어떻게 생겼는지를 컴파일러가 알아야 하기 때문입니다.
+</p>
+
+<p>
+    그런데 템플릿 인스턴스화는 인라인과 완전히 별개로, 하등의 관련이 없습니다.
+    어떤 템플릿을 만들고 있는데 이 템플릿으로부터 만들어지는 모든 함수가 인라인 함수였으면 싶은 경우에 그 템플릿에 inline을 붙여 선언하는 것입니다.
+    위에서 보신 std::max가 바로 이 경우입니다.
+</p>
+
+<h2 class="section-heading">컴파일러의 inline 조건</h2>
+
+<p>
+    inline은 컴파일러 선에서 무시할 수 있는 요청입니다.
+    대부분의 컴파일러의 경우, 아무리 인라인 함수로 선언되어 있어도 자신이 보기에 복잡한 함수는 절대로 인라인 확장의 대상에 넣지 않는데다가(루프가 들어 있다거나 재귀 함수인 경우가 이런 예입니다), 정말 간단한 함수라 할지라도 가상 함수 호출 같은 것은 절대로 인라인해 주지 않습니다.<br>
+    <i>두 번째 부분은 virtual의 이미가 "어떤 함수를 호출할지 결정하는 작업을 실행 중에 한다"라는 뜻이고 inline의 의미가 "함수 호출 위치에 호출된 함수를 끼워 넣는 작업을 프로그램 실행 전에 한다"는 뜻이니 당연한 것입니다.</i>
+</p>
+
+<p>
+    결국 인라인 함수가 실제로 인라인되느냐 안 되느냐의 여부는 전적으로 개발자가 사용하는 빌드 환경, 그 중에서도 컴파일러에 달렸다는 것이죠.
+    한 가지 다행스러운 사실은, 여러분이 요청한 함수에 대한 인라인이 실패했을 경우에 경고 메시지를 내주는 진단 수준 설정 기능이 대부분의 컴파일러에 들어 있다는 점입니다.
+</p>
+
+<p>
+    완벽한 인라인 조건을 갖추었는데도, 컴파일러가 인라인 함수의 본문에 대해 코드를 만드는 경우가 있습니다.
+    예를 들어 어떤 인라인 함수의 주소를 취하는 코드가 있으면, 컴파일러는 이 코드를 위해 일반 함수 본문을 만들 수밖에 없을 것입니다.
+    게다가, 인라인 함수로 선언된 함수를 함수 포인터를 통해 호출하는 경우도 대개 인라인되지 않는답니다.
+    종합해 보면, 확실한 인라인 함수도 '어떻게 호출하느냐'에 따라 인라인되기도 하고 안 되기도 한다는 이야기입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">inline</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;f()&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;f의&nbsp;호출은&nbsp;컴파일러가&nbsp;반드시</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;인라인해&nbsp;준다고&nbsp;가정합시다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;(<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pf)()&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;f;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pf는&nbsp;f를&nbsp;가리키는&nbsp;함수&nbsp;포인터입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%">f();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;호출은&nbsp;인라인될&nbsp;것입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;"평범한"&nbsp;함수&nbsp;호출이니까요.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">pf();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;호출은&nbsp;인라인되지&nbsp;않을&nbsp;것입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;함수&nbsp;포인터를&nbsp;통해&nbsp;호출되고&nbsp;있으니까요.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    인라인되지 않는 인라인 함수는 여러분이 함수 포인터를 전혀 사용하지 않아도 여러분을 괴롭힐 수 있습니다.
+    컴파일러가 인라인으로 선언된 생성자 및 소멸자에 대해 일반 함수 본문을 만들 수도 있습니다.
+    어떤 배열의 원소가 객체일 경우가 대표적인 예인데, 배열을 구성하는 객체들을 생성하고 소멸시킬 때 생성자/소멸자의 함수 포인터를 얻어내려면 함수 본문이 반드시 필요합니다.
+</p>
+
+<h2 class="section-heading">생성자와 소멸자의 inline</h2>
+
+<p>
+    생성자와 소멸자는 인라인하기에 그리 좋지 않은 함수입니다.
+    아래의 Derived 클래스에 들어 있는 생성자를 보고 가만히 생각해 보세요.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Base&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;bm1,&nbsp;bm2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Base&nbsp;클래스의&nbsp;멤버&nbsp;1,&nbsp;멤버&nbsp;2</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Derived:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Base&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Derived()&nbsp;{}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Derived&nbsp;생성자가&nbsp;비어&nbsp;있습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;진짜&nbsp;비어&nbsp;있을까요?</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;dm1,&nbsp;dm2,&nbsp;dm3;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Derived의&nbsp;멤버&nbsp;1,&nbsp;멤버&nbsp;2,&nbsp;멤버&nbsp;3</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    Dervied의 생성자는 생김새부터 인라인하기에 딱 좋아 보이는 인상입니다.
+    아무 코드도 안 들어 있으니까요.
+    하지만 여러분은 눈에 속은 것입니다.
+</p>
+
+<p>
+    C++은 객체가 생성되고 소멸될 때 일어나는 일들에 대해 여러 가지 보장을 준비해 놓았습니다.
+    여러분이 new를 하면 이때 동적으로 만들어지는 객체를 생성자가 자동으로 초괴화해 주는 것도 그렇고, delete를 하면 이에 대응되는 소멸자가 호출되는 것도 C++이 깔아둔 보장입니다.
+    어떤 객체를 여러분이 생성하면 그 객체의 기본 클래스 부분과 그 객체의 데이터 멤버들이 자동으로 생성되며, 그 객체가 소멸될 때 이에 반대되는 순서로 소멸 과정이 저절로 이루어지는 것도 마찬기지죠.
+    또한 C++은 객체가 생성되는 도중에 예외가 던져지더라도, 이미 생성이 완료된 부분만큼은 여러분 손길 없이도 말끔히 소멸되도록 보장합니다.
+    하지만 C++은 <strong>'무엇을'</strong> 해야 하는지는 정해 두었지만 그것을 <strong>'어떻게'</strong> 해야 하는지는 정하지 않았다는 점입니다.
+    즉, 여러분 눈에 보이지 않지만 이런 일을 가능하게 하는 어떤 코드가 여러분의 프로그램에 포함되어야 하고, 이 코드(다시 말해 컴파일러가 만들어서 컴파일 도중에 여러분의 소스 코드에 삽입하는 코드)가 소스 코드 어딘가에 들어가 있어야 한다는 결론이 나오는 것입니다.
+    바로 그 장소가 생성자와 소멸자일 수도 있는 것이고요.
+    그러니까, 비어 있다고 생각되던 Dervied 생성자는 사실 어떤 구현환경에서는 다음과 같은 코드로 만들어질 것이라고 상상해 볼 수 있습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div><div style="line-height:130%">25</div><div style="line-height:130%">26</div><div style="line-height:130%">27</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">Derived::Derived()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;"비어&nbsp;있는"&nbsp;Derived&nbsp;생성자가&nbsp;실제로</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;구현된다면&nbsp;이런&nbsp;모습일지도&nbsp;모른다고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;꾸며&nbsp;본&nbsp;개념적인&nbsp;코드</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Base::Base();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Base&nbsp;부분을&nbsp;초기화합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">try</span>&nbsp;{&nbsp;dm1.<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>::<span style="color:#4be6fa">string</span>();&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;dm1의&nbsp;생성을&nbsp;시도합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">catch</span>&nbsp;(...)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;생성&nbsp;도중에&nbsp;dm1에서&nbsp;예외를&nbsp;던지면,</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Base::~Base();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;클래스&nbsp;부분을&nbsp;소멸시키고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;그&nbsp;예외를&nbsp;전파합니다(다시&nbsp;던집니다).</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">try</span>&nbsp;{&nbsp;dm2.<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>::<span style="color:#4be6fa">string</span>();&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;dm2의&nbsp;생성을&nbsp;시도합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">catch</span>&nbsp;(...)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;생성&nbsp;도중에&nbsp;dm2에서&nbsp;예외를&nbsp;던지면,</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dm1.<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>::~<span style="color:#4be6fa">string</span>();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;dm1을&nbsp;소멸시키고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Base::~Base();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;클래스&nbsp;부분을&nbsp;소멸시키고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;그&nbsp;예외를&nbsp;전파합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">try</span>&nbsp;{&nbsp;dm3.<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>::<span style="color:#4be6fa">string</span>();&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;dm3의&nbsp;생성을&nbsp;시도합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">catch</span>&nbsp;(...)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;생성&nbsp;도중에&nbsp;dm3에서&nbsp;예외를&nbsp;던지면,</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dm2.<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>::~<span style="color:#4be6fa">string</span>();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;dm2를&nbsp;소멸시키고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dm1.<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>::~<span style="color:#4be6fa">string</span>();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;dm1을&nbsp;소멸시키고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Base::~Base();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;클래스&nbsp;부분을&nbsp;소멸시키고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;그&nbsp;예외를&nbsp;전파합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    진짜 컴파일러가 실제로 만들어내는 코드가 위처럼 무식하지는 않겠지만, Dervied의 '텅 빈' 생성자가 실제로 어떤 동작을 하는지에 대한 사항은 정확하게 나와 있습니다.
+    Dervied 클래스의 생성자는 최소한 자신의 데이터 멤버와 기본 클래스 부분에 대해 생성자를 호출해 주어야 하고, 이들 생성자를 호출해야 하기 때문에(이들도 인라인될 수 있습니다) 인라인이 사뭇 난감해지는 것입니다.
+</p>
+
+<p>
+    Base 생성자의 경우에 대해서도 똑같이 생각하면 됩니다.
+    그러니까 Base 생성자가 인라인되면, 이 함수에 삽입되어 있던 코드들도 전부 Dervied 생성자에 끼어들어가야 합니다(Base 생성자를 Derived 생성자가 호출하니까요).
+    그리고 string 생성자마저도 어쩌다가 인라인되면, Derived 생성자는 Dervied 객체가 갖는 다섯 개의 string 데이터 멤버에 대한 생성자로 인해 똑같은 함수 본문을 다섯 개나 갖게 되는 것입니다.
+    소멸자의 경우에도 사정은 비슷합니다.
+</p>
+
+<h2 class="section-heading">inline 전략</h2>
+
+<p>
+    라이브러리를 설계하는 입장에서 함수를 inline으로 선언할 때 그 영향에 대해 많은 고민을 해야 합니다.
+    사용자의 눈에 뻔히 보이는 인라인 함수에 대해서는 라이브러리 차원에서 바이너리 업그레이드를 제공할 수 없기 때문입니다.
+    어떤 라이브러리에 f라는 인라인 함수가 있고, 이 라이브러리를 쓰는 사용자가 f의 본문을 컴파일해서 응용프로그램을 만들었다고 가정해 보세요.
+    나중에 이 라이브러리 개발자가 f의 내부를 바꾸겠다고 결정했다면, f를 썼던 사용자들은 슬프지만 죄다 각자의 소스를 다시 컴파일해야 할 것입니다.
+    반대로 f가 인라인 함수가 아닌 보통 함수라고 하면, f가 바뀌었을 때 사용자들은 링크만 다시 해 주면 끝납니다.
+    게다가 f를 제공하는 라이브러리가 동적 링크 방식을 취하고 있으면, 사용자 쪽에서는 바뀌었다고만 생각할 정도로 개발 작업이 완벽하게 투명해질 것입니다.
+</p>
+
+<p>
+    인라인 함수도 따질 게 많지만, 실제로 코딩하는 입장에서 보면 한 가지 사실이 크게 다가옵니다.
+    그 사실이란, 디버거가 무척이나 곤란해 하는 비호감 대상이 바로 인라인 함수라는 점입니다.
+    물론 어떤 빌드 환경은 인라인 함수의 디버깅을 어떻게든 지원해 주긴 하지만, 대다수의 환경에서는 디버그 빌드에 대해 인라인을 비활성화해 주는 정도만 제공합니다.
+    사정이 이렇다 보니, 어떤 함수를 인라인으로 선언해야 하고 또 어떤 것을 선언하지 말아야 하는지에 대한 기본 전략이 턱 하니 나오게 됩니다.
+</p>
+
+<p>
+    우선, 아무것도 인라인하지 마세요.
+    아니면 꼭 인라인해야 하는 함수 혹은 정말 단순한 함수(이번 항목 처음에 나온 Person::age 같은 함수가 여기에 해당됩니다)에 한해서만 인라인 함수로 선언하는 것으로 시작하십시오.
+    인라인을 주의해서 사용하는 버릇을 들여서, 디버깅하고 싶은 부분에서 여러분의 디버거를 제대로 쓸 수 있도록 만드시고, 정말 필요한 위치에 인라인 함수를 놓도록 하세요.
+    수동 최적화인 셈이지요.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    함수 인라인은 작고, 자주 호출되는 함수에 대해서만 하는 것으로 묶어둡시다.
+    이렇게 하면 디버깅 및 라이브러리의 바이너리 업그레이드가 용이해지고, 자칫 생길 수 있는 코드 부풀림 현상이 최소화되며, 프로그램의 속력이 더 빨라질 수 있는 여지가 최고로 많아집니다.<br>
+    함수 템플릿이 대개 헤더 파일에 들어간다는 일반적인 부분만 생각해서 이들을 inline으로 선언하면 안 됩니다.
+</p>
