@@ -6,7 +6,7 @@ date: 2019-12-19 23:52:00
 background: '/img/posts/EffectiveCpp.jpg'
 ---
 
-<h2 class="section-heading"></h2>
+<h2 class="section-heading">파일 사이의 컴파일 의존성</h2>
 
 <p>
     클래스를 아주 살짝 손보았다고 생각합시다.
@@ -81,6 +81,8 @@ background: '/img/posts/EffectiveCpp.jpg'
     게다가 Person이 어떻게 구현되어 있는지를 들여다볼 수 없기 때문에, 구현 세부사항에 어떻게든 직접 발을 걸치는 코드를 작성할 여지가 사라집니다.
 </p>
 
+<h2 class="section-heading">의존성을 정의부에서 선언부로</h2>
+
 <p>
     이렇게 인터페이스와 구현을 둘로 나누는 열쇠는 '<strong>정의부</strong>에 대한 의존성(dependencies on definitions)'을 '<strong>선언부</strong>에 대한 의존성(dependencies on declarations)'으로 바꾸어 놓는 데 있습니다.
     이게 바로 컴파일 의존성을 최소화하는 핵심 원리이죠.
@@ -132,6 +134,8 @@ background: '/img/posts/EffectiveCpp.jpg'
     <i>사실 C++에서는 템플릿 선언과 템플릿 정의를 분리할 수 있도록 하는 기능을 export라는 키워드로 제공하지만, 현재 이 키워드를 제대로 지원하는 컴파일러가 별로 없고, 현장에서 쓰는 예가 너무 드뭅니다.</i>
 </p>
 
+<h2 class="section-heading">핸들 클래스</h2>
+
 <p>
     앞에서 보신 pimpl 관용구를 사용하는 Person 같은 클래스를 가리켜 <strong>핸들 클래스(handle class)</strong>라고 합니다.
     핸들 클래스에서 어떤 함수를 호출하게 되어 있다면, 핸들 클래스에 대응되는 구현 클래스 쪽으로 그 함수 호출을 전달해서 구현 클래스가 실제 작업을 수행하게 만드세요.
@@ -144,6 +148,8 @@ background: '/img/posts/EffectiveCpp.jpg'
     그리고 Person::name이 PersonImpl::name을 호출하는 부분도 잘 보시고요.
     Person은 핸들 클래스이지만 그렇다고 Person의 동작이 바뀐 것은 아니라, Person의 동작을 수행하는 방법이 바뀌었을 뿐입니다.
 </p>
+
+<h2 class="section-heading">인터페이스 클래스</h2>
 
 <p>
     핸들 클래스 방법 대신에 다른 방법을 쓰고 싶다면 Person을 특수 형태의 추상 기본 클래스, 이른 바 <strong>인터페이스 클래스(Interface class)</strong>로 만드는 방법도 생각해 볼 수 있겠습니다.
@@ -201,6 +207,8 @@ background: '/img/posts/EffectiveCpp.jpg'
     다시 정리하면, 인터페이스 클래스(Person)로부터 인터페이스 명세를 물려받게 만든 후에, 그 인터페이스에 들어 있는 함수(가상 함수)를 구현하는 것이라고 말할 수 있겠습니다.<br>
     <i>한편, 인터페이스 클래스를 구현하는 두 번째 방법은 다중 상속을 사용하는 것입니다.</i>
 </p>
+
+<h2 class="section-heading">핸들 클래스 혹은 인터페이스 클래스 사용의 필요성</h2>
 
 <p>
     결론적으로, 핸들 클래스와 인터페이스 클래스는 구현부로부터 인터페이스를 뚝 떼어 놓음으로써 파일들 사이의 컴파일 의존성을 완화시키는 효과를 가져다줍니다.
