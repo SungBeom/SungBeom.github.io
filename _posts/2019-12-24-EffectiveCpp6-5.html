@@ -1,0 +1,65 @@
+---
+layout: post
+title: "[Effective C++]상속받은 비가상 함수를 파생 클래스에서 재정의하는 것은 절대 금물!"
+subtitle: "상속, 그리고 객체 지향 설계, 다섯 번째 이야기"
+date: 2019-12-24 14:33:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">같은 객체, 같은 함수, 다른 동작</h2>
+
+<p>
+    D라는 이름의 클래스가 B라는 이름의 클래스로부터 public 상속에 의해 파생되었고, B 클래스에는 mf라는 이름의 public 멤버 함수가 정의되어 있다고 가정합시다.
+    매개변수나 반환 타입은 둘 다 void라고 해 둡시다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;B&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;mf();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;D:&nbsp;<span style="color:#ff3399">public</span>&nbsp;B&nbsp;{&nbsp;...&nbsp;};</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    D 타입으로 x라는 객체를 생성하고, x 객체에 대한 포인터를 얻어, mf 멤버 함수를 호출할 경우에 상황에 따라 동작이 다를 수 있습니다.
+    함수도 똑같고 객체도 똑같으니, 동작도 같아햐 하는 것이 이치적으로 맞지만, 다를 수도 있다는 게 문제입니다.
+    특히, mf가 비가상 함수이고 D 클래스가 자체적으로 mf 함수를 또 정의하고 있으면 위와 같은 황당한 동작이 나오게 됩니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;D:&nbsp;<span style="color:#ff3399">public</span>&nbsp;B&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;mf();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;B::mf를&nbsp;가려&nbsp;버립니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">D&nbsp;x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;x는&nbsp;D&nbsp;타입으로&nbsp;생성된&nbsp;객체입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">B&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pB&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;x에&nbsp;대한&nbsp;포인터를&nbsp;얻어냅니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">D&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pD&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;x에&nbsp;대한&nbsp;포인터를&nbsp;얻어냅니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">pB<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>mf();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;B::mf를&nbsp;호출합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">pD<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>mf();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;D::mf를&nbsp;호출합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이렇게 두 얼굴의 동작을 하는 이유는, B::mf 및 D::mf 등의 <strong>비가상</strong> 함수는 정적 바인딩(static binding)으로 묶이기 때문입니다.
+    무슨 뜻인고 하니, pB는 'B에 대한 포인터' 타입으로 선언되었기 때문에, pB를 통해 호출되는 비가상 함수는 <strong>항상</strong> B 클래스에 정의되어 있을 것이라고 결정해 버린다는 말입니다.
+    심지어 B에서 파생된 객체를 pB가 가리키고 있다 해도 마찬가지입니다.
+</p>
+
+<p>
+    반면 <strong>가상</strong> 함수의 경우엔 동적 바인딩(dynamically binding)으로 묶입니다.
+    비가상 함수와 같은 문제로 골머리를 썩을 이유가 없죠.
+    만약 mf 함수가 가상 함수였다면, mf가 pB에서 호출되든 pD에서 호출되든 D::mf가 호출됩니다.
+    pB 및 pD가 <strong>진짜로</strong> 가리키는 대상은 D 타입의 객체이니까요.
+</p>
+
+<p>
+    만약 D 클래스를 B로부터 파생시켜 만드는 도중에 B 클래스로부터 물려받은 비가상 함수인 mf를 재정의해 버리면, D 클래스는 일관성 없는 동작을 보이는 이상한 클래스가 됩니다.
+    특히, 분명히 D 객체인데도, 이 객체에서 mf 함수를 호출하면 B와 D 중 어디로 튈지 모르는 결과를 낳게 됩니다.
+    게다가 B냐 D냐를 좌우하는 요인이 해당 객체 자신이 아니라, 그 객체를 가리키는 포인터의 타입이란 점이 심각하게 암울합니다.
+    참조자도 좌절스런 문제를 일으키기는 포인터나 마찬가지입니다.
+</p>
+
+<p>
+    D에서 mf를 재정의하면 public 상속의 의미인 "is-a(...는 ...의 일종이다)" 설계 중 '모든 D는 B의 일종'이란 명제에 모순이 생겨 버립니다.
+    만약 mf를 B와 다르게 구현한 것이 진짜로 원해서 그런 거라면, D는 B로부터 public 상속을 받으면 안 됩니다.
+    한편, D는 B로부터 public 상속을 받아 파생시킬 수밖에 없는 사정이 있고, 진짜로 D에서 mf 함수를 B의 그것과 다르게 구현해야 한다면, 'mf는 클래스 파생에 상관없이 B에 대한 불변동작을 나타낸다'라는 점도 참이 되지 않습니다.
+    이런 경우라면 mf는 가상 함수로 만들어지는 것이 맞습니다.
+    마지막으로, 만약 모든 D가 B의 일종이고 정말 mf가 클래스 파생에 상관없는 B의 불변동작에 해당한다면, D에서는 결단코 mf를 재정의할 생각도 할 수 없습니다.
+</p>
+
+<p>
+    실제적이든 이론적이든, 받아들이는 입장에서는 문제일 수밖에 없습니다.
+    어떤 상황에서도 상속받은 비가상 함수를 재정의하는 것은 절대 금물입니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    상속받은 비가상 함수를 재정의하는 일은 절대로 하지 맙시다.
+</p>
