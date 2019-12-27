@@ -6,7 +6,7 @@ date: 2019-12-26 00:38:00
 background: '/img/posts/EffectiveCpp.jpg'
 ---
 
-<h2 class="section-heading"></h2>
+<h2 class="section-heading">객체 합성의 의미</h2>
 
 <p>
     합성(合成, composition)이란, 어떤 타입의 객체들이 그와 다른 타입의 객체들을 포함하고 있을 경우에 성립하는 그 타입들 사이의 관계를 일컫습니다.
@@ -31,12 +31,16 @@ background: '/img/posts/EffectiveCpp.jpg'
     반면, 구현영역에서 일어나면 그 객체 합성의 의미는 is-implemented-in-terms-of 관계를 나타내는 것입니다.
 </p>
 
+<h2 class="section-heading">응용 영역에서의 객체 합성</h2>
+
 <p>
     위의 예제에서 Person 클래스가 나타내는 관계는 has-a 관계입니다.
     하나의 Person 객체는 이름, 주소, 음성전화 및 팩스전화 번호를 가지고 있습니다.
     사람이 이름의 일종(Person is a name)이라든지 사람이 주소의 일종(Person is a address)이라고는 말할 수 없겠지요.
     사람이 이름을 가지며 사람이 주소를 가진다고 말하는 것이 자연스럽습니다.
 </p>
+
+<h2 class="section-heading">구현 영역에서의 객체 합성</h2>
 
 <p>
     상대적으로 오락가락하는 부분이 바로 is-a 관계와 is-implemented-in-terms-of 관계의 차이점일 것입니다.
