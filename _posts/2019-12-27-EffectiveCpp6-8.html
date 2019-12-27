@@ -1,0 +1,159 @@
+---
+layout: post
+title: "[Effective C++]private 상속은 심사숙고해서 구사하자"
+subtitle: "상속, 그리고 객체 지향 설계, 여덟 번째 이야기"
+date: 2019-12-27 23:25:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">private 상속의 의미</h2>
+
+<p>
+    C++은 public 상속을 is-a 관계로 나타냅니다.
+    Student가 Person으로부터 public 상속으로 파생된 상태의 클래스 계통이 주어졌을 때, 상속 방식을 public 상속 말고 private 상속으로 살짝 바꾸겠습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Person&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Student:&nbsp;<span style="color:#ff3399">private</span>&nbsp;Person&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;eat(<span style="color:#ff3399">const</span>&nbsp;Person<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;p);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;누구라도&nbsp;사람은&nbsp;먹을&nbsp;수&nbsp;있습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;study(<span style="color:#ff3399">const</span>&nbsp;Student<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;s);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;공부는&nbsp;학생만&nbsp;할&nbsp;수&nbsp;있습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Person&nbsp;p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;p는&nbsp;Person의&nbsp;일종입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Student&nbsp;s;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;s는&nbsp;Student의&nbsp;일종입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">eat(p);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;좋습니다.&nbsp;p는&nbsp;Person의&nbsp;일종이니까요.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">eat(s);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;에러!&nbsp;Student는&nbsp;Person의&nbsp;일종이&nbsp;아닙니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    private 상속을 지배하는 첫 번째 동작 규칙은 public 상속과 대조적으로, 클래스 사이의 상속 관계가 private이면 컴파일러는 일반적으로 파생 클래스 객체(이를테면 Student)를 기본 클래스 객체(그러니까 Person)로 변환하지 않습니다.
+    eat 함수 호출이 s에 대해서 실패했던 이유가 바로 이것입니다.
+    두 번째 동작 규칙은 기본 클래스로부터 물려받은 멤버는 파생 클래스에서 모조리 private 멤버가 된다는 것입니다.
+    기본 클래스에서 원래 protected 멤버였거나 public 멤버였어도 말이죠.
+</p>
+
+<p>
+    private 상속의 의미는 is-implemented-in-terms-of입니다.
+    B 클래스로부터 private 상속을 통해 D 클래스를 파생시킨 것은, B 클래스에서 쓸 수 있는 기능들 몇 개를 활용할 목적으로 한 행동이지, B 타입과 D 타입의 객체 사이에 어떤 개념적 관계가 있어서 한 행동이 아니라는 것입니다.
+    단도직입적으로 말해서, private 상속은 그 자체로 구현 기법 중 하나입니다.
+    D가 B로부터 private 상속을 받으면, 이것은 그냥 D 객체가 B 객체를 써서 구현되는 거라고 생각하세요.
+    private 상속은 소프트웨어 <strong>설계(design)</strong> 도중에는 아무런 의미도 갖지 않으며, 단지 소프트웨어 <strong>구현(implementation)</strong> 중에만 의미를 가질 뿐입니다.
+</p>
+
+<h2 class="section-heading">private 상속 vs 객체 합성</h2>
+
+<p>
+    그런데 private 상속의 의미가 is-implemented-in-terms-of라는 사실은 객체 합성과 똑같은 뜻을 가집니다.
+    그렇다면 이 둘(private 상속, 객체 합성) 중에 어떻게 골라야 될까요?
+    할 수 있으면 객체 합성을 사용하고, 꼭 해야 하면 private 상속을 사용하시면 됩니다.
+    '꼭 해야 하는' 때는, 비공개 멤버를 접근할 때 혹은 가상 함수를 재정의할 경우가 주로 이 경우에 속합니다.
+    비록 공간 문제가 얽히면서 완전히 private 상속으로 기울 수밖에 없는 경우도 있긴 합니다.
+</p>
+
+<p>
+    Widget 객체를 사용하는 응용프로그램을 하나 만들고 있다고 가정합시다.
+    Widget의 멤버 함수의 호출 횟수, 실행 시간이 지남에 따라 호출 비율이 어떻게 변하는지 등을 알고 싶어서 Widget 클래스를 직접 손보기로 합니다.
+    멤버 함수의 호출 횟수 정보를 프로그램이 실행되는 도중에 주기적으로 점검하도록 만들기 위해 일종의 타이머를 하나 설치해 놓습니다.
+    이때 다음과 같은 타이머 코드가 있다고 생각해 봅시다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Timer&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;Timer(<span style="color:#4be6fa">int</span>&nbsp;tickFrequency);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;onTick()&nbsp;<span style="color:#ff3399">const</span>;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;일정&nbsp;시간이&nbsp;경과할&nbsp;때마다</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;자동으로&nbsp;이것이&nbsp;호출됩니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    Timer 객체는 반복적으로 시간을 경과시킬 주기를 우리가 정해 줄 수 있고, 일정 시간이 경과할 때마다 가상 함수를 호출하도록 되어 있습니다.
+    Widget 클래스에서 Timer의 가상 함수를 재정의하기 위해, Widget 클래스는 Timer에서 상속을 받아야 합니다.
+    하지만 지금 상황이 Widget이 Timer의 일종(is-a)는 아니므로 public 상속은 맞지 않습니다.
+    게다가, Widget 객체의 사용자는 Widget 객체를 통해 onTick 함수를 호출해선 안 됩니다.
+    이 함수는 개념적으로 Widget 인터페이스의 일부로 볼 수 없기 때문입니다.
+    따라서 public 상속은 처음부터 틀린 선택이기에 private 상속을 하는 것입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Widget:&nbsp;<span style="color:#ff3399">private</span>&nbsp;Timer&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;onTick()&nbsp;<span style="color:#ff3399">const</span>;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Widget&nbsp;사용&nbsp;자료&nbsp;등을&nbsp;수집합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    상속 방식을 private로 한 덕택에, Timer의 public 멤버인 onTick 함수는 Widget에서 private 멤버가 되었습니다.
+    하지만 이 onTick 함수를 public 인터페이스로 빼놓는 순간, 사용자는 분명히 '이 함수는 호출할 수 있구나'라고 오해할 것이고, 바로 인터페이스 설계에 문제가 생기게 됩니다.
+</p>
+
+<h2 class="section-heading">public 상속 + 객체 합성</h2>
+
+<p>
+    현재 상황은 객체 합성으로도 해결이 가능합니다.
+    Timer로부터 public 상속을 받은 클래스를 Widget 안에 private 중첩 클래스로 선언해 놓고, 이 클래스에서 onTick을 재정의한 다음, 이 타입(클래스)의 객체 하나를 Widget 안에 데이터 멤버로서 넣으면 됩니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Widget&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">class</span>&nbsp;WidgetTimer:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Timer&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;onTick()&nbsp;<span style="color:#ff3399">const</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;WidgetTimer&nbsp;timer;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    (public) 상속에다가 객체 합성이 들어가 있고, 게다가 클래스를 새로 만들기까지(WidgetTimer) 했으니, private 상속만 써서 만든 설계와 비교하면 상당히 복잡한 구조입니다.
+    하지만 두 가지 좋은 점 때문에, 현실적으로는 private 상속 대신에 public 상속에 객체 합성 조합이 더 자주 즐겨 쓰입니다.
+    첫째, Widget 클래스를 설계하는 데 있어서 파생은 가능하게 하되, 파생 클래스에서 onTick을 재정의할 수 없도록 설계 차원에서 막고 싶을 때 유용합니다.
+    만약에 Widget을 Timer로부터 상속시킨 구조거나, 상속을 private로 하면 이런 게 안 됩니다(파생 클래스는 자신이 물려받은 가상 함수를 호출할 권한이 없더라도 가상 함수를 재정의할 수는 있습니다).
+    하지만 위처럼 Timer로부터 상속을 받은 WidgetTimer가 Widget 클래스의 private 영역에 있으면, Widget의 파생 클래스는 아무리 용을 써도 WidgetTimer에 접근할 수 없습니다.
+</p>
+
+<p>
+    둘째, Widget의 컴파일 의존성을 최소화하고 싶을 때 좋습니다.
+    Widget이 Timer에서 파생된 상태라면, Widget이 컴파일될 때 Timer의 정의도 끌어올 수 있어야 하기 때문에, Widget의 정의부 파일에서 Timer.h 같은 헤더를 #include해야 할지도 모릅니다.
+    반면, 지금의 설계에서는 WidgetTimer의 정의를 Widget으로부터 빼내고 Widget이 WidgetTimer 객체에 대한 포인터만 갖도록 만들어 두면, WidgetTimer 클래스를 간단히 선언하는 것만으로도 컴파일 의존성을 슬쩍 피할 수 있습니다.
+    Timer에 관련된 어떤 것도 #include할 필요가 없으니까요.
+    규모가 큰 시스템을 만들 때 이런 구성요소 분리는 굉장히 중요해질 수 있는 요소입니다.
+</p>
+
+<h2 class="section-heading">공백 기본 클래스 최적화</h2>
+
+<p>
+    하지만 객체 합성보다 private 상속을 선호할 수밖에 없는, 소위 공간 최적화가 얽힌 경우도 있습니다.
+    데이터가 전혀 없는 클래스를 사용할 때에 볼 수 있습니다.
+    데이터가 없는 클래스란 비정적 데이터 멤버가 없는 클래스를 일컫습니다.
+    그러니까 가상 함수도 하나도 없어야 하고, 가상 기본 클래스도 없어야 합니다.
+    이런 <strong>공백 클래스(empty class)</strong>는 개념적으로 차지하는 메모리 공간에 없는 게 맞습니다.
+    하지만 이런저런 기술적인 우여곡절 때문에 C++에는 "독립 구조(freestanding)의 객체는 반드시 크기야 0을 넘어야 한다."라는 요상한 금기사항 같은 것이 정해져 내려오고 있습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Empty&nbsp;{};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;정의된&nbsp;데이터가&nbsp;없으므로,&nbsp;객체는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;메모리를&nbsp;사용하지&nbsp;말아야&nbsp;합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;HoldsAnInt&nbsp;{&nbsp;&nbsp;<span style="color:#999999">//&nbsp;int를&nbsp;저장할&nbsp;공간만&nbsp;필요해야&nbsp;합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;x;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Empty&nbsp;e;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;메모리&nbsp;요구가&nbsp;없어야&nbsp;합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    위 코드에서 sizeof(HoldsAnInt) &gt; sizeof(int)가 되는 괴현상을 목도하게 됩니다.
+    Empty 타입의 데이터 멤버가 메모리를 요구하는 거죠.
+    대부분의 컴파일러에서 sizeof(Empty)의 값은 1로 나옵니다.
+    크기가 0인 독립 구조의 객체가 생기는 것을 금지하는 C++의 제약을 지키기 위해, 컴파일러는 이런 "공백" 객체에 char 한 개를 슬그머니 끼워 넣는 식으로 처리하기 때문입니다.
+    하지만 바이트 정렬(alignment)이 필요하다고 판단되면 컴파일러는 HoldsAnInt 등의 클래스에 바이트 패딩(padding) 과정을 추가할 수도 있어서, HoldsAnInt 객체의 크기는 char 하나의 크기를 넘게 됩니다.
+    실제로는 두 번째(코드에선 첫째로 보이지만) int를 담을 수 있는 만큼으로 늘어나죠.
+</p>
+
+<p>
+    하지만 이 C++의 제약은 파생 클래스 객체의 기본 클래스 부분에는 적용되지 않습니다.
+    이때의 기본 클래스 부분은 독립구조 객체, 다시 말해 홀로서기를 한 객체가 아니기 때문입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;HoldsAnInt:&nbsp;<span style="color:#ff3399">private</span>&nbsp;Empty&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;x;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    Empty 타입의 객체를 데이터 멤버로 두지 말고 Empty로부터 <strong>상속</strong>을 시켜 보면, sizeof(HoldsAnInt) == sizeof(int)임을 확인할 수 있습니다.
+    이 공간 절약 기법은 <strong>공백 기본 클래스 최적화(empty base optimization: EBO)</strong>라고 알려져 있습니다.
+    메모리 공간에 신경 쓰는 사용자를 상대하는 라이브러리 개발자라면 EBO를 알아두는 게 좋을 것입니다.
+    이와 더불어, EBO는 일반적으로 단일 상속하에서만 적용됩니다.
+    C++ 객체의 레이아웃을 결정하는 규칙이 일반적으로 기본 클래스를 두 개 이상 갖는 파생 클래스에는 EBO가 적용될 수 없다고 하네요.
+</p>
+
+<p>
+    실무적인 입장에서 "공백" 클래스는, 비정적 데이터 멤버는 안 갖고 있지만, typedef 혹은 enum, 정적 데이터 멤버는 물론이고 비가상 함수까지 갖는 경우가 비일비재합니다.
+    STL에는 방금 말씀드린 성격의 멤버(대개 typedef 타입입니다)를 포함하고 있는, 기술적으로 공백 처리된 클래스가 많이 있습니다.
+    unary_function과 binary_function이 그 예인데, 이들은 사용자 정의 함수 객체를 만들 때 상속시킬 기본 클래스로 굉장히 자주 사용되는 클래스입니다.
+    요즘은 EBO의 구현이 보편화된 덕택에, 이런 상속은 아무리 자주 되더라도 파생 클래스의 크기를 증가시키는 일이 거의 없습니다.
+</p>
+
+<p>
+    솔직히 아무것도 없는 클래스를 사용하는 경우는 정말 드물기 때문에, EBO 하나만 갖고 private 상속이 뭔가 합법적으로 정당화된 것처럼 생각하는 것은 무리에 가깝습니다.
+    게다가 대부분의 상속은 is-a 관계를 나타내고, 이 부분은 public 상속이 다 맡고 있습니다.
+    is-implemented-in-terms-of 관계는 객체 합성과 private 상속 둘 다 나타낼 수 있지만, 이해하기에는 객체 합성이 훨씬 낫기에 할 수 있으면 객체 합성을 사용해야 합니다.
+</p>
+
+<p>
+    private 상속이 적법한 설계 전략일 가능성이 가장 높은 경우가 있습니다.
+    아무리 봐 주어도 is-a 관계로 이어질 것 같지 않은 두 클래스를 사용해야 하는데, 이 둘 사이에서 한쪽 클래스가 다른 쪽 클래스의 protected 멤버에 접근해야 하거나 다른 쪽 클래스의 가상 함수를 재정의해야 할 때가 바로 이 경우입니다.
+    그렇다고 private 상속 아니면 안 되는 것은 아니고, public 상속과 객체 합성을 적절히 잘 섞으면, 설계 복잡도는 더 올라가겠지만 원하는 동작을 얻을 수 있습니다.
+    "private 상속을 심사숙고해서 구현하자"라는 말의 의미는, 섣불리 이것을 쓸 필요가 없다는 생각을 갖고 모든 대안을 고민한 연후에, 주어진 상황에서 두 클래스 사이의 관계를 나타낼 가장 좋은 방법이 private 상속이라는 <strong>결론이 나면</strong> 쓰라는 뜻입니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    private 상속의 의미는 is-implemented-in-terms-of(...는 ...를 써서 구현됨)입니다.
+    대개 객체 합성과 비교해서 쓰이는 분야가 많지는 않지만, 파생 클래스 쪽에서 기본 클래스의 protected 멤버에 접근해야 할 경우 혹은 상속받은 가상 함수를 재정의해야 할 경우에는 private 상속이 나름대로 의미가 있습니다.<br>
+    객체 합성과 달리, private 상속은 공백 기본 클래스 최적화(EBO)를 활성화시킬 수 있습니다.
+    이 점은 객체 크기를 가지고 고민하는 라이브러리 개발자에게 꽤 매력적인 특징이 되기도 합니다.
+</p>
