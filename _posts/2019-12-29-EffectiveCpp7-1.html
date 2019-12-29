@@ -1,0 +1,106 @@
+---
+layout: post
+title: "[Effective C++]템플릿 프로그래밍의 천릿길도 암시적 인터페이스와 컴파일 타임 다형성부터"
+subtitle: "템플릿과 일반화 프로그래밍, 첫 번째 이야기"
+date: 2019-12-29 14:41:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">클래스: 명시적 인터페이스, 런타임 다형성</h2>
+
+<p>
+    객체 지향 프로그래밍의 세계를 회전시키는 축은 <strong>명시적 인터페이스(explicit interface)</strong>와 <strong>런타임 다형성(runtime polymorphism)</strong>입니다.
+    예를 들어 아래의 클래스와 함수가 주어졌다고 가정합시다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Widget&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Widget();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;~Widget();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#4be6fa">std</span>::size_t&nbsp;<span style="color:#4be6fa">size</span>()&nbsp;<span style="color:#ff3399">const</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;normalize();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;swap(Widget<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;other);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;doProcessing(Widget<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;w)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(w.<span style="color:#4be6fa">size</span>()&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#c10aff">10</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;w&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">!</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;someNastyWidget)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Widget&nbsp;temp(w);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;temp.normalize();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;temp.swap(w);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    doProcessing 함수 안에 있는 w에 대해 말할 수 있는 부분은 다음과 같습니다.<br>
+    첫째, w는 Widget 타입으로 선언되었기 때문에, w는 Widget 인터페이스를 지원해야 합니다.
+    이 인터페이스를 소스 코드(Widget이 선언된 .h 파일 등)에서 찾으면 이것이 어떤 형태인지를 확인할 수 있으므로, 이런 인터페이스를 가리켜 <strong>명시적 인터페이스</strong>라고 합니다.
+    다시 말해, 소스 코드에 명시적으로 드러나는 인터페이스를 일컫습니다.<br>
+    둘째, Widget의 멤버 함수 중 몇 개는 가상 함수이므로, 이 가상 함수에 대한 호출은 <strong>런타임 타형성</strong>에 의해 이루어집니다.
+    다시 말해, 특정한 함수에 대한 실제 호출은 w의 동적 타입을 기반으로 프로그램 실행 중, 즉, 런타임에 결정됩니다.
+</p>
+
+<h2 class="section-heading">템플릿 매개변수: 암시적 인터페이스, 컴파일 타임 다형성</h2>
+
+<p>
+    템플릿과 일반화 프로그래밍의 세계에는 뿌리부터 뭔가 다른 부분이 있습니다.
+    명시적 인터페이스 및 런타임 다형성은 그대로 존재하긴 하지만 중요도는 사뭇 떨어집니다.
+    이 바닥에서 활개를 치고 다니는 주인공은 <strong>암시적 인터페이스(implicit interface)</strong>와 <strong>컴파일 타임 다형성(compile-time polymorphism)</strong>입니다.
+    doProcessing 함수를 함수 템플릿으로 바꿀 때 무슨 일이 생기는지 보도록 합시다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;doProcessing(T<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;w)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(w.<span style="color:#4be6fa">size</span>()&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#c10aff">10</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;w&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">!</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;someNastyWidget)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;temp(w);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;temp.normalize();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;temp.swap(w);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이번에는 doProcessing 템플릿 안의 w에 대해서 어떻게 말할 수 있을까요?<br>
+    첫째, w가 지원해야 하는 인터페이스는 이 템플릿 안에서 w에 대해 실행되는 연산이 결정합니다.
+    지금의 경우를 보면, size, normalize, swap 멤버 함수를 지원해야 하는 쪽은 w의 타입, 즉 T입니다.
+    그뿐 아니라 T는 복사 생성자도 지원해야 하고(temp를 만들어야 하니까), 부등 비교를 위한 연산도 지원해야 합니다(someNastyWidget과 비교해야 하니까).
+    진짜 중요한 점은, 이 테믈릿이 제대로 컴파일되려면 몇 개의 표현식이 '유효(valid)'해야 하는데 이 표현식들은 바로 T가 지원해야 하는 <strong>암시적 인터페이스</strong>라는 점입니다.<br>
+    둘째, w가 수반되는 함수 호출이 일어날 때, 이를테면 operaotr> 및 operator!= 함수가 호출될 때는 해당 호출을 성공시키기 위해 템플릿의 인스턴스화가 일어납니다.
+    이러한 인스턴스화가 일어나는 시점은 컴파일 도중입니다.
+    인스턴스화를 진행하는 함수 템플릿에 어떤 템플릿 매개변수가 들어가느냐에 따라 호출되는 함수가 달라지기 때문에, 이것을 가리켜 <strong>컴파일 타임 다형성</strong>이라고 합니다.
+</p>
+
+<h2 class="section-heading">함수 시그니처 기반의 명시적 인터페이스</h2>
+
+<p>
+    명시적 인터페이스는 대개 함수 시그니처로 이루어집니다.
+    아시다시피 시그니처는 함수의 이름, 매개변수 타입, 반환 타입 등을 통틀어 부르는 용어죠.
+    그러니까 앞에서 보신 예제 클래스인 Widget의 public 인터페이스는 생성자, 소멸자를 포함해서 size, normalize, swap 함수 그리고 이들의 매개변수 타입, 반환 타입 및 각 함수의 상수성 여부로 이루어져 있는 것이죠(게다가 컴파일러가 자동으로 만들어 놓은 복사 생성자와 복사 대입 연산자도 포함됩니다).
+    typedef 타입이 있을 경우에는 이것도 포함될 수 있습니다.
+</p>
+
+<h2 class="section-heading">유효 표현식 기반의 암시적 인터페이스</h2>
+
+<p>
+    반면, 암시적 인터페이스는 사뭇 다릅니다.
+    함수 시그니처에 기반하고 있지 않다는 것이 가장 큰 차이점입니다.
+    암시적 인터페이스를 이루는 요소는 유효 <strong>표현식(expression)</strong>입니다.
+    doProcessing 템플릿 시작부분에 있는 조건문을 다시 보면, T(w의 타입)에서 제공될 암시적 인터페이스에는 다음과 같은 제약이 걸릴 테지요.<br>
+    정수 계열의 값을 반환하고 이름이 size인 함수를 지원해야 합니다.<br>
+    T 타입의 객체 둘을 비교하는 operator!= 함수를 지원해야 합니다(여기서 someNastyWidget 객체의 타입은 T라고 가정합니다).
+</p>
+
+<p>
+    실제로는 연산자 오버로딩의 가능성이 있기 때문에 T는 위의 두 가지 제약 중 어떤 것도 만족시킬 필요가 없습니다.
+    우선 첫 번째 제약을 보면, T가 size 멤버 함수를 지원하고, 기본 클래스로부터 물려받을 수도 있다는 점을 간과할 순 없지만, 그렇다고 해도 이 멤버 함수는 수치 타입을 반환할 필요까지는 없습니다.
+    심지어, operator>의 정의에 필요한 타입도 반환할 필요가 없고요.
+    size 멤버 함수가 해야하는 일은 그저 어떤 X 타입의 객체와 int가 함께 호출될 수 있는 operator>가 성립될 수 있도록, X 타입의 객체만 반환하면 임무 종료인 것입니다.
+    한편, operator> 함수는 반드시 X 타입의 매개변수를 받아들일 이유가 없습니다.
+    그 이유는, 이 함수가 Y 타입의 매개변수를 받도록 정의되어 있고 X 타입에서 Y 타입으로 암시적인 변환이 가능하다면 문제 없기 때문입니다.
+</p>
+
+<p>
+    첫 번째 제약의 경우와 비슷한 이치로, T가 operator!= 함수를 지원해야 한다는 두 번째 제약도 필수 요구사항이 되지 않습니다.
+    operator!= 함수가 x 타입의 객체 하나와 Y 타입의 객체 하나를 받아들인다고 하면 이 부분은 별 걸림돌 없이 넘어갈 수 있기 때문입니다.
+    T가 X로 변환될 수 있으며 someNastyWidget의 타입이 Y로 변환되는 것이 가능하기만 하면 operator!= 함수의 호출은 유효 호출로 간주될 것입니다.
+</p>
+
+<p>
+    암시적 인터페이스는 그저 유효 표현식의 집합으로 구성되어 있을 뿐입니다.
+    표현식 자체만 보면 좀 복잡해 보일 수도 있지만, 표현식에 걸리는 제약은 일반적으로 지극히 평이합니다.
+    표현식에서 쓰이는 것들이 정확히 어떤 타입인지 상관없이, 표현식이 정확히 어떤 값을 내놓든 간에, 이 조건식 부분의 결과 값이 T 타입의 객체에 대해 '유효'해야 합니다.
+</p>
+
+<p>
+    템플릿 매개변수에 요구되는 암시적 인터페이스는 클래스의 객체에 요구되는 명시적 인터페이스만큼이나 우리 피부에 가깝게 닿아 있습니다.
+    게다가 컴파일 도중에 점검된다는 점도 둘이 똑같습니다.
+    클래스에서 제공하는 명시적 인터페이스와 호환되지 않는 방법으로 그 클래스의 객체를 쓸 수 없듯이, 어떤 템플릿 안에서 어떤 객체를 쓰려고 할 때 그 템플릿에서 요구하는 암시적 인터페이스를 그 객체가 지원하지 않으면 사용이 불가능합니다(코드가 컴파일되지 않습니다).
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    클래스 및 템플릿은 모두 인터페이스와 다형성을 지원합니다.<br>
+    클래스의 경우, 인터페이스는 명시적이며 함수의 시그니처를 중심으로 구성되어 있습니다.
+    다형성은 프로그램 실행 중에 가상 함수를 통해 나타납니다.<br>
+    템플릿 매개변수의 경우, 인터페이스는 암시적이며 유효 표현식에 기반을 두어 구성됩니다.
+    다형성은 컴파일 중에 템플릿 인스턴스화와 함수 오버로딩 모호성 해결을 통해 나타납니다.
+</p>
