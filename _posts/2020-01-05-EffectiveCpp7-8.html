@@ -1,0 +1,146 @@
+---
+layout: post
+title: "[Effective C++]템플릿 메타프로그래밍, 하지 않겠는가?"
+subtitle: "템플릿과 일반화 프로그래밍, 여덟 번째 이야기"
+date: 2020-01-05 17:11:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">템플릿 메타프로그래밍의 장점</h2>
+
+<p>
+    템플릿 메타프로그래밍(template metaprogramming: TMP)는 컴파일 도중에 실행되는 템플릿 기반의 프로그램을 작성하는 일을 말합니다.
+    템플릿 메타프로그램은 C++ <strong>컴파일러</strong>가 실행시키는, C++로 만들어진 프로그램입니다.
+    TMP 프로그램이 실행을 마친 후엔 그 결과로 나온 출력물(템플릿으로부터 인스턴스화된 C++ 소스 코드)이 다시 보통의 컴파일 과정을 거치는 것입니다.
+</p>
+
+<p>
+    TMP에는 엄청난 강점이 두 개나 있습니다.
+    첫째, TMP를 쓰면 다른 방법으로는 까다롭거나 불가능한 일을 괸장히 쉽게 할 수 있습니다.
+    둘째, 템플릿 메타프로그램은 C++ 컴파일이 진행되는 동안에 실행되기 때문에, 기존 작업을 런타임 영역에서 컴파일 타임 영역으로 전환할 수 있습니다.
+    이 때문에 두 가지 짭짤한 재미를 맛볼 수 있습니다.
+    하나는 일반적으로 프로그램 실행 도중에 잡혀 왔던 몇몇 에러들을 컴파일 도중에 찾을 수 있다는 점입니다.
+    또 하나는 TMP를 써서 만든 C++ 프로그램이 확실히 모든 면에서 효율적인 여지가 많다는 점입니다.
+    컴파일 타임에 동작을 다 해 가지고 오기 때문에 실행 코드가 작아지고, 실행 시간도 짧아지며, 메모리도 적게 잡아먹는 것이죠(하지만 컴파일 시간은 길어집니다).
+</p>
+
+<p>
+    지정된 반복자를 지정된 거리(distance)만큼 이동시키는 advance에 대한 코드를 보면 typeid를 사용합니다.
+    타입 정보를 꺼내는 작업을 런타임에 하겠다는 것입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;IterT,&nbsp;<span style="color:#ff3399">typename</span>&nbsp;DistT<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;advance(IterT<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;iter,&nbsp;DistT&nbsp;d)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(<span style="color:#ff3399">typeid</span>(<span style="color:#ff3399">typename</span>&nbsp;<span style="color:#4be6fa">std</span>::iterator_traits<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>IterT<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>::iterator_category)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">typedef</span>(<span style="color:#4be6fa">std</span>::andom_access_iterator_tag))&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;d;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;임의&nbsp;접근&nbsp;반복자에&nbsp;대해서는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;반복자&nbsp;산술&nbsp;연산을&nbsp;씁니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">else</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(d&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>)&nbsp;{&nbsp;<span style="color:#ff3399">while</span>&nbsp;(d<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">-</span>)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>iter;&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;다른&nbsp;종류의&nbsp;반복자에&nbsp;대해서는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">else</span>&nbsp;{&nbsp;<span style="color:#ff3399">while</span>&nbsp;(d<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">-</span>iter;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;++&nbsp;혹은&nbsp;--&nbsp;연산의&nbsp;반복&nbsp;호출을</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;사용합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이렇게 typeid 연산자를 쓰는 방법은 특성정보(traits)를 쓰는 방법보다 효율이 떨어집니다.
+    왜냐하면 타입 점검 동작이 컴파일 도중이 아니라 런타임에 일어나기 때문이며, 런타임 타입 점검을 수행하는 코드는 어쩔 수 없이 실행 파일에 들어가야 하기 때문입니다.
+    여기서 특성정보 방법이 바로 TMP입니다.
+</p>
+
+<p>
+    typeid 방법은 성능 외에도 컴파일 문제를 일으킬 수 있습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::list<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">int</span><span style="color:#ff3399">&gt;</span>::<span style="color:#4be6fa">iterator</span>&nbsp;iter;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%">advance(iter,&nbsp;<span style="color:#c10aff">10</span>);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;iter를&nbsp;10개&nbsp;원소만큼&nbsp;앞으로&nbsp;옮길까&nbsp;했으나,</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;위처럼&nbsp;구현된&nbsp;advance로는&nbsp;컴파일이&nbsp;안&nbsp;됩니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    위의 코드를 컴파일러가 돌리면, 템플릿 매개변수인 IterT와 DistT에 대해 iter의 타입과 10의 타입을 넣고 나면, 다음과 같은 advance가 생길 것입니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;advance(<span style="color:#4be6fa">std</span>::list<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">int</span><span style="color:#ff3399">&gt;</span>::<span style="color:#4be6fa">iterator</span><span style="color:#ff3399">&amp;</span>&nbsp;iter,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;d)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(<span style="color:#ff3399">typeid</span>(<span style="color:#4be6fa">std</span>::iterator_traits<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">std</span>::list<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">int</span><span style="color:#ff3399">&gt;</span>::<span style="color:#4be6fa">iterator</span><span style="color:#ff3399">&gt;</span>::iterator_category)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">typeid</span>(<span style="color:#4be6fa">std</span>::random_access_iterator_tag))&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;d;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;에러!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">else</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(d&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>)&nbsp;{&nbsp;<span style="color:#ff3399">while</span>&nbsp;(d<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">-</span>)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>iter;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">else</span>&nbsp;{&nbsp;<span style="color:#ff3399">while</span>&nbsp;(d<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">-</span>iter;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    list&lt;int&gt;::iterator에 +=를 쓰려고 한 부분에서 문제가 생기는데, list&lt;int&gt;::iterator는 양방향 반복자이기 때문에 += 지원하지 못합니다.
+    += 연산의 지원은 임의 접근 반복자에서만 가능하거든요.
+    하지만 지금은 += 줄까지도 실행될 수 없고, 앞에 있는 if 문에서 list&lt;int&gt;::iterator에 대해 typeid 점검이 실패합니다.
+</p>
+
+<h2 class="section-heading">템플릿 메타프로그래밍의 동작 원리</h2>
+
+<p>
+    TMP는 그 자체가 튜링 완전성을 갖고 있는 것으로도 알려져 왔습니다.
+    범용 프로그래밍 언어처럼 어떤 것이든 계산할 수 있는 능력을 갖고 있다는 뜻입니다.
+    변수 선언도 되고, 루프도 실행시킬 수 있으며, 함수를 작성하고 호출하는 것까지도 됩니다.
+    단, 이런 것들에 필요한 구문요소가 "보통"의 C++에서 쓰이는 구문요소들과 꽤나 다른 모습을 갖고 있다는 것이 특이하지요.
+</p>
+
+<p>
+    TMP의 동작 원리를 엿볼 수 있는 부분을 하나 더 말씀드리자면 루프를 빼놓을 수 없습니다.
+    사실 TMP에는 반복(iteration) 의미의 진정한 루프는 없기 때문에, 재귀(recursion)를 사용해서 루프의 효과를 냅니다.
+    그런데 이 재귀조차도 우리가 알고 있는 종류가 아닌데, TMP의 루프는 재귀 함수 호출을 만들지 않고 <strong>재귀식 템플릿 인스턴스화(recursive template instantiation)</strong>를 하기 때문입니다.
+</p>
+
+<p>
+    일반 프로그래밍 언어를 배울 때 가장 먼저 "hello world"를 접하듯, TMP에서 처음 접하는 프로그램은 컴파일을 통해 계승(階承, factorial)을 계산하는 템플릿입니다.
+    TMP 계승 계산에서는 재귀식 인스턴스화를 통한 루프 효과를 확인할 수 있고, TMP에서 변수를 만들어서 사용하는 방법도 엿볼 수 있습니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">unsigned</span>&nbsp;n<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;일반적인&nbsp;경우:&nbsp;Factorial&lt;n&gt;의&nbsp;값은</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">struct</span>&nbsp;Factorial&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Factorial&lt;n-1&gt;의&nbsp;값에&nbsp;n을&nbsp;곱해서&nbsp;구합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">enum</span>&nbsp;{&nbsp;value&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;n&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>&nbsp;Factorial<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>n<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#c10aff">1</span><span style="color:#ff3399">&gt;</span>::value&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;특수한&nbsp;경우:&nbsp;Factorial&lt;0&gt;의</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">struct</span>&nbsp;Factorial<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#c10aff">0</span><span style="color:#ff3399">&gt;</span>&nbsp;{&nbsp;&nbsp;<span style="color:#999999">//&nbsp;값은&nbsp;1입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">enum</span>&nbsp;{&nbsp;value&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">1</span>&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이렇게 만들어진 템플릿 메타프로그램이 있으면, Factorial&lt;n&gt;::value를 참조함으로써 n의 계승을 바로 얻을 수 있습니다.
+    이 코드에서 루프를 도는 위치는 템플릿 인스턴스인 Factorial&lt;n&gt;의 내부에서 또 다른 템플릿 인스턴스인 Factorial&lt;n-1&gt;을 참조하는 곳입니다.
+    제대로 만들어진 재귀 코드가 그러하듯, 여기에도 재귀를 끝내는 특수 조건이 붙어 있는데, 바로 Factorial&lt;0&gt;입니다.
+</p>
+
+<p>
+    Factorial 템플릿은 구조체 타입이 인스턴스화되도록 만들어져 있습니다.
+    그리고 이렇게 만들어진 구조체 안에는 value라는 이름의 TMP 변수가 선언되어 있는데, 여기엔 나열자 둔갑술(enum hack)이 쓰인 것입니다.
+    이 value 변수는 현재 계산된 계승 값을 담는 역할을 맡습니다.
+    만약 진짜 루프가 있었다면 이 값은 루프가 한 번 돌 때마다 갱신되겠지요.
+    TMP는 루프 대신에 재귀식 템플릿 인스턴스화를 사용하기 때문에, 꼬리에 꼬리를 물고 만들어지는 템플릿 인스턴스화 버전마다 자체적으로 value의 사본을 갖게 되고, 각각의 value에는 "루프"를 한 번 돌 때 만들어지는 그 값이 담기게 되는 거죠.
+</p>
+
+<p>
+    Factorial 템플릿은 다음과 같이 쓰면 됩니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">int</span>&nbsp;main()</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">cout</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>&nbsp;Factorial<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#c10aff">5</span><span style="color:#ff3399">&gt;</span>::value;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;120을&nbsp;런타임&nbsp;계산&nbsp;없이&nbsp;출력</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">cout</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>&nbsp;Factorial<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#c10aff">10</span><span style="color:#ff3399">&gt;</span>::value;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;3628800을&nbsp;런타임&nbsp;계산&nbsp;없이&nbsp;출력</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">템플릿 메타프로그래밍의 사용처</h2>
+
+<p>
+    C++ 프로그래밍에서 TMP가 실력 발휘하는 예를 들어 보면 세 군데입니다.
+</p>
+
+<p>
+    <strong>치수 단위(dimensional unit)의 정확성 확인</strong><br>
+    과학 기술 분야의 응용프로그램을 만들 때는 무엇보다도 치수 단위(예를 들면 질량, 거리, 시간 등)가 똑바로 조합되어야 하는 것이 최우선입니다.
+    TMP를 사용하면 계산 시간에 상관없이 프로그램 안에서 쓰이는 모든 치수 단위의 조합이 제대로 됐는지를 컴파일 동안에 맞춰 볼 수 있습니다.
+    여기서 한 가지 재미있는 점은 바로 분수식 지수 표현이 지원된다는 것입니다.
+    이런 표현이 가능하려면 컴파일러가 확인할 수 있도록 <strong>컴파일 도중</strong>에 분수의 약분이 되어야 합니다.
+    이를테면 time^1/2는 time^4/8과 똑같이 받아들여져야 한다는 말이죠.
+</p>
+
+<p>
+    <strong>행렬 연산의 최적화</strong><br>
+    operator* 등의 어떤 연산자 함수는 연산 결과를 새로운 객체에 담아 반환해야 합니다.
+    여러 행렬의 곱셈 결과를 "보통" 방법으로 계산하려면 여러 개의 임시 행렬이 생겨야 합니다.
+    그뿐 아니라, 행렬 원소들 사이에 곱셈을 해야 하므로 여러 번의 루프가 순차적으로 만들어질 수밖에 없습니다.
+    바로 이런 비싼 연산에 TMP를 응용한 고급 프로그래밍 기술인 <strong>표현식 템플릿(expression template)</strong>을 사용하면 덩치 큰 임시 객체를 없애는 것은 물론이고 루프까지 합쳐 버릴 수 있습니다.
+    게다가 기존 코드에서 문법 하나 바꾸지 않고도 이 놀라운 기술을 적용할 수 있습니다.
+    이로써 우리는 메모리도 적게 먹으면서 속도는 빛나게 빠른 소프트웨어를 만들 수 있는 것이고요.
+</p>
+
+<p>
+    <strong>맞춤식 디자인 패턴 구현의 생성</strong><br>
+    전략(Strategy) 패턴, 감시자(Observer) 패턴, 방문자(Visitor) 패턴 등의 디자인 패턴은 그 구현 방법이 여러 가지일 수 있습니다.
+    TMP를 사용한 프로그래밍 기술인 <strong>정책 기반 설계(policy-based design)</strong>라는 것을 사용하면, 따로따로 마련된 설계상의 선택(이것을 "정책(policy)"이라고 합니다)을 나타내는 템플릿을 만들어낼 수 있게 됩니다.
+    이렇게 만들어진 정책 템플릿은 서로 임의대로 조합되어 사용자의 취향에 맞는 동작을 갖는 패턴으로 구현되는 데 쓰입니다.
+    이 기술에 쓰이는 예는 몇 개의 스마트 포인터 동작 정책을 하나씩 구현한 각각의 템플릿을 만들어 놓고, 이들을 사용자가 마음대로 조합하여 수백 가지의 스마트 포인터 타입을 컴파일 도중에 생성할 수 있게 하는 것입니다.
+    사실 이 기술은 디자인 패턴 혹은 스마트 포인터 등으로 대표되는 프로그래밍 구조물의 영역을 뛰어넘어 일반화되어 있는 이른바 <strong>생성식 프로그래밍(generative programming)</strong>의 기초입니다.
+</p>
+
+<p>
+    TMP는 문법은 비직관적이고, 개발도구의 지원도 아주 미약하지만, 기존 작업을 런타임에서 컴파일 타임으로 전환함으로써 손에 쥘 수 있는 놀라운 효율 향상과 런타임에 했다면 까다롭거나 불가능했을 동작을 쉽게 표현할 수 있는 능력이 있습니다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    템플릿 메타프로그래밍은 기존 작업을 런타임에서 컴파일 타임으로 전환하는 효과를 냅니다.
+    따라서 TMP를 쓰면 선행 에러 탐지와 높은 런타임 효율을 손에 거머쥘 수 있습니다.<br>
+    TMP는 정책 선택의 조합에 기반하여 사용자 정의 코드를 생성하는 데 쓸 수 있으며, 또한 특정 타입에 대해 부적절한 코드가 만들어지는 것을 막는 데도 쓸 수 있습니다.
+</p>
