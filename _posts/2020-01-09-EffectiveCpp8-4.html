@@ -1,0 +1,120 @@
+---
+layout: post
+title: "[Effective C++]위치지정 new를 작성한다면 위치지정 delete도 같이 준비하자"
+subtitle: "new와 delete를 내 맘대로, 네 번째 이야기"
+date: 2020-01-09 00:28:00
+background: '/img/posts/EffectiveCpp.jpg'
+---
+
+<h2 class="section-heading">new와 delete 짝 맞추기</h2>
+
+<p>
+    Widget *pw = new Widget;<br>
+    위와 같은 new 표현식을 썼을 때 호출되는 함수는 두 개입니다.
+    우선 메모리 할당을 위해 operator new가 호출되고, 그 뒤를 이어 Widget의 기본 생성자가 호출되지요.
+    여기서, 첫 번째 함수 호출은 무사히 지나갔는데 두 번째 함수 호출이 진행되다가 예외가 발생했다고 가정해 봅시다.
+    이렇게 사고가 나 버렸을 경우, 첫 단계에서 이미 끝난 메모리 할당을 어떻게 해서든 취소하지 않으면 메모리 누출이 될 것입니다.
+    Widget 생성자에서 예외가 튀어나오면 pw에 포인터가 대입될 일은 절대로 안 생기기 때문에, 사용자 코드에서는 이 메모리를 해제할 수 없습니다.
+    따라서 1단계의 메모리 할당을 안전하게 되돌리는 일은 C++ 런타임 시스템이 맡아 줍니다.
+</p>
+
+<p>
+    C++ 런타임 시스템이 해 주어야 하는 일은 1단계에서 자신이 호출한 operator new 함수와 짝이 되는 버전의 operator delete 함수를 호출하는 것인데, 이게 제대로 되려면 operator delete 함수들 가운데 어떤 것을 호출해야 하는지를 런타임 시스템이 제대로 알고 있어야만 가능합니다.
+    하지만 여러분이 상대하고 있는 new, delete가 기본형 시그니처로 되어 있는 한 기본형끼리 짝을 맞추기 때문에 이 부분은 문제가 되지 않습니다.
+    그런데 operator new의 기본형이 아닌 형태(비기본형이란 바로 다른 매개변수를 추가로 갖는 operator new를 뜻합니다)를 선언하면서 문제가 생겨나게 됩니다.
+</p>
+
+<h2 class="section-heading">위치지정 new</h2>
+
+<p>
+    어떤 클래스에 대해 전용으로 쓰이는 operator new를 만들고 있는데, 메모리 할당 정보를 로그로 기록해 줄 ostream을 지정받는 꼴로 만든다고 가정합시다.
+    그리고 클래스 전용 operator delete는 기본형으로 만든다고 가정하죠.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Widget&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span><span style="color:#ff3399">*</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">new</span>(<span style="color:#4be6fa">std</span>::size_t&nbsp;<span style="color:#4be6fa">size</span>,&nbsp;&nbsp;<span style="color:#999999">//&nbsp;비표준&nbsp;형태의</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::ostream<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;logStream)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;operator&nbsp;new</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>(<span style="color:#4be6fa">std</span>::bad_alloc);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">delete</span>(<span style="color:#ff3399">void</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pMemory,&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;클래스&nbsp;전용</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;size_t&nbsp;<span style="color:#4be6fa">size</span>)&nbsp;<span style="color:#ff3399">throw</span>();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;operator&nbsp;delete의</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;표준&nbsp;형태</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이 설계에는 문제가 있는데, 그 전에 용어를 정리해 보겠습니다.
+    operator new 함수는 기본형과 달리 매개변수를 추가로 받는 형태로도 선언할 수 있는데, 이것이 바로 <strong>위치지정(placement)</strong> new입니다.
+    위에서 보신 operator new가 위치지정 버전입니다.
+    위치지정 new는 개념적으로 '추가 매개변수를 받는 new'이므로 위치지정 new는 가지각색일 수 있지만, 이들 중 유용한 것이 바로 어떤 객체를 생성시킬 메모리 위치를 나타내는 포인터를 매개변수로 받는 것입니다.
+</p>
+
+<p>
+    void* operator new(std::size_t, void *pMemory) throw();  //위치 지정 new<br>
+    이렇게 포인터를 추가로 받는 형태의 위치지정 new는 그 유용성을 인정받아 이미 C++ 표준 라이브러리인 &lt;new&gt;에도 들어가 있습니다.
+    new 함수는 표준 라이브러리의 여러 군데에서 쓰이고 있는데, 특히 vector의 경우에는 해당 벡터의 미사용 공간에 원소 객체를 생성할 때 이 위치지정 new를 쓰고 있습니다.
+    또한 위치지정 new의 <strong>원조</strong>(元祖)이기도 합니다.
+</p>
+
+<p>
+    Widget *pw = new (std::cerr) Widget;  // operator new 호출 중 cerr을 ostream 인자로 넘기다 Widget 생성자에서 예외 발생 시 메모리가 누출됩니다.<br>
+    위 코드는 Widget 객체 하나를 동적 할당할 때 cerr에 할당 정보를 로그로 기록하는 코드입니다.
+    앞서 나온 코드에 문제가 있다고 했는데, 지금부터 보도록 하겠습니다.
+    런타임 시스템 쪽에는 호출된 operator new가 어떻게 동작하는지를 알아낼 방법이 없으므로, 자신이 할당 자체를 되돌릴 수는 없습니다.
+    그 대신, 런타임 시스템은 호출된 operator new가 받아들이는 <strong>매개변수의 개수 및 타입이 똑같은</strong> 버전의 operator delete를 찾고, 찾아냈으면 그 것을 호출합니다.
+    지금의 경우에 호출된 operator new는 ostream& 타입의 매개변수를 추가로 받아들이므로, 이것과 짝을 이루는 operator delete 역시 똑같은 시그니처를 가진 것이 마련되어 있어야 하겠지요.
+</p>
+
+<h2 class="section-heading">위치지정 delete</h2>
+
+<p>
+    void operator delete(void *, std::ostream&) throw();<br>
+    매개변수를 추가로 받아들인다는 면에서 위치지정 new와 비슷하므로, 이런 형태의 operator delete를 가리켜 <strong>위치지정</strong> delete라고 합니다.
+    그런데 지금의 Widget에는 operator delete의 위치지정 버전이 마련되어 있지 않기 때문에, 런타임 시스템 쪽에서는 위치지정 new로 저질러버린 메모리 할당을 어떻게 되돌려야 할지 갈팡질팡할 수밖에 없습니다.
+    따라서 앞에서 본 코드에서 Widget 생성자가 예외를 던지면 어떤 operator delete도 호출되지 않습니다.
+</p>
+
+<p>
+    추가 매개변수를 취하는 operator new 함수가 있는데 그것과 똑같은 추가 매개변수를 받는 operator delete가 짝으로 존재하지 않으면, 이 new에 해당 매개변수를 넘겨서 할당한 메모리를 해제해야 하는 상황이 오더라도 어떤 operator delete도 호출되지 않는다는 점만 기억하시면 됩니다.
+    위의 코드에서 생길 수 있는 메모리 누출을 제거하려면, 로그 기록용 인자를 받는 위치지정 new와 짝이 되는 위치지정 delete를 Widget 클래스에 넣어 주어야 한다는 결론이 나오는 거죠.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Widget&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span><span style="color:#ff3399">*</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">new</span>(<span style="color:#4be6fa">std</span>::size_t&nbsp;<span style="color:#4be6fa">size</span>,&nbsp;<span style="color:#4be6fa">std</span>::ostream<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;logStream)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>(<span style="color:#4be6fa">std</span>::bad_alloc);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">delete</span>(<span style="color:#ff3399">void</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pMemory,&nbsp;size_t&nbsp;<span style="color:#4be6fa">size</span>)&nbsp;<span style="color:#ff3399">throw</span>();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">delete</span>(<span style="color:#ff3399">void</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pMemory,&nbsp;<span style="color:#4be6fa">std</span>::ostream<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;logStream)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    이렇게 바꿔 두면, Widget 생성자에서 예외가 발생되더라도, 이제는 위치지정 new와 짝이 되는 위치지정 delete가 런타임 시스템에 의해 자동으로 호출됩니다.
+    Widget으로 하여금 메모리 누출을 막을 수 있도록 길을 만들어 주는 것이죠.
+    그런데 문제가 생긴 문장에서 Widget 생성자가 예외를 던지지 않았고 사용자 코드의 delete 문까지 다다랐다고 하면 어떤 일이 생길까요?
+</p>
+
+<p>
+    delete pw;  // 기본형의 operator delete가 호출됩니다.<br>
+    이 경우에는 런타임 시스템이 기본형의 operator delete를 호출합니다.
+    위치지정 버전을 호출하지 않기 때문에, 포인터(위의 pw 같은)에 delete를 적용했을 때는 절대로 위치지정 delete를 호출하는 쪽으로 가지 않습니다.
+    결국 어떤 위치지정 new 함수와 조금이라도 연관된 모든 메모리 누출을 사전에 봉쇄하려면, 표준 형태의 operator delete를 기본으로 마련해 두어야(객체 생성 도중에 예외가 던져지지 않았을 경우에 대비해서) 하고 그와 함께 위치지정 new와 똑같은 추가 매개변수를 받는 위치지정 delete도 빼먹지 말아야(예외가 던져졌을 때에 대비해서) 한다는 것이 결론입니다.
+</p>
+
+<h2 class="section-heading">위치지정 new와 위치지정 delete가 가리는 표준 버전</h2>
+
+<p>
+    단, 바깥쪽 유효범위에 있는 어떤 함수의 이름과 클래스 멤버 함수의 이름이 같으면 바깥쪽 유효범위에 있는 어떤 함수의 이름과 클래스 멤버 함수의 이름이 같으면 바깥쪽 유효범위의 함수가 '이름만 같아도' 가려지게 되어 있습니다.
+    때문에 여러분은 사용자 자신이 쓸 수 있다고 생각하는 다른 new들(표준 버전도 포함해서)을 클래스 전용의 new가 가리지 않도록 신경을 쓰셔야 합니다.
+    특히 파생 클래스는 전역 operator new는 물론이고 자신이 상속받은 기본 클래스의 operator new까지 가려 버립니다.
+</p>
+
+<p>
+    기본적으로 C++이 전역 유효범위에서 제공하는 operator new의 형태는 다음의 세 가지가 표준이라는 점을 기억해두시면 됩니다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span><span style="color:#ff3399">*</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">new</span>(<span style="color:#4be6fa">std</span>::size_t)&nbsp;<span style="color:#ff3399">throw</span>(<span style="color:#4be6fa">std</span>::bad_alloc);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본형&nbsp;new</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span><span style="color:#ff3399">*</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">new</span>(<span style="color:#4be6fa">std</span>::size_t,&nbsp;<span style="color:#ff3399">void</span><span style="color:#ff3399">*</span>)&nbsp;<span style="color:#ff3399">throw</span>();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;위치지정&nbsp;new</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span><span style="color:#ff3399">*</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">new</span>(<span style="color:#4be6fa">std</span>::size_t,</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">const</span>&nbsp;<span style="color:#4be6fa">std</span>::nothrow_t<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>)&nbsp;<span style="color:#ff3399">throw</span>();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;예외불가&nbsp;new</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p>
+    어떤 형태이든 간에 operator new가 클래스 안에 선언되는 순간, 표준 형태들이 몽땅 가려지는 것입니다.
+    사용자가 이들 표준 형태를 쓰지 못하게 막자는 것이 원래 의도가 아니었다면, 사용자 정의 operator new 형태 외에 표준 형태들도 사용자가 접근할 수 있도록 해야합니다.
+    물론, operator new를 만들었다면 operator delete도 만들어 주는 것도 잊지 마시고요.
+    클래스 안에서 이런저런 할당, 해제 함수들이 여느 때와 똑같은 방식으로 동작했으면 하는 경우에는, 그냥 클래스 전용 버전이 전역 버전을 호출하도록 구현해 두면 됩니다.
+    이것을 쉽게 하는 방법은, 기본 클래스 하나를 만들고, 이 안에 new 및 delete의 기본 형태를 전부 넣어두는 것입니다.
+    표준 형태에 덧붙여 사용자 정의 형태를 추가하고 싶다면, 이제는 이 기본 클래스를 축으로 넓혀 가면 됩니다.
+    상속과 using 선언을 사용해서 표준 형태를 파생 클래스 쪽으로 끌어와 외부에서 사용할 수 있게 만든 후에, 원하는 사용자 정의 형태를 선언해 주세요.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">정리</h2>
+
+<p>
+    operator new 함수의 위치지정(placement) 버전을 만들 때는, 이 함수와 짝을 이루는 위치지정 버전의 operator delete 함수도 꼭 만들어 주세요.
+    이 일을 빼먹었다가는, 찾아내기도 힘들며 또 생겼다가 안 생겼다 하는 메모리 누출 현상을 경험하게 됩니다.<br>
+    new 및 delete의 위치지정 버전을 선언할 때는, 의도한 바도 아닌데 이들의 표준 버전이 가려지는 일이 생기지 않도록 주의해 주세요.
+</p>
