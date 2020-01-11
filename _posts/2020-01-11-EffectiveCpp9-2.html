@@ -6,7 +6,7 @@ date: 2020-01-11 23:18:00
 background: '/img/posts/EffectiveCpp.jpg'
 ---
 
-<h2 class="section-heading"></h2>
+<h2 class="section-heading">C++ 98의 표준 C++ 라이브러리의 주요 구성요소</h2>
 
 <p>
     TR1에 무엇이 들어 있는지 살펴보기 전에, C++ 98에 명시되어 있는 표준 C++ 라이브러리의 주요 구성요소를 한 번 되짚어 보겠습니다.
@@ -42,6 +42,8 @@ background: '/img/posts/EffectiveCpp.jpg'
     <strong>C89의 표준 라이브러리</strong>
     1989년 버전의 C에 포함된 표준 라이브러리는 전부 C++에도 들어 있습니다.
 </p>
+
+<h2 class="section-heading">TR1의 새로운 구성요소</h2>
 
 <p>
     TR1을 통해 명시된 새로운 구성요소는 총 14개입니다.
@@ -137,11 +139,30 @@ background: '/img/posts/EffectiveCpp.jpg'
     라게르(Laguerre) 다항식, 베셀(Bessel) 함수, 완전 타원 적분(complete elliptic integral) 등이며 그 외에도 많이 있습니다.
 </p>
 
+<p>
+    <strong>C99 호환성 확장 기능</strong>
+    C99의 새로운 라이브러리를 C++로 가져올 목적으로 설계된 함수 및 템플릿 모음입니다.
+</p>
+
+<p>
+    <strong>타입 특성정보(type traits)</strong>
+    주어진 타입에 대한 컴파일 타임 정보를 제공하는 특성정보 클래스의 모음입니다.
+    어떤 T라는 타입에 대해 TR1의 타입 특성정보 기능을 적용하면, T가 기본제공 타입인지, 가상 소멸자를 지원하는지, 공백 클래스인지, 다른 U 타입으로 암시적 변환이 가능한지 등의 정보를 들추어낼 수 있습니다.
+    심지어, 주어진 타입의 적절한 바이트 정렬까지 잡아내어 줍니다.
+</p>
+
+<p>
+    <strong>tr1::result_of</strong>
+    어떤 함수 호출의 반환 타입을 추론해 주는 템플릿입니다.
+    tr1::result_of 템플릿을 쓰면 함수 반환 타입을 쉽게 참조할 수 있습니다.
+</p>
+
 <br>
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
 <p>
     최초에 상정된 표준 C++ 라이브러리의 주요 구성요소는 STL, iostream, 로케일 등입니다.
-    여기에는 C89의 표준 라이브러리도 포함되어 있습니다.
+    여기에는 C89의 표준 라이브러리도 포함되어 있습니다.<br>
+    TR1이 도입되면서 추가된 것은 스마트 포인터(tr1::shared_ptr 등), 일반화 함수 포인터(tr1::function), 해시 기반 컨테이너, 정규 표현식 그리고 그 외의 10개의 구성요소입니다.
 </p>
