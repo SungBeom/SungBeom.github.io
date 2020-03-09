@@ -8,65 +8,65 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">C++의 캐스트</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     "어떤 일이 있어도 타입 에러가 생기지 않도록 보장한다."
     C++의 동작 규칙은 바로 이 철학을 바탕으로 설계되어 있습니다.
     즉, 이론적으로 C++ 프로그램은 일단 컴파일만 깔끔하게 끝나면 그 이후엔 어떤 객체에 대해서도 불안전한 연산이나 말도 안 되는 연산을 수행하려 들지 않는다는 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     그런데 공교롭게도 C++에는 이 타입 시스템을 위협하는 것이 있는데, 바로 캐스트(cast)입니다.
     C++에서 캐스팅은 정말로 조심해서 써야 하는 기능입니다.
     캐스팅 문법부터 정리하자면 똑같은 캐스트인데 쓰는 방법은 세 가지입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     우선, C 스타일의 캐스트입니다.<br>
     (T)<i>표현식</i>&nbsp;&nbsp;// 표현식 부분을 T 타입으로 캐스팅합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     다음은 함수 방식 캐스트입니다.
     문법이 함수호출문 같지요.<br>
     T(<i>표현식</i>)&nbsp;&nbsp;// 표현식 부분을 T 타입으로 캐스팅합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     위 두 형태는 어떻게 쓰든 괄호를 어디에 썼느냐만 다를 뿐, 가진 의미는 똑같습니다.
     이 두 형태를 통틀어 <strong>'구현 스타일의 캐스트'</strong>라고 부르겠습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     C++은 네 가지로 이루어진 새로운 형태의 캐스트 연산자를 독자적으로 제공합니다.
     이는 <strong>신형 스타일 캐스트</strong> 혹은 <strong>C++ 스타일의 캐스트</strong>라고 부르겠습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>const_cast&lt;T&gt;(<i>표현식</i>)</strong><br>
     객체의 상수성(constness)을 없애는 용도로 사용됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>dynamic_cast&lt;T&gt;(<i>표현식</i>)</strong><br>
     이른바 '안전한 다운캐스팅(safe downcasting)'을 할 때 사용하는 연산자입니다.
     즉, 주어진 객체가 어떤 클래스 상속 계통에 속한 특정 타입인지 아닌지를 결정하는 작업에 쓰입니다.
     런타임 비용이 높은 캐스트 연산자입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>reinterpret_cast&lt;T&gt;(<i>표현식</i>)</strong><br>
     포인터를 int로 바꾸는 등의 하부 수준 캐스팅을 위해 만들어진 연산자로서, 이것의 적용 결과는 구현환경에 의존적입니다(이식성이 없습니다).
     이런 캐스트는 하부 수준 코드 외에는 거의 없어야 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>static_cast&lt;T&gt;(<i>표현식</i>)</strong><br>
     암시적 변환(비상수 객체를 상수 객체로 바꾸거나, int를 double로 바꾸는 등의 변환)을 강제로 진행할 때 사용합니다.
     흔히들 이루어지는 타입 변환을 거꾸로 수행하는 용도(void*를 일반 타입의 포인터로 바꾸거나, 기본 클래스의 포인터를 파생 클래스의 포인터로 바꾸는 등)로도 쓰입니다.
     물론 상수 객체를 비상수 객체로 캐스팅하는 데 이것을 쓸 수는 없습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     구형 스타일의 캐스트는 요즘도 여전히 적법하게 쓰일 수 있지만, 그보다는 C++ 스타일의 캐스트를 쓰는 것이 바람직합ㄴ디ㅏ.
     우선, 코드를 읽을 때 알아보기 쉽기 때문에(사람 눈에도 그렇고 grep 등의 검색도구에도 그렇습니다), 소스 코드의 어디에서 C++의 타입 시스템이 망가졌는지를 찾아보는 작업이 편해집니다.
     둘째, 캐스트를 사용한 목적을 더 좁혀서 지정하기 때문에 컴파일러 쪽에서 사용 에러를 진단할 수 있습니다.
@@ -75,7 +75,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">파생 클래스의 캐스팅 문제</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     캐스팅은 그냥 어떤 타입을 다른 타입으로 처리하라고 컴파일러에게 알려 주는 것에 지나지 않는다고 생각한다면, 크나큰 오해입니다.
     어떻게 쓰더라도(캐스팅으로 명시적으로 바꾸거나 컴파일러가 암시적으로 바꾸거나) 일단 타입 변환이 있으면 이로 말미암아 런타임에 실행되는 코드가 만들어지는 경우가 적지 않습니다.
     다음의 코드를 봐주세요.
@@ -83,7 +83,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">int</span>&nbsp;x,&nbsp;y;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">double</span>&nbsp;d&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">static_cast</span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">double</span><span style="color:#ff3399">&gt;</span>(x)<span style="color:#aaffaa"></span><span style="color:#ff3399">/</span>y;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;x를&nbsp;y로&nbsp;나눕니다.&nbsp;그런데&nbsp;이때</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;부동소수점&nbsp;나눗셈을&nbsp;사용합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     거의 항상 int 타입의 x를 double 타입으로 캐스팅한 부분에서 코드가 만들어집니다.
     대부분의 컴퓨터 아키텍처에서 int의 표현구조와 double의 표현구조가 아예 다르기 때문입니다.
     문제는 다음 코드입니다.
@@ -91,7 +91,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Base&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Derived:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Base&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">Derived&nbsp;d;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Base&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pb&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>d;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Derived*&nbsp;=&gt;&nbsp;Base*의&nbsp;암시적&nbsp;변환이&nbsp;이루어집니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     보다시피 파생 클래스 객체에 대한 기본 클래스 포인터를 만드는(초기화하는), 지극히 흔하디 흔한 코드입니다.
     그런데 두 포인터의 값이 같지 않을 때도 가끔 있습니다.
     이런 경우가 되면, 포인터의 변위(offset)를 Dervied* 포인터에 적용하여 실제의 Base* 포인터 값을 구하는 동작이 바로 <strong>런타임(runtime)</strong>에 이루어집니다.
@@ -101,7 +101,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     이를테면, 어떤 객체의 주소를 char* 포인터로 바꿔서 포인터 산술 연산을 적용하는 등의 코드는 거의 항상 미정의 동작을 낳을 수 있다는 이야기입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     캐스팅이 들어가면, 보기엔 맞는 것 같지만 실제로는 틀린 코드를 쓰고도 모르는 경우가 많아집니다.
     이를테면, 주변에서 많이들 쓰이는 응용프로그램 프레임워크(application framework)를 하나 살펴보면, 가상 함수를 파생 클래스에서 재정의해서 구현할 때 기본 클래스의 버전을 호출하는 문장을 가장 먼저 넣어달라는 요구사항을 보게 됩니다.
     어떤 프레임워크에 Window 기본 클래스가 있고 SpecialWindow 파생 클래스가 있다고 가정해 보죠.
@@ -110,7 +110,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Window&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;onResize()&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;클래스의&nbsp;onResize&nbsp;구현&nbsp;결과</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SpecialWindow:&nbsp;punlic&nbsp;Window&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;파생&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;onResize()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static_cast</span><span style="color:#ff3399">&lt;</span>Window<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span><span style="color:#ff3399">this</span>).onResize();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;파생&nbsp;클래스의&nbsp;onResize&nbsp;구현&nbsp;결과&nbsp;*this를&nbsp;Window로&nbsp;캐스팅하고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;그것에&nbsp;대해&nbsp;onResize를&nbsp;호출합니다.&nbsp;동작이&nbsp;안&nbsp;되어서&nbsp;문제죠.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Special&nbsp;Window에서만&nbsp;필요한&nbsp;작업을&nbsp;여기서&nbsp;수행합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     위의 코드는 *this를 Window로 캐스팅하는 코드입니다.
     이에 따라 호출되는 onResize 함수는 Window::onResize가 됩니다.
     그런데 함수 호출이 이루어지는 객체는 현재의 객체가 아닙니다!
@@ -123,7 +123,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     즉, 시본 클래스에서 들어가는 수정은 반영되지 않고, 파생 클래스에서 들어가는 수정만 반영됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     이 문제를 풀려면 일단 캐스팅을 빼버려야 합니다.
     그냥 현재 객체에 대고 onResize의 기본 클래스 버전을 호출하도록 만들면 되는 것입니다.
 </p>
@@ -132,7 +132,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">dynamic_cast의 대체 방안</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     dynamic_cast는 그 설계부터 말도 많고 탈도 많은 연산자입니다.
     이 부분을 잘 알아두면 꽤 유익하긴 하지만, 지금은 상당수의 구현환경에서 이 연산자가 정말 느리게 구현되어 있습니다.
     dynamic_cast 연산자가 쓰고 싶어지는 때가 있는데, 파생 클래스 객체가 있어서 이에 대해 파생 클래스의 함수를 호출하고 싶은데, 그 객체를 조작할 수 있는 수단으로 기본 클래스의 포인터(혹은 참조자)밖에 없을 경우입니다.
@@ -141,19 +141,19 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Window&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SpecialWindow:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Window&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;blink();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">typedef</span>&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">vector</span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Window<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;VPW;</div><div style="padding:0 6px; white-space:pre; line-height:130%">VPW&nbsp;winPtrs;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">for</span>(VPW::<span style="color:#4be6fa">iterator</span>&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;winPtrs.<span style="color:#4be6fa">begin</span>();&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">!</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;winPtrs.<span style="color:#4be6fa">end</span>();&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>iter)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(SpecialWindow&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>psw&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">dynamic_cast</span><span style="color:#ff3399">&lt;</span>SpecialWindow<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(iter<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>get()))</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;psw<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>blink();</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이런 문제를 피해 가는 일반적인 방법으로는 두 가지를 들 수 있습니다.
     첫 번째 방법은, 파생 클래스 객체에 대한 포인터(혹은 스마트 포인터)를 컨테이너에 담아둠으로써 각 객체를 기본 클래스 인터페이스를 통해 조작할 필요를 아예 없애 버리는 것입니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">typedef</span>&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">vector</span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>SpecialWindow<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;VPSW;</div><div style="padding:0 6px; white-space:pre; line-height:130%">VPSW&nbsp;winPtrs;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">for</span>(VPSW::<span style="color:#4be6fa">iterator</span>&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;winPtrs.<span style="color:#4be6fa">begin</span>();&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">!</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;winPtrs.<span style="color:#4be6fa">end</span>();&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>iter)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;(<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>iter)<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>blink();</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이 방법으로는 Window에서 파생될 수 있는 모든 것들에 대한 포인터를 똑같은 컨테이너에 저장할 수는 없습니다.
     다른 타입의 포인터를 담으려면 타입 안전성을 갖춘 컨테이너 여러 개가 필요할 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     한편, Window에서 뻗어 나온 자손들을 전부 기본 클래스 인터페이스를 통해 조작할 수 있는 다른 방법이 없는 것은 아닙니다.
     여러분이 원하는 조작을 가상 함수 집합으로 정리해서 기본 클래스에 넣어두면 됩니다.
     예를 들어, 지금은 blink 함수가 SpecialWindow에서만 가능하지만, 그렇다고 기본 클래스에 못 넣어둘 만한 것도 아니죠.
@@ -162,11 +162,11 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Window&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;blink()&nbsp;{}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;구현은&nbsp;'아무&nbsp;동작&nbsp;안하기'입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SpecialWindow:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Window&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;blink()&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;클래스에서는&nbsp;blink&nbsp;함수가&nbsp;특정한&nbsp;동작을&nbsp;수행합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">typedef</span>&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">vector</span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Window<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;VPW;</div><div style="padding:0 6px; white-space:pre; line-height:130%">VPW&nbsp;winPtrs;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;컨테이너는&nbsp;Window에서&nbsp;파생된&nbsp;모든&nbsp;타입의</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;객체(에&nbsp;대한&nbsp;포인터)들을&nbsp;담습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">for</span>&nbsp;(VPW::<span style="color:#4be6fa">iterator</span>&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;winPtrs.<span style="color:#4be6fa">begin</span>();&nbsp;iter&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">!</span><span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;winPtrs.<span style="color:#4be6fa">end</span>();&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>iter)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;(<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>iter)<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>blink();</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     말씀드린 두 가지 방법 중 어떤 것도(타입 안전성을 갖춘 컨테이너를 쓰든지 가상 함수를 기본 클래스 쪽으로 올려두든지) 모든 상황에 다 적용하기란 불가능하지만, 상당히 많은 상황에서 dynamic_cast를 쓰는 방법 대신에 꽤 잘 쓸 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     정말 잘 작성된 C++ 코드는 캐스팅을 거의 쓰지 않습니다.
     하지만 캐스팅을 발본색원한다는 것도 어찌 보면 현장 사정을 무시한 생각일 수 있습니다.
     앞에서 보신 int를 double로 바꾸는 경우는 꼭 필요한가에 대한 의문이 남긴 하지만, 터무니없는 캐스팅은 아닙니다.
@@ -178,7 +178,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     다른 방법이 가능하다면 캐스팅은 피하십시오.
     특히 수행 성능에 민감한 코드에서 dynamic_cast는 몇 번이고 다시 생각하십시오.
     설계 중에 캐스팅이 필요해졌다면, 캐스팅을 쓰지 않는 다른 방법을 시도해 보십시오.<br>

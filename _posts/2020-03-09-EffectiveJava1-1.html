@@ -8,28 +8,28 @@ background: '/img/posts/EffectiveJava.jpg'
 
 <h2 class="section-heading">Intro</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     클라이언트가 클래스의 인스턴스를 얻는 전통적인 수단은 public 생성자다.
     하지만 클래스는 생성자와 별도로 그 클래스의 인스턴스를 반환하는 정적 팩토리 메소드(static factory method)를 제공할 수 있다.
 </p>
 
 <h2 class="section-heading">정적 팩토리 메소드의 장점</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>첫 번째, 이름을 가질 수 있다.</strong><br>
     생성자에 넘기는 매개변수와 생성자 자체만으로는 반환될 객체의 특성을 제대로 설명하지 못하나, 정적 팩토리는 이름만 잘 지으면 반환될 객체의 특성을 쉽게 묘사할 수 있다.
     예를 들어 소수인 BigInteger를 반환하는 경우는 생성자인 BigInteger(int, int, Random), 정적 팩토리 메소드인 BigInteger.probablePrime를 보면 알 수 있다.
     또한 하나의 시그니처로는 생성자를 하나만 만들 수 있는데 반해, 정적 팩토리 메소드에는 이런 제약이 없다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>두 번째, 호출될 때마다 인스턴스를 새로 생성하지는 않아도 된다.</strong><br>
     불변 클래스(immutable class)는 인스턴스를 미리 만들어 놓거나 새로 생성한 인스턴스를 캐싱하여 재활용하는 식으로 불필요한 객체 생성을 피할 수 있다.
     인스턴스 통제(instance-controlled) 클래스는 반복되는 요청에 같은 객체를 반환하는 식으로 정적 팩토리 방식의 클래스는 언제 어느 인스턴스를 살아 있게 할지를 철저히 통제할 수 있다.
     인스턴스를 통제하면 클래스를 싱글턴(singleton)으로 만들 수도, 인스턴스화 불가(noninstantiable)로 만들 수도 있다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>세 번째, 반환 타입의 하위 타입 객체를 반환할 수 있는 능력이 있다.</strong><br>
     이 능력은 반환할 객체의 클래스를 자유롭게 선택할 수 있게 하는 유연성을 제공한다.
     API를 만들 때 이를 응용하면 구현 클래스를 공개하지 않고도 그 객체를 반환할 수 있어 API를 작게 유지할 수 있다.
@@ -37,14 +37,14 @@ background: '/img/posts/EffectiveJava.jpg'
     자바 8부터는 위 제한이 풀렸지만 인터페이스에는 public 정적 멤버만 허용하고, 자바 9에서는 private 정적 메소드까지 허락하만 정적 필드와 정적 멤버 클래스는 여전히 public이어야 한다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>네 번째, 입력 매개변수에 따라 매번 다른 클래스의 객체를 반환할 수 있다.</strong><br>
     반환 타입의 하위 타입이기만 하면 어떤 클래스의 객체를 반환하든 상관없다.
     예를 들어 EnumSet 클래스는 public 생성자 없이 오직 정적 팩토리만 제공하는데, OpenJDK에서는 원소의 수에 따라 RegularEnumSet 또는 JumboEnumSet의 인스턴스를 반환한다.
     클라이언트는 이 두 클래스의 존재를 몰라도 된다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>다섯 번째, 정적 팩토리 메소드를 작성하는 시점에는 반환할 객체의 클래스가 존재하지 않아도 된다.</strong><br>
     이런 유연함은 서비스 제공자 프레임워크(service provider framework)를 만드는 근간이 되며, 대표적인 예로는 JDBC(Java Database Connectivity)가 있다.
     서비스 제공자 프레임워크는 3개의 핵심 컴포넌트로 이뤄진다.
@@ -57,12 +57,12 @@ background: '/img/posts/EffectiveJava.jpg'
 
 <h2 class="section-heading">정적 팩토리 메소드의 단점</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>첫 번째, 상속을 하려면 public이나 protected 생성자가 필요하니 정적 팩토리 메소드만 제공하면 하위 클래스를 만들 수 없다.</strong><br>
     어찌 보면 이 제약은 상속보다 컴포지션을 사용하도록 유도하고 불변 타입으로 만들려면 이 제약을 지켜야 한다는 점에서 오히려 장점으로 받아들일 수도 있다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>두 번째, 정적 팩토리 메소드는 프로그래머가 찾기 어렵다.</strong><br>
     생성자처럼 API 설명에 명확히 드러나지 않으니 사용자는 정적 팩토리 메소드 방식 클래스를 인스턴스화할 방법을 알아내야 한다.
     그래도 정적 팩토리 메소드에 흔히 사용하는 from, of, valueOf, instance 혹은 getInstance, create 혹은 newInstance, getType, newType, type 등의 명명 방식들이 존재한다.
@@ -72,7 +72,7 @@ background: '/img/posts/EffectiveJava.jpg'
 
 <h2 class="section-heading" style="color: red">핵심 정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     정적 팩토리 메소드와 public 생성자는 각자의 쓰임새가 있으니 상대적인 장단점을 이해하고 사용하는 것이 좋다.
     그렇다고 하더라도 정적 팩토리를 사용하는 게 유리한 경우가 더 많으므로 무작정 public 생성자를 제공하던 습관이 있다면 고치자.
 </p>

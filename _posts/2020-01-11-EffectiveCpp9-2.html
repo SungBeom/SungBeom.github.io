@@ -8,51 +8,51 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">C++ 98의 표준 C++ 라이브러리의 주요 구성요소</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     TR1에 무엇이 들어 있는지 살펴보기 전에, C++ 98에 명시되어 있는 표준 C++ 라이브러리의 주요 구성요소를 한 번 되짚어 보겠습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>표준 템플릿 라이브러리(Standard Template Library: STL)</strong>
     주요 구성요소로서 컨테이너(vector, string, map 등), 반복자, 알고리즘(find, sort, transform 등), 함수 객체(less, greater 등) 외에 이런저런 컨테이너 어댑터와 함수 객체 어댑터(stact, priority_queue, mem_fuc, not1 등)가 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>iostream</strong>
     사용자 정의 버퍼링, 국제화 기능이 가능한 입출력을 지원하며, 그 외에 cin, cout, cerr, clog 등의 사전정의 객체를 지원합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>국제화 지원</strong>
     여러 로케일(locale)을 활성화시킬 수 있는 기능이 포함되어 있습니다.
     또한 wchar_t 등의 타입(대개 16비트/문자) 및 wstring(wchar_t 타입으로 정의한 string)을 쓰면 유니코드를 사용할 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>수치 처리 지원</strong>
     복소수를 나타내는 템플릿(complex) 및 수치 배열을 나타내는 템플릿(valarray)이 여기에 해당됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>예외 클래스 계통</strong>
     최상위 클래스인 exception 및 이것으로부터 갈라져 나온 파생 클래스들, 예를 들어 logic_error 및 runtime_error 등이 여기에 포함됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>C89의 표준 라이브러리</strong>
     1989년 버전의 C에 포함된 표준 라이브러리는 전부 C++에도 들어 있습니다.
 </p>
 
 <h2 class="section-heading">TR1의 새로운 구성요소</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     TR1을 통해 명시된 새로운 구성요소는 총 14개입니다.
     14개 모두 std 네임스페이스에 들어 있는데, 더 정확히 말하면 std 안에 중첩된 tr1이란 네임스페이스에 들어 있습니다.
     그러니까 TR1 구성요소 중 하나인 shared_ptr의 완전형태 이름은 std::tr1::shared_ptr입니다.
     이제부터 TR1 구성요소를 정리해 보겠습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>스마트 포인터(smart pointer)</strong>
     tr1::shared_ptr, tr1::weak_ptr이 여기에 해당합니다.
     동작은 기본제공 포인터와 똑같으나, 하나의 실제 객체를 가리키는 자신과 같은 포인터의 개수를 유지해 놓는 똑똑한 포인터입니다.
@@ -62,7 +62,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     tr1::weak_ptr은 tr1:shared_ptr에 기반한 비순환형 자료구조에서 순환고리를 가능하게 하는 포인터로 동작하게끔 설계되었습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>tr1::function</strong>
     어떤 함수가 가진 시그니처와 호환되는 시그니처를 갖는 <strong> 함수호출성 개체(callable entity)</strong>의 표현을 가능하게 해 주는 템플릿입니다.
     시그니처가 '비슷'하면 호출이 가능한 일반화 콜백 한수를 만들어 보자는 것이 주요 개념입니다.
@@ -71,13 +71,13 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;registerCallback(<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;func(<span style="color:#4be6fa">int</span>));&nbsp;&nbsp;<span style="color:#999999">//&nbsp;int를&nbsp;받고&nbsp;string을&nbsp;반환하는&nbsp;함수가&nbsp;매개변수&nbsp;타입입니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     매개변수 이름으로 쓰인 func는 사실 없어도 되는 선택사항이므로, registerCallback은 다음과 같이 이름을 떼고 선언해도 문제가 없습니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;registerCallback(<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;(<span style="color:#4be6fa">int</span>));&nbsp;&nbsp;<span style="color:#999999">//&nbsp;위와&nbsp;동일하나&nbsp;매개변수&nbsp;이름만&nbsp;빠졌습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     여기서 매개변수 타입에 해당하는 "std::string(int)" 부분이 바로 함수 시그니처입니다.
     바로 이런 용도에 tr1::function 템플릿을 사용하면 registerCallback이 훨씬 융통성 있게 만들어집니다.
     함수 시그니처 대신에 임의의 함수호출성 개체를 받도록 만들게 함으로써, int 타입 혹은 int로 변환이 가능한 어떤 타입도 전달받으며, string 타입 혹은 string으로 변환 가능한 어떤 타입도 반환할 수 있는 그런 함수를 registerCallback의 매개변수로 설정할 수 있는 것이죠.
@@ -85,7 +85,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;registerCallback(<span style="color:#4be6fa">std</span>::tr1::function<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;(<span style="color:#4be6fa">int</span>)<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;func);</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;매개변수인&nbsp;"func"는&nbsp;이제&nbsp;"std::string&nbsp;(int)"와&nbsp;호환되는&nbsp;시그니처를&nbsp;갖는&nbsp;어떤&nbsp;함수호출성&nbsp;개체도&nbsp;될&nbsp;수&nbsp;있습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>tr1::bind</strong>
     STL 바인더로 잘 쓰이고 있는 bind1st 및 bind2nd와 똑같이 동작함은 물론, 그보다 훨씬 더 많은 기능이 있는 범용 바인더입니다.
     TR1 이전의 바인더들과 달리, tr1::bind는 상수 멤버 함수 및 비상수 멤버 함수에 상관없이 동작합니다.
@@ -93,65 +93,65 @@ background: '/img/posts/EffectiveCpp.jpg'
     마지막으로, 외부 보조 없이도 함수 포인터를 자체적으로 다룰 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>해시 테이블(hash table)</strong>
     새로운 동작 원리의 연관 컨테이너인 set, multiset, map, multimap을 구현하는 데 이 해시 테이블이 쓰였습니다.
     인상적인 점은 이름이 각각 tr1::unordered_set, tr1::unordered_multiset, tr1::unordered_map, tr1::unordered_multimap인데, 기존의 set, multiset, map, multimap에 저장되는 원소와 달리, TR1의 해시 기반 컨테이너는 원소가 저장되는 순서를 예측할 수 없다는 점을 알 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>정규 표현식(regular expression)</strong>
     정규 표현식 기반의 탐색과 문자열에 대한 대체 연산이 가능하며, 일치되는 원소들 사이의 순회도 지원합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>튜플(tuple)</strong>
     종래의 표준 라이브러리에 원래 있었던 pair 템플릿의 신세대 버전입니다.
     pair 객체의 경우에는 두 개만 담을 수 있는 반면, tr1::tuple 객체는 몇 개라도 담을 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>tr1::array</strong>
     begin 및 end 등의 멤버 함수를 지원하여 "STL스럽게 된" 배열입니다.
     tr1::array 객체의 크기는 컴파일 과정에서 고정됩니다.
     동적 메모리를 쓰지 않는다는 뜻이죠.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>tr1::mem_fn</strong>
     멤버 함수 포인터를 적응시키는(adapt) 용도에 쓸 수 있는, 문법적으로 통일을 이룬 템플릿입니다.
     tr1::mem_fn은 C++98의 mem_fun 및 mem_fun_ref를 그대로 껴안음과 동시에 확장하였습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>tr1::reference_wrapper</strong>
     기존의 참조자가 객체처럼 행세할 수 있도록 만들어주는 템플릿입니다.
     무엇보다, 이것을 사용하면 참조자를 담은 것처럼 동작하는 컨테이너를 만들 수 있다는 점이 가장 큽니다(사실 컨테이너는 객체 혹은 포인터만 담을 수 있습니다).
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>난수 발생</strong>
     C++이 C 표준 라이브러리로부터 물려받은 rand 함수보다 몇 배는 우수한 난수 발생 기능입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>특수 용도의 수학 함수</strong>
     라게르(Laguerre) 다항식, 베셀(Bessel) 함수, 완전 타원 적분(complete elliptic integral) 등이며 그 외에도 많이 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>C99 호환성 확장 기능</strong>
     C99의 새로운 라이브러리를 C++로 가져올 목적으로 설계된 함수 및 템플릿 모음입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>타입 특성정보(type traits)</strong>
     주어진 타입에 대한 컴파일 타임 정보를 제공하는 특성정보 클래스의 모음입니다.
     어떤 T라는 타입에 대해 TR1의 타입 특성정보 기능을 적용하면, T가 기본제공 타입인지, 가상 소멸자를 지원하는지, 공백 클래스인지, 다른 U 타입으로 암시적 변환이 가능한지 등의 정보를 들추어낼 수 있습니다.
     심지어, 주어진 타입의 적절한 바이트 정렬까지 잡아내어 줍니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>tr1::result_of</strong>
     어떤 함수 호출의 반환 타입을 추론해 주는 템플릿입니다.
     tr1::result_of 템플릿을 쓰면 함수 반환 타입을 쉽게 참조할 수 있습니다.
@@ -161,7 +161,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     최초에 상정된 표준 C++ 라이브러리의 주요 구성요소는 STL, iostream, 로케일 등입니다.
     여기에는 C89의 표준 라이브러리도 포함되어 있습니다.<br>
     TR1이 도입되면서 추가된 것은 스마트 포인터(tr1::shared_ptr 등), 일반화 함수 포인터(tr1::function), 해시 기반 컨테이너, 정규 표현식 그리고 그 외의 10개의 구성요소입니다.

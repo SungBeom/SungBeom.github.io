@@ -8,7 +8,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">좋은 인터페이스란</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     C++에선 많은 부분이 인터페이스로 되어 있습니다.
     함수도 인터페이스요, 클래스도 인터페이스요, 템플릿 또한 인터페이스입니다.
     이상적으로는, 어떤 인터페이스를 어떻게 써 봤는데 결과 코드가 사용자가 생각한 대로 동작하지 않는다면 그 코드는 컴파일되지 않아야 맞습니다.
@@ -19,14 +19,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">사용자의 실수를 방지하는 방법과 인터페이스의 올바른 사용을 이끄는 방법</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     '제대로 쓰기에 쉽고 엉터리로 쓰기에 어려운' 인터페이스를 개발하려면 우선 사용자가 저지를 만한 실수의 종류를 머리에 넣어두고 있어야 합니다.
     예를 들어, 날짜를 나타내는 어떤 클래스에 넣을 생성자를 설계하고 있다고 가정합시다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Date&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Date(<span style="color:#4be6fa">int</span>&nbsp;month,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;day,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;year);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     별 문제는 없을 것 같습니다.
     그런데 여기에는 사용자가 쉽게 저지를 수 있는 오류가 두 개나 있습니다.<br>
     우선 매개변수의 전달 순서가 잘못될 여지가 있습니다.<br>
@@ -35,7 +35,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     Date d(3, 40, 1995);  // "3, 30"이어야 하는데 "3, 40"을 넣었습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     새로운 타입을 들여와 인터페이스를 강화하면 상당수의 사용자 실수를 막을 수 있습니다.
     어처구니없는 코드가 컴파일되는 사태로부터 지켜주는 것이 바로 타입 시스템입니다.
     지금의 경우, 일, 월, 연을 구분하는 간단한 랩퍼(wrapper) 타입을 각각 만들고 이 타입을 Date 생성자 안에 둘 수 있을 것입니다.
@@ -43,7 +43,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">struct</span>&nbsp;Day&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;Day(<span style="color:#4be6fa">int</span>&nbsp;d)&nbsp;:&nbsp;val(d)&nbsp;{}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;val;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">struct</span>&nbsp;Month&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;Month(<span style="color:#4be6fa">int</span>&nbsp;m)&nbsp;:&nbsp;val(m)&nbsp;{}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;val;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">struct</span>&nbsp;Year&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;Year(<span style="color:#4be6fa">int</span>&nbsp;y)&nbsp;:&nbsp;val(y)&nbsp;{}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;val;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Date&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Date(<span style="color:#ff3399">const</span>&nbsp;Month<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;m,&nbsp;<span style="color:#ff3399">const</span>&nbsp;Day<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;d,&nbsp;<span style="color:#ff3399">const</span>&nbsp;Year<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;y);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Date&nbsp;d(<span style="color:#c10aff">30</span>,&nbsp;<span style="color:#c10aff">3</span>,&nbsp;<span style="color:#c10aff">1995</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;타입이&nbsp;틀렸습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Date&nbsp;d(Day(<span style="color:#c10aff">30</span>),&nbsp;Month(<span style="color:#c10aff">3</span>),&nbsp;Year(<span style="color:#c10aff">1995</span>));&nbsp;&nbsp;<span style="color:#999999">//&nbsp;타입이&nbsp;틀렸습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Date&nbsp;d(Month(<span style="color:#c10aff">3</span>),&nbsp;Day(<span style="color:#c10aff">30</span>),&nbsp;Year(<span style="color:#c10aff">1995</span>));&nbsp;&nbsp;<span style="color:#999999">//&nbsp;타입이&nbsp;전부&nbsp;맞았습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     일단 적절한 타입만 제대로 준비되어 있으면, 각 타입의 값에 제약을 가하더라도 괜찮은 경우가 생기게 됩니다.
     예를 들어 월(月)이 가질 수 있는 유효한 값은 12개뿐이므로, Month 타입은 이 사실을 제약으로 사용할 수 있습니다.
     한 가지 방법으로 월 표시 값을 나타내는 enum을 넣는 방법이 있는데, enum은 타입 안전성은 그리 믿음직하지 못합니다.
@@ -52,7 +52,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Month&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;Month&nbsp;Jan()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;Month(<span style="color:#c10aff">1</span>);&nbsp;}&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;유효한&nbsp;Month&nbsp;값을&nbsp;반환하는&nbsp;함수들</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;Month&nbsp;Feb()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;Month(<span style="color:#c10aff">2</span>);&nbsp;}&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;객체를&nbsp;쓰지&nbsp;않고&nbsp;함수를&nbsp;쓴&nbsp;것은</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;비지역&nbsp;정적&nbsp;객체들&nbsp;사이의&nbsp;초기화&nbsp;순서는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;Month&nbsp;Dec()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;Month(<span style="color:#c10aff">12</span>);&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;정해져&nbsp;있지&nbsp;않기&nbsp;때문입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;다른&nbsp;멤버&nbsp;함수들</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;Month(<span style="color:#4be6fa">int</span>&nbsp;m);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Month&nbsp;값이&nbsp;새로&nbsp;생성되지&nbsp;않도록</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;명시호출&nbsp;생성자가&nbsp;private&nbsp;멤버입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;월&nbsp;표현을&nbsp;위한&nbsp;내부&nbsp;데이터</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Date&nbsp;d(Month::Mar(),&nbsp;Day(<span style="color:#c10aff">30</span>),&nbsp;Year(<span style="color:#c10aff">1995</span>));</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     예상되는 사용자 실수를 막는 다른 방법으로는 어떤 타입이 제약을 부여하여 그 타입을 통해 할 수 있는 일들을 묶어 버리는 방법이 있습니다.
     제약 부여 방법으로 아주 흔히 쓰이는 예가 'const 붙이기'입니다.
     사실, 이 이야기는 '제대로 쓰기에 쉽고 엉터리에 쓰기에 어려운 타입 만들기'를 위한 또 하나의 일반적인 지침을 알려 주려고 일부러 끄집어낸 것입니다.
@@ -60,12 +60,12 @@ background: '/img/posts/EffectiveCpp.jpg'
     int 등의 타입 정도는 사용자들이 그 성질을 이미 다 알고 있기 때문에, 여러분이 사용자를 위해 만드는 타입도 웬만하면 이들과 똑같이 동작하게 만드는 것이 좋습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     기본제공 타입과 쓸데없이 어긋나는 동작을 피하는 실질적인 이유는 일관성 있는 인터페이스를 제공하기 위해서입니다.
     제대로 쓰기에 괜찮은 인터페이스를 만들어 주는 요인 중에 일관성만큼 똑 부러지는 것이 별로 없으며, 편찮은 인터페이스를 더 나쁘게 만들어 버리는 요인 중에 비일관성을 따라오는 것이 거의 없습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     사용자 쪽에서 뭔가를 외워야 제대로 쓸 수 있는 인터페이스는 잘못 쓰기 쉽습니다.
     언제라도 잊어버릴 수 있으니까요.
     팩토리 함수를 예로 들어 보겠습니다.<br>
@@ -73,32 +73,32 @@ background: '/img/posts/EffectiveCpp.jpg'
     이 함수는 Investment 클래스 계통에 속해 있는 어떤 객체를 동적 할당하고 그 객체의 포인터를 반환하는 함수입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     이 함수를 사용할 때는, 자원 누출을 피하기 위해 createInvestment에서 얻어낸 포인터를 나중에라도 삭제해야 합니다.
     그런데 이 점 때문에 사용자가 실수를 최소한 두 가지나 저지를 가능성이 만들어집니다.
     포인터 삭제를 깜박 잊을 수 있고, 똑같은 포인터에 대해 delete가 두 번 이상 적용될 수 있거든요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     createInvestment의 반환 값을 auto_ptr이나 tr1::shared_ptr 등의 스마트 포인터에 저장한 후에 해당 포인터의 삭제 작업을 스마트 포인터에게 떠넘기는 방법이 있습니다.
     하지만 이 스마트 포인터를 사용해야 한다는 사실을 사용자가 잊어버릴 경우에 대비해, 애초부터 팩토리 함수가 스마트 포인터를 반환하게 만드는 방법도 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     std::tr1::shared_ptr&lt;Investment&gt; createInvestment();<br>
     이렇게 해 두면, 이 함수의 반환 값은 tr1::shared_ptr에 넣어둘 수밖에 없을 뿐더러, 나중에 Investment 객체가 필요 없어졌을 때 이 객체를 삭제하는 것을 깜빡하고 넘어가는 불상사도 생기지 않을 것입니다.
 </p>
 
 <h2 class="section-heading">사용자 정의 삭제자를 지원하는 shared_ptr</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     createInvestment를 통해 얻은 Investment* 포인터를 직접 삭제하지 않게 하고, getRidOfInvestment라는 이름의 함수를 준비해서 여기에 넘기게 하면 어떨까요.
     왠지 더 깔끔해 보이지만 이런 인터페이스는 되레 사용자 실수를 하나 더 열어놓는 결과를 가져옵니다.
     자원 해제 매커니즘을 잘못 사용할 수가 있거든요(getRidOfInvestment를 잊어버리고 delete를 쓴다든지).
     createInvestment를 살짝 고쳐서, getRidOfInvestment가 삭제자로 묶인 tr1::shared_ptr을 반환하도록 구현해 둔다면 이런 문제는 발도 못 들여놓을 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     tr1::shared_ptr에는 두 개의 인자를 받는 생성자가 있습니다. 첫 번째 인자는 이 스마트 포인터로 관리할 실제 포인터이고, 두 번째 인자는 참조 카운트가 0이 될 때 호출될 삭제자입니다.
     그러니까 tr1::shared_ptr이 널(null) 포인터를 물게 함과 동시에 삭제자로 getRidOfInvestment를 갖게 하는 방법으로 다음과 같은 코드를 쓰면 됩니다.<br>
     std::tr1::shared_ptr&lt;Investment&gt; pInv(static_cast&lt;Investment*&gt;(0), getRidOfInvestment);<br>
@@ -106,20 +106,20 @@ background: '/img/posts/EffectiveCpp.jpg'
     따라서 캐스트를 적용하여 변환해줍니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     createInvestment 함수에서 getRidOfInvestment를 삭제자로 갖는 tr1::shared_ptr을 반환하도록 구현한 코드는 다음과 비슷할 것입니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;createInvestment()</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;retVal(<span style="color:#ff3399">static_cast</span><span style="color:#ff3399">&lt;</span>Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(<span style="color:#c10aff">0</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getRidOfInvestment);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;retVal&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;...;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;retVal은&nbsp;실제&nbsp;객체를&nbsp;가리키도록&nbsp;만듭니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;retVal;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     tr1::shared_ptr에는 엄청 좋은 특징이 하나 있습니다.
     바로 포인터별(per-pointer) 삭제자를 자동으로 씀으로써 사용자가 저지를 수 있는 또 하나의 잘못을 미연에 없애 준다는 점인데, 이 또 하나의 잘못이란 바로 '교차 DLL 문제(cross-DLL problem)'입니다.
     이 문제가 생기는 경우가 언제냐 하면, 객체 생성 시에 어떤 동적 링크 라이브러리(dynamic linked library: DLL)의 new를 썼는데 그 객체를 삭제할 때는 이전의 DLL과 다른 DLL에 있는 delete를 썼을 경우입니다.
     이렇게 new/delete 짝이 실행되는 DLL이 달라서 꼬이게 되면 대다수의 플랫폼에서 런타임 에러가 일어나지요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     그런데 tr1::shared_ptr은 이 문제를 피할 수 있습니다.
     이 클래스의 기본 삭제자는 tr1::shared_ptr이 생성된 DLL과 동일한 DLL에서 delete를 사용하도록 만들어져 있기 때문입니다.
     예를 들어 Stock이라는 클래스가 Investment에서 파생된 클래스이고 createInvestment 함수가 아래와 같이 구현되어 있다고 가정합시다.
@@ -127,7 +127,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::tr1:shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;createInvestment()</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(<span style="color:#ff3399">new</span>&nbsp;Stock);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이 함수가 반환하는 tr1::shared_ptr은 다른 DLL들 사이에 이리저리 넘겨지더라도 교차 DLL 문제를 걱정하지 않아도 됩니다.
     Stock 객체의 참조 카운트가 0이 될 때 어떤 DLL의 delete를 사용해야 하는지를 꼭 붙들고 잊지 않습니다.
     따라서 tr1::shared_ptr을 사용하면 사용자가 무심코 저지를 수 있는 실수 몇 가지를 쉽게 없앰으로써 좋은 인터페이스를 만드는 데 쉽게 다가갈 수 있습니다.<br>
@@ -138,7 +138,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     좋은 인터페이스는 제대로 쓰기에 쉬우며 엉터리로 쓰기에 어렵습니다.
     인터페이스를 만들 때는 이 특성을 지닐 수 있도록 고민하고 또 고민합시다.<br>
     인터페이스의 올바른 사용을 이끄는 방법으로는 인터페이스 사이의 일관성 잡아주기, 그리고 기본제공 타입과의 동작 호환성 유지하기가 있습니다.<br>

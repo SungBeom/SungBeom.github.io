@@ -8,7 +8,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">멤버 함수 vs 비멤버 비프렌드 함수</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     웹브라우저를 나타내는 클래스가 하나 있다고 가정합시다.
     웹브라우저 클래스라면 이런 저런 함수를 통해 제공하는 기능이 많을 것입니다.
     웹브라우저로 다운로드한 파일들을 임시 저장한 캐시를 비우는 함수, 방문한 URL의 기록을 없애는 함수, 시스템이 갖고 있는 쿠키를 전부 제거하는 함수도 그 중에 속해 있겠지요.
@@ -16,20 +16,20 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;WebBrowser&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;clearCache();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;clearHistory();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;removeCookies();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     하지만 사용자 중에는 이 세 동작을 한 번에 하고 싶은 분들도 상당수 있기 때문에, 세 함수를 모아서 불러주는 함수도 준비해 둘 수 있을 것입니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;WebBrowser&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;clearEverything();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     물론 이 기능은 비멤버 함수로 제공해도 됩니다.
     웹브라우저 객체의 멤버 함수를 순서대로 불러주기만 하면 되는 거죠.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;clearBrowser(WebBrowser<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;wb)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;wb.clearCache();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;wb.clearHistory();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;wb.removeCookies();</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     어느 쪽이 더 괜찮을까요?
     멤버 버전인 clearEverything일까요, 아니면 비멤버 버전인 clearBrowser일까요?
     객체 지향 법칙에 관련된 이야기를 찾아보면 데이터와 그 데이터를 기반으로 동작하는 함수는 한 데 묶여 있어야 하며, 멤버 함수가 더 낫다고들 합니다.
@@ -41,7 +41,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">캡슐화의 관점</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     어떤 것을 캡슐화하면, 우선 외부에서 이것을 볼 수 없게 됩니다.
     캡슐화하는 것이 늘어나면 그만큼 밖에서 볼 수 있는 것들이 줄어듭니다.
     밖에서 볼 수 있는 것들이 줄어들면, 그것들을 바꿀 때 필요한 유연성이 커집니다.
@@ -50,7 +50,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     바로 이것 때문에 우선 무엇보다도 캡슐화에 가치를 두는 것이지요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     어떤 객체의 모습을 그 객체의 데이터로 설명할 수 있다고 생각해 봅시다.
     이 데이터를 직접 볼 수 있는(다시 말해 접근할 수 있는) 코드가 적으면 적을수록 그 데이터는 많이 캡슐화된 것이고, 그 객체가 가진 데이터의 특징을 바꿀 수 있는 자유도가 그만큼 높은 것입니다.
     똑같은 기능을 제공하는데 멤버 함수(그 클래스의 private 멤버뿐만 아니라 private 멤버로 되어 있는 다른 함수, 나열자, typedef 타입 등등을 모두 접근할 수 있는)를 쓸 것이냐, 아니면 비멤버 비프렌드 함수(어느 것도 접근할 수 없는)를 쓸 것이냐를 다시 생각해 보면, 단연 캡슐화 정도가 더 높은 후자입니다.
@@ -58,14 +58,14 @@ background: '/img/posts/EffectiveCpp.jpg'
     따라서 clearBrowser(비멤버 비프렌드 함수)가 clearEverything(멤버 함수)보다 클래스에 대한 캡슐화 정도가 더 높기에 바람직합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     여기서 주의해야 할 부분 두 가지가 있습니다.
     첫째, 이 이야기는 비멤버 <strong>비프렌드(non-friend)</strong> 함수에만 적용된다는 것입니다.
     프렌드 함수는 private 멤버에 대한 접근권한이 해당 클래스의 멤버 함수가 가진 접근권한과 똑같기 때문에, 캡슐화에 대한 영향 역시 같습니다.
     캡슐화라는 관점에서 보았을 때, 위의 선택은 멤버 함수와 비멤버 한수 사이의 선택이 아닌, 멤버 함수와 비멤버 '비프렌드' 함수 사이의 선택입니다. 
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     주의해야 할 점 두 번째는, 캡슐화에 대한 이런저런 이야기 때문에 "함수는 어떤 클래스의 비멤버가 되어야 한다"라는 주장이 "그 함수는 다른 클래스의 멤버가 될 수 없다"라는 의미가 아니라는 것입니다.
     이를테면, clearBrowser 함수를 다른 유틸리티 클래스 같은 데의 정적 멤버 함수로 만들어도 된다는 이야기입니다.
     어쨌든 이 함수가 WebBrowser 클래스의 멤버(혹은 프렌드)가 아니기만 하면 됩니다.
@@ -74,21 +74,21 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">패키징 유연성의 관점</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     C++로는 더 자연스런 방법을 구사할 수 있습니다.
     clearBrowser를 비멤버 함수로 두되, WebBrowserStuff와 같은 네임스페이스 안에 두는 것입니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">namespace</span>&nbsp;WebBrowserStuff&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">class</span>&nbsp;WebBrowser&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;clearBrowser(WebBrowser<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;wb);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     사실 이건 자연스러움보다 몇 걸음 더 나아간 방법이라고 볼 수 있습니다.
     왜냐하면 네임스페이스는 클래스와 달리 여러 개의 소스 파일에 나뉘어 흩어질 수 있기 때문입니다.
     지금 이 부분은 굉장히 중요한데, clearBrowser 같은 함수들은 편의상 준비한 함수들이기 때문입니다.
     멤버도 아니고 프렌드도 아니기에, WebBrowser 사용자 수준에서 Browser가 없다고 해도 사용자는 그냥 clearCache, clearHistory, removeCookies를 알아서 불러주면 되는 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     WebBrowser처럼 응용도가 높은 클래스는 이런 종류의 편의 함수가 꽤 많이 생길 수 있습니다.
     즐겨찾기(bookmark)에 관련한 함수라든지, 인쇄에 관련된 함수도 있을 수 있고, 쿠키 관리용 함수도 충분히 가능하지요.
     일반적인 경우입니다만, 웬만한 사용자라면 이들 편의 함수들 중 몇 개만 알고 있거나 관심을 둘 것입니다.
@@ -98,7 +98,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;"webbrowser.h"&nbsp;헤더&nbsp;-&nbsp;WebBrowser&nbsp;클래스&nbsp;자체에&nbsp;대한&nbsp;헤더</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;그리고&nbsp;WebBrowser에&nbsp;관련된&nbsp;'핵심'&nbsp;기능들이&nbsp;선언되어&nbsp;있음</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">namespace</span>&nbsp;WebBrowserStuff&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;clear&nbsp;WebBrowser&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;'핵심'&nbsp;관련&nbsp;기능,&nbsp;이를테면&nbsp;거의&nbsp;모든&nbsp;사용자가</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;써야&nbsp;하는&nbsp;비멤버&nbsp;함수들이&nbsp;여기에&nbsp;들어갑니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;"webbrowserbookmarks.h"&nbsp;헤더</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">namespace</span>&nbsp;WebBrowserStuff&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;즐겨찾기&nbsp;관련&nbsp;편의&nbsp;함수들이&nbsp;여기에&nbsp;들어갑니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;"webbrowsercookies.h"&nbsp;해더</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">namespace</span>&nbsp;WebBrowserStuff&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;쿠키&nbsp;관련&nbsp;편의&nbsp;함수들이&nbsp;여기에&nbsp;들어갑니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     표준 C++ 라이브러리가 이러한 구조로 구성되어 있습니다.
     std 네임스페이스에 속한 모든 것들이 &lt;C++StandardLibrary&gt; 헤더 같은 것에 모조리 들어가 한 통으로 섞여 있지 않고, 몇 개의 기능과 관련된 함수들이 수십 개의 헤더(&lt;vector&gt;. &lt;algorithm&gt;, &lt;memory&gt; 등)에 흩어져 선언되어 있습니다.
     vector 기능만 필요한 사용자는 굳이 &lt;memory&gt;를 #include할 필요가 없으며, list를 사용하지 않는 사용자는 &lt;list&gt;를 #include하지 않아도 됩니다.
@@ -106,7 +106,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     반면 클래스 멤버 함수로 오게 되면 하나의 클래스는 그 전체가 통으로 정의되어야 하기에 여러 조각으로 나누지 못하여 앞과 같은 방식으로 기능을 쪼개는 것이 불가능합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     편의 함수 전체를 여러 개의 헤더 파일에(그러나 하나의 네임스페이스에) 나누어 놓으면 편의 함수 집합의 <strong>확장(extend)</strong>도 손쉬워집니다.
     해당 네임스페이스에 비멤버 비프렌드 함수를 원하는 만큼 추가해 주기만 하면 그게 확장입니다.
     클래스는 역시 이런 부분은 제공이 불가능합니다.
@@ -118,7 +118,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     멤버 함수보다는 비멤버 비프렌드 함수를 자주 쓰도록 합시다.
     캡슐화 정도가 높아지고, 패키징 유연성도 커지며, 기능적인 확장성도 늘어납니다.
 </p>

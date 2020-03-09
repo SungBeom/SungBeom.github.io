@@ -8,32 +8,32 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">예외 안전성을 가진 함수의 조건</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     예쁜 배경그림을 깔고 나오는 GUI 메뉴를 구현하기 위해 클래스를 하나 만든다고 가정합시다.
     이 클래스는 스레딩 환경에서 동작할 수 있도록 설계되었기 때문에, 병행성 제어를 위해 뮤텍스(mutex)를 갖고 있습니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;PrettyMenu&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;changeBackground(<span style="color:#4be6fa">std</span>::istream<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;imgSrc);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;배경그림을</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;바꾸는&nbsp;멤버&nbsp;함수</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Mutex&nbsp;mutex;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;객체&nbsp;하나를&nbsp;위한&nbsp;뮤텍스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Image&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>bgImage;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;현재의&nbsp;배경그림</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;imageChanges;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;배경그림이&nbsp;바뀐&nbsp;횟수</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     여기서 PrettyMenu의 changeBackground 함수가 다음과 같이 구현되었다고 생각해보세요.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;PrettyMenu::changeBackground(<span style="color:#4be6fa">std</span>::istream<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;imgSrc)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;lock(<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;뮤텍스를&nbsp;획득합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">delete</span>&nbsp;bgImage;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이전의&nbsp;배경그림을&nbsp;없앱니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>imageChanges;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;그림&nbsp;변경&nbsp;횟수를&nbsp;갱신합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;bgImage&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Image(imgSrc);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;새&nbsp;배경그림을&nbsp;깔아&nbsp;놓습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;unlock(<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;뮤텍스를&nbsp;해제합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     예외 안전성이라는 측면에서 볼 때 이 함수는 상당히 좋지 않은 함수입니다.
     일반적으로 예외 안전성을 확보하려면 두 가지의 요구사항을 맞추어야 합니다.
     예외 안전성을 가진 함수라면 예외가 발생할 때 다음과 같이 동작해야 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>자원이 새도록 만들지 않습니다.</strong><br>
     그런데 위의 코드는 자원이 샙니다.
     왜냐하면 "new Image(imgSrc)" 표현식에서 예외를 던지면 unlock 함수가 실행되지 않게 되어 뮤텍스가 계속 잡힌 상태로 남기 때문입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>자료구조가 더럽혀지는 것을 허용하지 않습니다.</strong><br>
     그런데 위의 코드에서 "new Image(imgSrc)"가 예외를 던지면 bgImage가 가리키는 객체는 이미 삭제된 후입니다.
     또한 새 그림이 제대로 깔린 게 아닌데도 imageChanges 변수는 이미 증가되었을 것입니다.
@@ -41,7 +41,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">자원 누출 문제의 해결</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     위 함수의 자원 누출 문제는 객체를 써서 자원 관리를 전담케 하는 방법과 뮤텍스를 적절한 시점에 해제하는 방법을 구현한 Lock 클래스를 사용하는 것으로 마무리됩니다.
     Lock 등의 자원관리 전담 클래스를 쓰면 좋은 점 중 하나는 함수의 코드 길이가 짧아진다는 것입니다.
     늘 그런 건 아니겠지만, 대개 코드는 적을수록 좋습니다.
@@ -52,13 +52,13 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">자료구조 오염 문제의 해결</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     자원 누출 문제는 해결했으나, 자료구조 오염 문제가 남았습니다.
     여기서는 선택이 필요한데, 일단 그전에 고를 수 있는 것이 무엇인지를 파악하기 위해 용어를 알아야 합니다.
     예외 안전성을 갖춘 함수는 다음 세 가지 보장(guarantee) 중 하나를 제공합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>기본적인 보장(basic guarantee)</strong><br>
     함수 동작 중에 예외가 발생하면, 실행 중인 프로그램에 관련된 모든 것들을 유효한 상태로 유지하겠다는 보장입니다.
     어떤 객체나 자료구조도 더렵혀지지 않으며, 모든 객체의 상태는 내부적으로 일관성을 유지하고 있습니다(즉, 모든 클래스 불변속성이 만족된 상태입니다).
@@ -67,7 +67,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     이 부분은 전적으로 함수를 만들 사람에 달려 있지만, 사용자 쪽에서는 어떻게 될지 예측할 수 없습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>강력한 보장(strong guarantee)</strong><br>
     함수 동작 중에 예외가 발생하면, 프로그램의 상태를 절대로 변경하지 않겠다는 보장입니다.
     이런 함수를 호출하는 것은 원자적인(atomic) 동작이라고 할 수 있습니다.
@@ -75,7 +75,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     예측할 수 있는 프로그램의 상태가 두 개밖에 안 되기 때문에, '쓰기 편한가'의 측면에서 보면 강력한 보장을 제공하는 함수가 기본 보장을 제공하는 함수보다 더 쉽습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>예외불가 보장(nothrow guarantee)</strong><br>
     예외를 절대로 던지지 않겠다는 보장입니다.
     약속한 동작은 언제나 끝까지 완수하는 함수라는 뜻이죠.
@@ -84,13 +84,13 @@ background: '/img/posts/EffectiveCpp.jpg'
     이는 만약 해당 함수에서 예외가 발생되면 매우 심각한 에러가 생긴 것으로 판단되므로, 지정되지 않은 예외가 발생했을 경우에 실행되는 처리자인 unexpected 함수가 호출되어야 한다는 뜻입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     예외 안전성을 갖춘 함수는 위의 세 가지 보장 중 하나를 반드시 제공해야 합니다.
     따라서 여러분이 '선택'해야 하는 것은 '어떤 보장을 제공할 것인가'이겠습니다.
     예외 안전성의 관점에서 보면 예외불가 보장이 가장 훌륭하겠지만, 현실적으로는 대부분의 함수에 있어서 기본적인 보장과 강력한 보장 중 하나를 고르게 됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     changeBackground 함수의 경우엔 강력한 보장을 <strong>거의</strong> 제공하는 것은 그다지 어렵지 않습니다.
     우선 첫째로, PrettyMenu의 bgImage 데이터 멤버의 타입을 기본제공 포인터 타입인 Image*에서 자원관리 전담용 포인터로 바꿉니다.
     둘째로, changeBackground 함수 내의 문장을 재배치해서 배경그림이 진짜로 바뀌기 전에는 imageChanges를 증가시키지 않도록 만듭니다.
@@ -99,7 +99,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;PrettyMenu&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Image<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;bgImage;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;PrettyMenu::changeBackground(<span style="color:#4be6fa">std</span>::istream<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;imgSrc)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Lock&nbsp;ml(<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>mutex);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;bgImage.reset(<span style="color:#ff3399">new</span>&nbsp;Image(imgSrc));&nbsp;&nbsp;<span style="color:#999999">//&nbsp;bgImage의&nbsp;내부&nbsp;포인터를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;"new&nbsp;Image"&nbsp;표현식의&nbsp;실행&nbsp;결과로</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;바꿔치기합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>imageChanges;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     changeBackground 함수에서 강력한 예외 안전성 보장을 제공하려면 현재 상태로 <strong>거의</strong> 충분합니다.
     문제는 매개변수인 imgSrc입니다.
     Image 클래스의 생성자가 실행되다가 예외를 일으킬 때, 그 시점에 입력 스트림의 읽기 표시자가 이동한 채로 남아 있을 가능성이 충분히 있을 테고, 이 표시자의 이동이 전체 프로그램의 나머지에 영향을 미칠 수 있는 어떤 변화로 작용할 수도 있을 것입니다.
@@ -109,7 +109,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">'복사-후-맞바꾸기' 전략</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     이번에는 예외에 속수무책인 함수를 탈바꿈시켜 강력한 예외 안전성 보장을 제공하는 함수로 거듭나게 만드는 일반적인 설계 전략을 하나 알아보도록 하죠.
     이 전략은 '복사-후-맞바꾸기(copy-and-swap)'라는 이름으로 알려져 있는데, 원리적으로 무척 간단합니다.
     어떤 객체를 수정하고 싶으면 그 객체의 사본을 하나 만들어 놓고 그 사본을 수정하는 것입니다.
@@ -121,7 +121,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div><div style="line-height:130%">25</div><div style="line-height:130%">26</div><div style="line-height:130%">27</div><div style="line-height:130%">28</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">struct</span>&nbsp;PMImpl&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Image<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;bgImage;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;imageChanges;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;PrettyMenu&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Mutex&nbsp;mutex;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>PMImpl<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;pImpl;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;PrettyMenu::changeBackground(<span style="color:#4be6fa">std</span>::istream<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;imgSrc)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">using</span>&nbsp;<span style="color:#4be6fa">std</span>::swap;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Lock&nbsp;ml(<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>mutex);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;뮤텍스를&nbsp;획득합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>PMImpl<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;객체의&nbsp;데이터&nbsp;부분을&nbsp;복사합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pNew(<span style="color:#ff3399">new</span>&nbsp;PMImpl(<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pImpl));</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;pNew<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>bgImage.reset(<span style="color:#ff3399">new</span>&nbsp;Image(imgSrc));&nbsp;&nbsp;<span style="color:#999999">//&nbsp;사본을&nbsp;수정합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span><span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>pNew<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>imageChanges;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;swap(pImpl,&nbsp;pNew);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;새&nbsp;데이터로&nbsp;바꿔&nbsp;넣어</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;진짜로&nbsp;배경그림을&nbsp;바꿉니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;뮤텍스를&nbsp;놓습니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     '복사-후-맞바꾸기' 전략은 객체의 상태를 '전부 버꾸거나 혹은 안 바꾸거나(all-or-nothing)' 방식으로 유지하려는 경우에 아주 그만입니다.
     그러나 함수 전체가 강력한 예외 안전성을 갖도록 보장하지는 않는다는 것이 일반적인 정설입니다.
     changeBackground 함수의 전체 흐름을 추상화해 놓은 someFunc()를 한번 살펴봅시다.
@@ -130,7 +130,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;someFunc()</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;함수의&nbsp;현재&nbsp;상태에&nbsp;대해&nbsp;사본을&nbsp;만들어&nbsp;놓습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;f1();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;f2();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;변경된&nbsp;상태를&nbsp;바꾸어&nbsp;넣습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     f1 혹은 f2에서 보장하는 예외 안전성이 '강력'하지 못하면, 위의 구조로는 someFunc 함수 역시 강력한 예외 안전성을 보장하기 힘들어집니다.
     예를 들어 f1이 기본적인 보장만 제공한다고 가정해 봅시다.
     someFunc 함수에서 강력한 보장을 제공하게 만들려면, f1을 호출하기 전에 프로그램 전체의 상태를 결정하고, f1에서 발생하는 모든 예외를 잡아낸 후에, 원래의 상태로 되돌리는 코드를 작성해야 합니다.
@@ -138,14 +138,14 @@ background: '/img/posts/EffectiveCpp.jpg'
     예를 들어 어차피 f1이 끝까지 실행되고 나면 프로그램 상태는 f1에 의해 어떻게든 변해 있을 것이고, 그 다음에 f2가 실행되다가 예외를 던지면 그 프로그램의 상태는 f2에서 아무것도 바꾸지 않았더라도 someFunc가 호출될 때의 상태와 아예 달라져 있을 것이니까요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     여기서 불거지는 문제가 바로 함수의 부수효과(side effect)입니다.
     자기 자신에만 국한된 것들의 상태를 바꾸며 동작하는 함수의 경우(예를 들어 someFunc는 이 함수의 내부에서만 사용하는 객체의 상태에만 영향을 주고 있죠)에는 강력한 보장을 제공하기가 비교적 수월합니다.
     그렇지만 비지역 데이터에 대해 부수효과를 주는 함수는 이렇게 하기가 무척 까다롭습니다.
     예를 들어 f1을 호출하고 나서 생기는 부수효과로서 데이터베이스가 변경되기라도 하면, someFunc 쪽에서 어떻게 손을 쓸 수가 없습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     강력한 예외 안전성 보장을 제공하고 싶어도 이런 문제 때문에 발목 잡힐 수 있다는 사실을 알고 있어야 합니다.
     또한 '복사-후-맞바꾸기' 방법은 수정하고 싶은 객체를 복사해 둘 공간과 복사에 걸리는 시간을 감수해야 하기에, 효율 문제도 무시할 수 없습니다.
     이런 이유 때문에 꺼림칙하긴 하나 예외 안전성 보장 중에는 강력한 보장이 가장 좋습니다.
@@ -155,13 +155,13 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">예외 안전성 보장의 강도</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     소프트웨어 시스템은 예외에 안전하거나 예외에 뚫려 있거나 둘 중 하나입니다.
     일부만 예외 안전성을 갖춘 시스템 같은 것은 없다는 말입니다.
     예외 안전성이 없는 함수가 한 개라도 쓰이고 있으면 그 시스템은 전부가 예외에 안전하지 않은 시스템입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     앞으로는 새로운 함수를 만들거나 기존의 코드를 고칠 때 '어떻게 하면 예외에 안전한 코드를 만들까'를 진지하게 고민해야 합니다.
     자원 관리가 필요할 때 자원 관리용 객체를 사용하는 것부터가 시작입니다.
     그리고 예외 안전성 보장 세 가지 중에 여러분이 만드는 함수에서 실용적으로 제공할 수 있는 보장은 어떤 것일지를 결정합니다.
@@ -173,7 +173,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     예외 안전성을 갖춘 함수는 실행 중 예외가 발생되더라도 자원을 누출시키지 않으며 자료구조를 더럽힌 채로 내버려 두지 않습니다.
     이런 함수들이 제공할 수 있는 예외 안전성 보장은 기본적인 보장, 강력한 보장, 예외 금지 보장이 있습니다.<br>
     강력한 예외 안전성 보장은 '복사-후-맞바꾸기' 방법을 써서 구현할 수 있지만, 모든 함수에 대해 강력한 보장이 실용적인 것은 아닙니다.<br>

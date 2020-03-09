@@ -8,31 +8,31 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">가상 소멸자를 선언해야 하는 경우</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     시간 기록을 유지하는 TimeKeeper란 이름을 가진 기본 클래스를 만들어 놓은 후에 적절한 용도에 따라 이것을 파생시키도록 설계했다고 칩시다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;TimeKeeper&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;TimeKeeper();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;~TimeKeeper();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;AtomicClock:&nbsp;<span style="color:#ff3399">public</span>&nbsp;TimeKeeper&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;WaterClock:&nbsp;<span style="color:#ff3399">public</span>&nbsp;TimeKeeper&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;WristWatch:&nbsp;<span style="color:#ff3399">public</span>&nbsp;TimeKeeper&nbsp;{&nbsp;...&nbsp;};</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     어떤 시간기록 객체에 대한 포인터를 손에 넣는 용도로 <strong>팩토리 함수</strong>(factory function, 새로 생성된 파생 클래스 객체에 대한 기본 클래스 포인터를 반환하는 함수)를 만들어 두면 딱 좋을 것 같습니다.
     팩토리 함수의 기존 규약을 그대로 따라간다면, getTimeKeeper 함수에서 반환되는 객체는 힙에 있게 되므로, 결국 메모리 및 기타 자원의 누출을 막기 위해 해당 객체를 적절히 삭제(delete)해야 합니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">TimeKeeper&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>ptk&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;getTimeKeeper();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;TimeKeeper&nbsp;클래스&nbsp;계통으로부터</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;동적으로&nbsp;할당된&nbsp;객체를&nbsp;얻습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;객체를&nbsp;사용합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">delete</span>&nbsp;ptk;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;자원&nbsp;누출을&nbsp;막기&nbsp;위해&nbsp;해제(삭제)합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     문제는 getTimeKeeper 함수가 반환하는 포인터가 파생 클래스(그러니까 AtomicClock) 객체에 대한 포인터라는 점과 이 포인터가 가리키는 객체가 삭제될 때는 기본 클래스(즉, TimeKeeper* 포인터)를 통해 삭제된다는 점, 그리고 결정적으로 기본 클래스(TimeKeeper)에 들어 있는 소멸자가 <strong>비가상 소멸자(non-virtual destructor)</strong>라는 점입니다.
     C++ 규약에 의하면, 기본 클래스 포인터를 통해 파생 클래스 객체가 삭제될 때 그 기본 클래스에 비가상 소멸자가 들어 있으면 프로그램 동작은 미정의 사항이라고 되어 있습니다.
     대개 그 객체의 파생 클래스 부분이 소멸되지 않게 됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     정리하면, getTimeKeeper 함수에서 포인터를 통해 날아오는 AtomicClock 객체는 기본 클래스 포인터를 통해 삭제될 때 AtomicClock 클래스에 정의된 데이터 멤버들이 남아있게 되고, AtomicClock의 소멸자도 실행되지 않습니다.
     그러나 TimeClock 부분은 소멸 과정이 제대로 끝나므로 결국 반쪽짜리 '부분 소멸(partially destroyed)' 객체의 신세로 전락하는 거죠.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     이 문제를 없애는 방법은 지극히 간단합니다.
     기본 클래스의 소멸자 앞에 virtual 키워드를 붙여 가상 소멸자로 만들면 객체 전부가 소멸됩니다.
     파생 클래스 부분까지 몽땅 말이죠.
@@ -40,7 +40,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;TimeKeeper&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;TimeKeeper();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;~TimeKeeper();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">TimeKeeper&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>ptk&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;getTimeKeeper();</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">delete</span>&nbsp;ptk;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이제&nbsp;제대로&nbsp;동작합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     TimeKeeper와 비슷한 기본 클래스에는 대개 소멸자 외에도 가상 멤버 함수들이 더러 들어 있기 마련입니다.
     파생 클래스를 구현할 때 해당 함수를 역할에 따라 맞추는 작업을 허용한다는 의미이겠지요.
     예를 들어 TimeKeeper 클래스는 현재 시각을 알려 주는 getCurrentTime 함수를 가상 함수로 가질 수 있습니다.
@@ -49,14 +49,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">가상 소멸자를 선언하면 안 되는 경우</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     가상 함수를 C++에서 구현하려면 프로그램 실행 중에 주어진 객체에 대해 어떤 가상 함수를 호출해야 하는지를 결정하는 데 쓰이는 자료구조가 클래스에 별도로 하나 들어가야 합니다.
     클래스에 가상 함수가 들어가게 되면 해당 클래스 타입 객체의 크기가 커질 뿐만 아니라, 이식성 또한 기대하기 어렵습니다.
     따라서 어느 경우를 막론하고 소멸자를 전부 virtual로 선언하는 일은 virtual로 절대 선언하지 않는 것만큼이나 좋지 않은 마인드입니다.
     가상 소멸자를 선언하는 것은 그 클래스에 가상 함수가 하나라도 들어 있는 경우에만 한정하세요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     가상 함수가 전혀 없는데도 비가상 소멸자 때문에 뒤통수를 맞는 경우도 있습니다.
     한 예가 표준 string 타입입니다.
     따라서 string 타입은 기본 클래스로 잡으면 안 됩니다.
@@ -64,12 +64,12 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SpecialString:&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;{&nbsp;<span style="color:#999999">//&nbsp;std::string은&nbsp;가상&nbsp;소멸자가&nbsp;없습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">SpecialString&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pss&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;SpecialString(<span style="color:#ffd500">"Impending&nbsp;Doom"</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>ps;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">ps&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;pss;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SpecialString*&nbsp;=&gt;&nbsp;std::string*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">delete</span>&nbsp;ps;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;정의되지&nbsp;않은&nbsp;동작이&nbsp;발생합니다!&nbsp;*ps의&nbsp;SpecialString&nbsp;부분에&nbsp;있는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;자원이&nbsp;누출되는데,&nbsp;SpecialString의&nbsp;소멸자가&nbsp;호출되지&nbsp;않기&nbsp;때문입니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이 현상은 가상 소멸자가 없는 클래스이면 어떤 것에든 전부 적용됩니다.
     STL 컨테이너 타입(예를 들면 vector, list, set, tr1::unordered_map 등) 전부가 바로 여기에 속합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     경우에 따라서는 순수(pure) 가상 소멸자를 두면 편리하게 쓸 수도 있습니다.
     순수 가상 함수는 해당 클래스를 <strong>추상 클래스</strong>(abstract class, 그 자체로는 인스턴스를 못 만드는(그 타입의 객체를 생성할 수 없는) 클래스)로 만들지요.
     어떤 클래스를 추상 클래스로 만들고 싶다면 클래스에 순수 가상 소멸자를 선언하면 됩니다.
@@ -77,19 +77,19 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;AWOV&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;~AWOV()&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;순수&nbsp;가상&nbsp;소멸자를&nbsp;선언합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     AWOV 클래스는 순수 가상 함수를 갖고 있으므로, 우선 추상 클래스입니다.
     동시에 이 순수 가상 함수가 가상 소멸자이므로, 앞에서 말한 소멸자 호출 문제로 고민할 필요가 없습니다.
     그런데 이 순수 가상 소멸자의 정의를 두지 않으면 안 됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     AWOV::~AWOV() {} // 순수 가상 소멸자의 정의<br>
     소멸자는 상속 계통 구조에서 가장 말단에 있는 파생 클래스의 소멸자가 먼저 호출되는 것을 시작으로, 기본 클래스 쪽으로 거쳐 올라가면서 각 기본 클래스의 소멸자가 하나씩 호출됩니다.
     컴파일러는 ~AWOV의 호출 코드를 만들기 위해 파생 클래스의 소멸자를 사용할 것이므로, 잊지 말고 이 함수의 본문을 준비해 두어야 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     기본 클래스의 손에 가상 소멸자를 쥐어 주자는 규칙은 <strong>다형성(polymorphic)</strong>을 가진 기본 클래스, 그러니까 기본 클래스 인터페이스를 통해 파생 클래스 타입의 조작을 허용하도록 설계된 기본 클래스에만 적용됩니다.
     표준 string 타입이나 STL 컨테이너 타입처럼 다형성의 흔적조차 볼 수 없는 클래스도 있습니다.
     한편, 기본 클래스로는 쓰일 수 있지만 다형성은 갖지 않도록 설계된 클래스도 있는데, 이런 클래스(예를 들면 Uncopyable과 표준 라이브러리의 input_iterator_tag)는 기본 클래스의 인터페이스를 통한 파생 클래스 객체의 조작이 허용되지 않습니다.
@@ -100,7 +100,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     다형성을 가진 기본 클래스에는 반드시 가상 소멸자를 선언해야 합니다.
     즉, 어떤 클래스가 가상 함수를 하나라도 갖고 있으면, 이 클래스의 소멸자도 가상 소멸자이어야 합니다.<br>
     기본 클래스로 설계되지 않았거나 다형성을 갖도록 설계되지 않은 클래스에는 가상 소멸자를 선언하지 말아야 합니다.

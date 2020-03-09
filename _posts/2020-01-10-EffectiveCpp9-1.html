@@ -8,14 +8,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">컴파일러 경고의 의미</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     C++의 경우에는 코드가 어떤 것인가에 대해 컴파일러 제작자가 여러분보다 더 잘 이해하고 있기를 기대하기는 힘듭니다.
     예를 들어 코드 하나를 보도록 하겠습니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;B&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;f()&nbsp;<span style="color:#ff3399">const</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;D:&nbsp;<span style="color:#ff3399">public</span>&nbsp;B&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;f();</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     가상 함수인 B::f를 D::f에서 재정의(redefine, 오버라이드)하겠다는 의도인데, 여기에 실수가 숨어 있습니다.
     B 클래스의 f는 상수(const) 멤버 함수이지만, D 클래스의 f는 괄호 뒤에 const가 붙어 있지 않습니다.
     컴파일러 중 하나는 다음과 같은 경고가 나오게 됩니다.
@@ -23,20 +23,20 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">warning:&nbsp;D::f()&nbsp;hides&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;B::f()</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     위 경고는 가볍게 넘겨서는 안 됩니다.
     컴파일러는 지금, B에서 선언된 f가 D에서 재선언된 것이 아니라 아예 가려졌다는 말을 하고 있는 것입니다.
     이 경고를 무시하고 지나갔다가는 프로그램이 원하지 않는 방향으로 흘러갈 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     컴파일러에서 내주는 경고 메시지들에 어느 정도 익숙해지고 나면, 이 외의 다른 메시지들도 어떤 뜻으로 나온 건지를 슬슬 이해하는 수준에 오게 됩니다(눈에 보이는 것과 실제 뜻이 너무 자주 다르다는 게 문제죠).
     이러한 경험이 웬만큼 쌓이면, 어떤 경고는 넘어가도 되고 어떤 경고는 없애 주어야 하는지를 선택할 수 있는 공력도 쌓입니다.
     물론, 최고 경고 수준을 걸더라도 경고 메시지 없이 컴파일되는 코드를 작성하는 것이 일반적으로 더 좋은 실천법입니다.
     어떻게 했든 정말 중요한 점은 경고 메시지를 없애기 전에, 그 경고가 여러분에게 알리려는 바를 정확히 이해해야 한다는 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     컴파일러 경고는 제작사의 고유 선택에 따라 달라지는 것이기 때문에, 이것만큼은 태생적으로 구현별 의존 사항이란 사실을 잊지 마세요.
     그렇기 때문에 여러분이 저지른 실수를 컴파일러가 대신 잡아주는 것만 믿고 프로그래밍에 임하는 자세는 좋지 않습니다.
     이름을 가리는 위의 예제 코드만 봐도 그런데, 어떤 다른 컴파일러의 경우에는 이 코드에 대해 경고를 띄우지 않습니다.
@@ -46,7 +46,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     컴파일러 경고를 쉽게 지나치지 맙시다.
     여러분의 컴파일러에서 지원하는 최고 경고 수준에도 경고 메시지를 내지 않고 컴파일되는 코드를 만드는 쪽에 전력을 다 하십시오.<br>
     컴파일러 경고에 너무 기대는 인생을 지양하십시오.

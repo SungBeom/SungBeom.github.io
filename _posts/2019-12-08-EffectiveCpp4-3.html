@@ -8,7 +8,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">값에 의한 전달</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     기본적으로 C++은 함수로부터 객체를 전달받거나 함수에 객체를 전달할 때 '값에 의한 전달(pass-by-value)' 방식을 사용합니다.
     특별히 다른 방식을 지정하지 않는 한, 함수 매개변수는 실제 인자의 <strong>'사본'</strong>을 통해 초기화되며, 어떤 함수를 호출한 쪽은 그 함수가 반환한 값의 <strong>'사본'</strong>을 돌려받습니다.
     이들 사본을 만들어내는 원천이 바로 복사 생성자인데요, 이 점 때문에 '값에 의한 전달'이 고비용의 연산이 되기도 합니다.
@@ -17,14 +17,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Person&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Person();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;~Person();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;name;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;address;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Student:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Person&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Student();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;~Student();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;schoolName;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::<span style="color:#4be6fa">string</span>&nbsp;schoolAddress;</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이제 아래의 코드를 봅시다.
     validateStudent라는 함수를 호출하고 있는데, 이 함수는 Student 인자를 전달받고(값으로) 이 인자가 유효화됐는가를 알려 주는 값을 반환합니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">bool</span>&nbsp;validateStudent(Student&nbsp;s);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Student&nbsp;plato;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">bool</span>&nbsp;platoIsOK&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;validateStudent(plato);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이 함수가 호출될 때 어떤 일이 일어날까요?
     plato로부터 매개변수 s를 초기화시키기 위해 Student의 복사 생성자가 호출될 것입니다.
     게다가 s는 validateStudent가 복귀할 때 소멸될 것이고요.
@@ -37,12 +37,12 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">상수객체 참조자에 의한 전달</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     위처럼 생성자와 소멸자 호출을 몇 번씩 거치지 않고 넘어갈 수 있는 방법이 있습니다.
     상수객체에 대한 참조자(reference-to-const)로 전달하게 만드는 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     bool validateStudent(const Student& s);<br>
     이렇게 하면 순식간에 훨씬 효율적인 코드로 바뀝니다.
     새로 만들어지는 객체 같은 것이 없기 때문에, 생성자와 소멸자가 전혀 호출되지 않거든요.
@@ -53,13 +53,13 @@ background: '/img/posts/EffectiveCpp.jpg'
     매개변수 앞에 const가 붙은 건 바로 그 때문인데, 이것이 붙지 않으면 validateStudent 함수로 넘어간 Student 객체가 변할지도 모른다는 걱정을 호출부가 해야 하거든요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     참조에 의한 전달 방식으로 매개변수를 넘기면 <strong>복사손실 문제(slicing problem)</strong>가 없어지는 장점도 있습니다.
     파생 클래스 객체가 기본 클래스 객체로서 전달되는 경우에는, 기본 클래스의 복사 생성자가 호출되고, 파생 클래스 객체로 동작하게 해 주는 특징들이 '싹둑 잘려' 떨어지고 맙니다.
     하지만 상수객체에 대한 참조자로 전달하도록 만들면 해당 문제는 해결됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     참조자는 보통 포인터를 써서 구현됩니다.
     즉, 참조자를 전달한다는 것은 결국 포인터를 전달한다는 것과 일맥상통한다는 이야기죠.
     이렇게 따져 보면, 전달하는 객체의 타입이 개본제공 타입(int 등)일 경우에는 참조자로 넘기는 것보다 값으로 넘기는 편이 더 효울적일 때가 많습니다.
@@ -68,7 +68,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     <i>참고로, 반복자와 함수 객체를 구현할 때는 반드시 복사 효율을 높일 것과 복사손실 문제에 노출되지 않도록 만드는 것이 필수입니다.</i>
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     기본제공 타입의 크기가 작아서 '값에 의한 전달'이 효율적인 것은 아닙니다.
     일반적으로 '값에 의한 전달'이 저비용이라고 가정해도 괜찮은 유일한 타입은 기본제공 타입, STL 반복자, 함수 객체 타입, 이렇게 세 가지뿐입니다.
     이 외의 타입에 대해서는 '값에 의한 전달'보다는 '상수객체 참조자에 의한 전달'이 좋습니다.
@@ -78,7 +78,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     '값에 의한 전달'보다는 '상수 객체 참조자에 의한 전달'을 선호합시다.
     대체적으로 효율적일 뿐만 아니라 복사손실 문제까지 막아 줍니다.<br>
     기본제공 타입 및 STL 반복자, 그리고 함수 객체 타입에는 '값에 의한 전달'이 더 적절합니다.

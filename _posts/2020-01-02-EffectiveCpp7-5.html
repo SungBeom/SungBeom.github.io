@@ -8,14 +8,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">멤버 함수 템플릿</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>스마트 포인터(smart pointer)</strong>는 그냥 포인터처럼 동작하면서도 포인터가 주지 못하는 기능을 덤으로 갖고 있는 객체를 일컫습니다.
     이를테면 힙 기반 자원의 삭제를 제때 수행하게 하는 데 표준 라이브러리의 auto_ptr 및 tr1::shared_ptr 객체를 이용하는 예를 보셨을 것입니다.
     STL 컨테이너의 반복자도 스마트 포인터나 마찬가지입니다.
     포인터에다가 "++" 연산을 적용해서 연결 리스트의 한 노드에서 다른 노드로 이동하는 것이 list::iterator에서는 가능합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     포인터에도 스마트 포인터로 대신할 수 없는 특징이 있습니다.
     그 중 하나가 암시적 변환(implicit conversion)을 지원한다는 점입니다.
     파생 클래스 포인터는 암시적으로 기본 클래스 포인터로 변환되고, 비상수 객체에 대한 포인터는 상수 객체에 대한 포인터로의 암시적 변환이 가능하고, 기타 등등 말입니다.
@@ -24,14 +24,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Top&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Middle:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Top&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Bottom:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Middle&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">Top&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pt1&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Middle;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Middle*&nbsp;=&gt;&nbsp;Top*의&nbsp;변환</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Top&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pt2&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Bottom;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Bottom*&nbsp;=&gt;&nbsp;Top*의&nbsp;변환</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">const</span>&nbsp;Top&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pct2&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;pt1;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Top*&nbsp;=?&nbsp;const&nbsp;Top*의&nbsp;</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이런 식의 타입 변환을 사용자 정의 스마트 포인터를 써서 흉내 내려면 무척 까다롭습니다.
     이를테면 다음과 같은 코드를 컴파일러에 통과시키고 싶은데 말이죠.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SmartPtr&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;스마트&nbsp;포인터는&nbsp;대개</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">explicit</span>&nbsp;SmartPtr(T&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>realPtr);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본제공&nbsp;포인터로&nbsp;초기화됩니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">SmartPtr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Top<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;pt1&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SmartPtr&lt;Middle&gt;&nbsp;=&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SmartPtr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Middle<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(<span style="color:#ff3399">new</span>&nbsp;Middle);&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SmartPtr&lt;Top&gt;의&nbsp;변환</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">SmartPtr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Top<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;pt2&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SmartPtr&lt;Bottom&gt;&nbsp;=&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SmartPtr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Bottom<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(<span style="color:#ff3399">new</span>&nbsp;Bottom);&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SmartPtr&lt;Top&gt;의&nbsp;변환</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">SmartPtr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">const</span>&nbsp;Top<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;pct2&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;pt1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SmartPtr&lt;Top&gt;&nbsp;=&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SmartPtr&lt;const&nbsp;Top&gt;의&nbsp;변환</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     같은 템플릿으로부터 만들어진 다른 인스턴스들 사이에는 어떤 관계도 없기 때문에, 컴파일러의 눈에 비치는 SmartPtr&lt;Middle&gt;과 SmartPtr&lt;Top&gt;은 완전히 별개의 클래스입니다.
     결론적으로 SmartPtr 클래스들 사이에 어떤 변환을 하고 싶다고 생각했다면, 변환이 되도록 직접 프로그램을 만들어야 한다는 것입니다.
     위 SmartPtr 에제 코드를 보시면, 모든 문장이 하나같이 new를 써서 스마트 포인터 객체를 만들고 있습니다.
@@ -40,7 +40,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     나중에 클래스 계통이 더 확장된다든지 하면 다른 스마트 포인터 타입으로부터 SmartPtr&lt;Top&gt; 객체를 만들 방법도 마련되야 하니까요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     원칙적으로 지금 우리가 원하는 생성자의 개수는 '무제한'입니다.
     그런데 템플릿을 인스턴스화하면 '무제한' 개수의 함수를 만들어낼 수 있죠.
     그러니까 SmartPtr에 생성자 <strong>함수(function)</strong>를 두는 것이 아니라, 생성자를 만들어내는 <strong>템플릿(template)</strong>을 쓰는 것입니다.
@@ -51,45 +51,45 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">일반화 복사 생성자</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     위의 코드는 모든 T 타입 및 모든 U 타입에 대해서, SmartPtr&lt;T&gt; 객체가 SmartPtr&lt;U&gt;로부터 생성될 수 있다는 이야기입니다.
     그 이유는 SmartPtr&lt;U&gt;의 참조자를 매개변수로 받아들이는 생성자가 SmartPtr&lt;T&gt; 안에 들어있기 때문입니다.
     이런 꼴의 생성자(같은 템플릿을 써서 인스턴스화되지만 타입이 다른 타입의 객체로부터 원하는 객체를 만들어 주는 생성자)를 가리켜 <strong>일반화 복사 생성자(generalized copy constructor)</strong>라고들 부릅니다.
     <i>위의 예제에 나온 일반화 복사 생성자는 explicit으로 선언되지 않았는데, 이는 기본제공 포인터는 포인터 타입 사이의 타입 변환이 암시적으로 이루어지며 캐스팅이 필요하지 않기 때문에, 스마트 포인터도 이런 형태로 동작하도록 흉내 내기 위해서입니다.</i>
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     보시면 알겠지만, 지금 SmartPtr에 선언된 일반화 복사 생성자는 실제로 우리가 원하는 것보다 더 많은 것을 해 줍니다.
     Smart&lt;Bottom&gt;으로부터 SmartPtr&lt;Top&gt;을 만들 수 있기만을 원했지, 반대로 SmartPtr&lt;Top&gt;으로부터 SmartPtr&lt;Bottom&gt;을 만들 수 있는 것까지 바라지 않았습니다.
     이것은 public 상속의 의미에 역행하는 오버입니다.
     게다가 지금의 생성자로는 심지어 SmartPtr&lt;double&gt;로부터 SmartPtr&lt;int&gt;를 만든다든지 하는 것도 가능해서, 뭔가 대책이 필요합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     auto_ptr 및 tr1::shared_ptr에서 쓰는 방법을 그대로 따라서 SmartPtr도 get 멤버 함수를 통해 해당 스마트 포인터 객체에 자체적으로 담긴 기본제공 포인터의 사본을 반환한다고 가정하면, 이것을 이용해서 생성자 템플릿에 우리가 원하는 타입 변환 제약을 줄 수 있을 것 같습니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SmartPtr&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;U<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SmartPtr(<span style="color:#ff3399">const</span>&nbsp;SmartPtr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>U<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;other)&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;SmartPtr에&nbsp;담긴&nbsp;포인터를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;heldPtr(other.get())&nbsp;{&nbsp;...&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;다른&nbsp;SmartPtr에&nbsp;담긴&nbsp;포인터로&nbsp;초기화합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>&nbsp;get()&nbsp;<span style="color:#ff3399">const</span>&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;heldPtr;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SmartPtr에&nbsp;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>heldPtr;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;제공&nbsp;포인터</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     보시다시피 멤버 초기화 리스트를 사용해서, SmartPtr&lt;T&gt;의 데이터 멤버인 T* 타입의 포인터를 SmartPtr&lt;U&gt;에 들어 있는 U* 타입의 포인터로 초기화했습니다.
     이렇게 해 두면 U*에서 T*로 진행하는 암시적 변환이 가능할 때만 컴파일 에러가 나지 않습니다.
     이제 SmartPtr&lt;T&gt;의 일반화 복사 생성자는 호환되는(compatible) 타입의 매개변수를 넘겨받을 때만 컴파일되도록 만들어졌습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     멤버 함수 템플릿의 활용은 비단 생성자에만 그치지 않습니다.
     가장 흔히 쓰이는 예를 하나 더 말씀드리면 대입 연산입니다.
     예를 들면, TR1의 shared_ptr 클래스 템플릿은 호환되는 모든 기본제공 포인터, tr1::shared_ptr, auto_ptr, tr1::weak_ptr 객체들로부터 생성자 호출이 가능한데다가, 이들 중 tr1::weak_ptr을 제외한 나머지를 대입 연산에 쓸 수 있도록 만들어져 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     실제 코드를 보면 일반화 복사 생성자를 제외한 모든 생성자가 explicit으로 선언되어 있을 텐데, 이는 shared_ptr로 만든 어떤 타입으로부터 또 다른 shared_ptr로 만든 타입으로 진행되는 <strong>암시적</strong> 변환은 허용되지만 기본제공 포인터 혹은 다른 스마트 포인터 타입으로부터 변환되는 것은 막겠다는 뜻입니다(단, <strong>명시적</strong> 변환은 가능합니다).
 </p>
 
 <h2 class="section-heading">일반화 복사 생성자 & 보통의 복사 생성자</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     멤버 함수 템플릿은 코드 재사용만큼이나 기특하고 훌륭한 기능이지만, C++ 언어의 기본 규칙까지 바꾸지는 않습니다.
     tr1::shared_ptr에는 분명히 일반화 복사 생성자가 선언되어 있는데, T 타입과 Y 타입이 동일하게 들어온다면 이 일반화 복사 생성자는 분명 "보통의" 복사 생성자를 만드는 쪽으로 인스턴스화되겠지요.
     여기서 규칙을 하나 보자면, '복사 생성자가 필요한데 프로그래머가 직접 선언하지 않으면 컴파일러가 자동으로 하나 만든다'라는 규칙이 있습니다.
@@ -102,7 +102,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     호환되는 모든 타입을 받아들이는 멤버 함수를 만들려면 멤버 함수 템플릿을 사용합시다.<br>
     일반화된 복사 생성 연산과 일반화된 대입 연산을 위해 멤버 템플릿을 선언헀다 하덜라도, 보통의 복사 생성자와 복사 대입 연산자는 여전히 직접 선언해야 합니다.
 </p>

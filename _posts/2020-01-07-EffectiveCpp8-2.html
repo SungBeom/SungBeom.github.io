@@ -8,11 +8,11 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">사용자 정의 버전의 operator new 함수와 operator delete 함수를 쓰면 좋은 경우</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     operator new와 operator delete를 바꾸고 싶은 가장 흔한 이유는 세 가지입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>잘못된 힙 사용을 탐지하기 위해</strong><br>
     new한 메모리에 delete를 하는 것을 잊어버리면 메모리가 누출되고, 한 번 new한 메모리를 두 번 이상 delete하면 미정의 동작이 발생합니다.
     만일 할당된 메모리 주소의 목록을 operator new가 유지해 두고 operator delete가 그 목록으로부터 주소를 하나씩 제거해 주게 만들어져 있다면, 이런 식의 실수는 쉽게 잡아낼 수 있을 것입니다.
@@ -21,7 +21,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     operator delete를 활용한다면, 이 사실을 로그로 기록하여 남겨 놓을 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>효율을 향상시키기 위해</strong><br>
     컴파일러가 제공하는 기본 버전의 operator new 및 operator delete 함수는 대체적으로는 일반적인 쓰임새에 맞추어 설계된 것입니다.
     실행 기간이 짧지 않은 프로그램(예를 들면 웹서버 같은)에서 잘 돌아가야 하며, 1초 안에 끝나는 프로그램에서도 별 문제가 없어야 합니다.
@@ -30,34 +30,34 @@ background: '/img/posts/EffectiveCpp.jpg'
     이렇듯 메모리 관리자에 대한 요구사항이 가지각색인 만큼, 자신의 프로그램이 동적 메모리를 어떤 성향으로 사용하는지를 이해하고, 이에 맞게 operator new와 operator delete를 만들어 쓰는 것이 실행 속도가 빠르고 메모리도 적게 차지하는 "우수한 성능"을 낼 확률이 높습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>동적 할당 메모리의 실제 사용에 관한 통계 정보를 수집하기 위해</strong><br>
     여러분이 만드는 소프트웨어가 동적 메모리를 어떻게 사용하는지에 관한 정보를 수집하는 것이 new 및 delete를 무작정 작성하는 것보다 좋습니다.
     할당된 메모리 블록의 크기와 사용 기간이 어떤 분포를 보이는지, 메모리가 할당되고 해제되는 순서는 어떠한지, 시간 경과에 따른 사용 패턴이 바뀌는지, 한 번에 실제로 쓰이는 동적 할당 메모리의 최대량(다른 말로 "최고수 위선(high water mark)")는 어떤지 등 많은 정보들이 있습니다.
     operator new와 operator delete를 사용하면 이런 정보를 아주 쉽게 수집할 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     operator new를 직접 만드는 작업의 한 예로, 버퍼 오버런 및 언더런을 탐지하는 쉬운 형태로 만들어 주는 전역 operator new를 보겠습니다.
     자잘한 부분에서 틀린 게 좀 많은 코드입니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">const</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;signature&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0xDEADBEEF</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">typedef</span>&nbsp;<span style="color:#ff3399">unsigned</span>&nbsp;<span style="color:#4be6fa">char</span>&nbsp;Byte;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;이&nbsp;코드는&nbsp;고쳐야&nbsp;할&nbsp;부분이&nbsp;몇&nbsp;개&nbsp;있습니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span><span style="color:#ff3399">*</span>&nbsp;<span style="color:#ff3399">operator</span>&nbsp;<span style="color:#ff3399">new</span>(<span style="color:#4be6fa">std</span>::size_t&nbsp;<span style="color:#4be6fa">size</span>)&nbsp;<span style="color:#ff3399">throw</span>(<span style="color:#4be6fa">std</span>::bad_alloc)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">using</span>&nbsp;<span style="color:#ff3399">namespace</span>&nbsp;<span style="color:#4be6fa">std</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;size_t&nbsp;realSize&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#4be6fa">size</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>&nbsp;<span style="color:#c10aff">2</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>&nbsp;<span style="color:#ff3399">sizeof</span>(<span style="color:#4be6fa">int</span>);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;경계표지&nbsp;2개를&nbsp;앞뒤에&nbsp;붙일&nbsp;수&nbsp;있을</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;만큼만&nbsp;메모리&nbsp;크기를&nbsp;늘립니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pMem&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#4be6fa">malloc</span>(realSize);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;malloc을&nbsp;호출하여</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(<span style="color:#aaffaa"></span><span style="color:#ff3399">!</span>pMem)&nbsp;<span style="color:#ff3399">throw</span>&nbsp;bad_alloc();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;실제&nbsp;메모리를&nbsp;얻어냅니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;메모리&nbsp;블록의&nbsp;시작&nbsp;및&nbsp;끝부분에&nbsp;경계표지를&nbsp;기록합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>(<span style="color:#ff3399">static_cast</span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">int</span><span style="color:#ff3399">*</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(pMem))&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;signature;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>(<span style="color:#ff3399">reinterpret_cast</span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">int</span><span style="color:#ff3399">*</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(<span style="color:#ff3399">static_cast</span><span style="color:#ff3399">&lt;</span>Byte<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(pMem)<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>realSize<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">sizeof</span>(<span style="color:#4be6fa">int</span>)))&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;signature;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;앞쪽&nbsp;경계표지&nbsp;바로&nbsp;다음의&nbsp;메모리를&nbsp;가리키는&nbsp;포인터를&nbsp;반환합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">static_cast</span><span style="color:#ff3399">&lt;</span>Byte<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(pMem)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">+</span>&nbsp;<span style="color:#ff3399">sizeof</span>(<span style="color:#4be6fa">int</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     위 코드는 operator new라는 이름이 붙는 함수를 만들 때 통상적으로 쓰이는 관례를 지키지 않고 있습니다.
     이를테면, operator new에는 new 처리자 함수를 호출하는 루프가 반드시 들어 있어야 합니다.
     하지만 이것보다 좀더 까다로운 문제가 있는데, 바로 바이트 <strong>정렬(alignment)</strong>입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     컴퓨터는 많은 경우에 있어서 아키텍처(architecture)적으로 특정 타입의 데이터가 특정 종류의 메모리 주소를 시작 주소로 하여 저장될 것을 요구사항으로 두고 있습니다.
     이를테면, 포인터는 4의 배수에 해당하는 주소에 맞추어 저장되어야(다시 말해 <strong>4바이트 단위로 정렬</strong>되어야)하거나 double 값은 8의 배수에 해당하는 주소에 맞추어 저장되어야(즉, <strong>8바이트 단위로 정렬</strong>되어야) 한다는 것이죠.
     이 바이트 정렬 제약을 따르지 않으면 프로그램이 실행되다가 하드웨어 예외를 일으킬 수 있습니다.<br>
     <i>이보다는 좀더 느슨한 제약을 두는 아키텍처(예로 인텔 x86 아키텍처)도 있는데, 이런 아키텍처는 바이트 정렬을 만족했을 경우데 더 나은 성능을 제공합니다.</i>
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     바이트 정렬 문제는 지금 경우에도 아주 중요한데, 왜냐하면 모든 operator new 함수는 어떤 데이터 타입에도 바이트 정렬을 적절히 만족하는 포인터를 반환해야 한다는 것이 C++의 요구사항이기 때문입니다.
     표준 malloc 함수는 이 요구사항에 맞추어 구현되어 있기 때문에, malloc에서 얻은 포인터를 operator new가 바로 반환하는 것은 '안전'합니다.
     하지만 위의 예시 코드는 operator new 함수에서 malloc에서 나온 포인터를 기준으로 <strong>크기만큼 뒤로 어긋난 주소</strong>를 포인터로 반환합니다.
@@ -65,18 +65,18 @@ background: '/img/posts/EffectiveCpp.jpg'
     이것 때문에 프로그램이 다운될 수도 있고, 실행 속도가 느려질 수도 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     바이트 정렬 등의 세세한 문제를 어떻게 다루느냐에 따라 메모리 관리자가 달라집니다.
     지극히 일반적인 경우만으로 말씀드린다면, 꼭 만들어 쓸 이유가 없다면 굳이 들이댈 필요는 없습니다.
     좋은 컴파일러와 좋은 메모리 관리 함수 및 오픈 소스 등을 쓰는 것도 한 방법입니다.<br>
     <i>오픈 소스 메모리 할당자 중 추천하는 것은 <strong>부스트</strong>의 풀(Pool) 라이브러리입니다.</i>
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     앞서 말씀드린 operator new와 operator delete를 가장 바꾸고 싶은 세 가지 이유 외에도 여러 가지 이유가 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>할당 및 해제 속력을 높이기 위해</strong><br>
     항상은 아니지만 기본으로 제공되는 범용 할당자는 사용자 정의 버전보다 꽤 느린 경우가 적지 않습니다.
     특히 사용자 정의 버전이 특정 타입의 객체에 맞추어 설계되어 있으면 더욱 그렇죠.
@@ -84,24 +84,24 @@ background: '/img/posts/EffectiveCpp.jpg'
     단일 스레드에서 스레드 안전성이 없는 할당자를 직접 만들어 쓰면 상당한 속력 이득을 볼 수 있을 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>기본 메모리 관리자의 공간 오버헤드를 줄이기 위해</strong><br>
     범용 메모리 관리자는 사용자 정의 버전과 비교해서 속력이 느린 경우도 많은데다가 메모리도 많이 잡아먹는 사례가 허다합니다.
     할당된 각각의 메모리 블록에 대해 전체적으로 지우는 부담이 꽤 되기 때문인데, 크기가 작은 객체에 대해 튜닝된 할당자를 사용하면 이러한 오버헤드를 실질적으로 제거할 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>적당히 타협한 기본 할당자의 바이트 정렬 동작을 보장하기 위해</strong><br>
     기본적으로 제공되는 operator new 함수가 double에 대한 동적 할당 시에 8바이트 정렬을 보장하지 않는 컴파일러들이 있기 때문에, 기본 제공 operator new 대신에 8바이트 정렬을 보장하는 사용자 정의 버전으로 바꿈으로써 프로그램 수행 성능을 확 끌어올릴 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>임의의 관계를 맺고 있는 객체들을 한 군데에 나란히 모아 놓기 위해</strong><br>
     한 프로그램에서 특정 자료구조 몇 개가 대개 한 번에 동시에 쓰이고 있다는 사실을 여러분이 알고 있고, 앞으로 이들에 대해서는 페이지 부재(page fault) 발생 횟수를 최소화하고 싶을 경우, 해당 자료구조를 담을 별도의 힙을 생성함으로써 이들이 가능한 한 적은 페이지를 차지하도록 하면 상당히 좋은 효과를 볼 수 있겠지요.
     이러한 메모리 군집화는 위치지정(placement) new 및 위치지정 delete를 통해 쉽게 구현할 수 있습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     <strong>그때그때 원하는 동작을 수행하도록 하기 위해</strong><br>
     컴파일러가 주는 버전이 하지 못하는 일을 operator new 및 operator delete가 해주었으면 하고 바라는 때가 종종 있게 마련입니다.
     메모리 할당과 해제를 공유 메모리에다 하고 싶은데 공유 메모리를 조작하는 일은 C API로밖에 할 수 없을 때가 한 가지 예이죠.
@@ -113,7 +113,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     개발자가 스스로 사용자 정의 new 및 delete를 작성하는 데는 여러 가지 나름대로 타당한 이유가 있습니다.
     여기에는 수행 성능을 향상시키려는 목적, 힙 사용 시의 에러를 디버깅하려는 목적, 힙 사용 정보를 수집하려는 목적 등이 포함됩니다.
 </p>

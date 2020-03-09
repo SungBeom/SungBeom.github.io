@@ -8,46 +8,46 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">비타입 템플릿 매개변수로 인한 코드 비대화</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     템플릿은 코딩 시간 절약, 코드 중복 회피의 두 마리 토끼를 한꺼번에 잡아 줍니다.
     이를테면 멤버 함수가 15개나 되면서 생김새나 하는 일이 모두 비슷비슷한 클래스 20개를 하나씩 손으로 타이핑해야 하는 끔찍한 상상은 하지 않아도 됩니다.
     클래스 템플릿 하나 써 놓고 나머지는 컴파일러에게 맡기면 필요한 클래스 20개와 함수 300개가 인스턴스화됩니다.
     함수 템플릿도 마찬가지입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     하지만 아무 생각 없이 템플릿을 사용하면 <strong>코드 비대화(code bloat)</strong>가 초래될 수 있습니다.
     똑같은(혹은 거의 똑같은) 내용의 코드와 데이터가 여러 벌로 중복되어 이진 파일로 구워진다는 뜻입니다.
     소스 코드만 보면 단정하고 깔끔해 보이겠지만, 목적 코드의 모양새는 그렇지 않을 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     우선적으로 써 볼 수 있는 방법이라면 <strong>공통성 및 가변성 분석(commonality and variability analysis)</strong>이 있습니다.
     지금 만들고 있는 함수의 구현 중 일부가 다른 함수의 구현에도 똑같이 있더라는 사실을 알아챘다면, 두 함수를 분석해서 공통적인 부분과 다른 부분을 찾은 후에 공통 부분은 새로운 함수에 옮기고 다른 부분은 원래의 함수에 남겨놓으면 됩니다.
     클래스의 경우에도 비슷한데, 지금 만들고 있는 클래스의 어떤 부분이 다른 클래스의 어떤 부분과 똑같다는 사실을 발견한다면, 공통 부분을 별도의 새로운 클래스에 옮긴 후, 클래스 상속 혹은 객체 합성을 사용해서 원래의 클래스들이 공통 부분을 공유하도록 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     템플릿을 작성할 경우에도 똑같은 분석을 하고 똑같은 방법으로 코드 중복을 막으면 됩니다만, 뜻밖의 전개가 하나 있습니다.
     템플릿이 아닌 코드에서는 코드 중복이 명시적인 것에 반해, 템플릿 코드에서는 코드 중복이 암시적입니다.
     두 함수 혹은 두 클래스 사이에 똑같은 부분이 있으면 눈으로 찾아낼 수 있지만, 템플릿은 소스 코드에 하나밖에 없기 때문에, 어떤 템플릿이 여러 번 인스턴스화될 때 발생할 수 있는 코드 중복은 감각으로 알아채야 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     고정 크기의 정방행렬을 나타내는 클래스 템플릿을 하나 만들고 싶습니다.
     다른 기능들도 있긴 하지만 특히 이 클래스 템플릿은 역행렬 만들기 연산을 지원합니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T,&nbsp;&nbsp;<span style="color:#999999">//&nbsp;T&nbsp;타입&nbsp;객체를&nbsp;원소로&nbsp;하는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::size_t&nbsp;n<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;n행&nbsp;n열의&nbsp;행렬을&nbsp;나타내는&nbsp;템플릿</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SquareMatrix&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;invert();&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;주어진&nbsp;행렬을&nbsp;그&nbsp;저장공간에서</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;역행렬로&nbsp;만듭니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이 템플릿은 T라는 타입 매개변수도 받지만, size_t 타입의 <strong>비타입 매개변수(non-type parameter)</strong>인 n도 받도록 되어 있습니다.
     비타입 매개변수는 타입 매개변수보다는 덜 흔하지만, C++에서 적법하게 인정되는 매개변수입니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">SquareMatrix<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">double</span>,&nbsp;<span style="color:#c10aff">5</span><span style="color:#ff3399">&gt;</span>&nbsp;sm1;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%">sm1.invert();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SquareMatrix&lt;double,&nbsp;5&gt;::invert를&nbsp;호출합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">SquareMatrix<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">double</span>,&nbsp;<span style="color:#c10aff">10</span><span style="color:#ff3399">&gt;</span>&nbsp;sm2;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%">sm2.invert();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;SquareMatrix&lt;double,&nbsp;10&gt;::invert를&nbsp;호출합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이때 invert의 사본이 인스턴스화되는데, 만들어지는 사본의 개수가 두 개입니다.
     한 쪽은 5x5 행렬에 대해 동작할 함수이고, 다른 쪽은 10x10 행렬에 대해 동작할 함수이기 때문에, 이 둘은 같은 함수일 수가 없습니다.
     그렇지만 행과 열의 크기를 나타내는 상수만 빼면 두 함수는 완전히 똑같습니다.
@@ -56,18 +56,18 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">공통성 및 가변성 분석 적용</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     해결 방법은 서로 다른 값을 매개변수로 받는 별도의 함수를 만들고, 그 함수에 5와 10을 매개변수로 넘겨서 호출하게 만들면 됩니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;정방행렬에&nbsp;대해&nbsp;쓸&nbsp;수&nbsp;있는</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SquareMatrixBase&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;크기가&nbsp;독립적인&nbsp;기본&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">protected</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;invert(<span style="color:#4be6fa">std</span>::size_t&nbsp;matrixsize);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;주어진&nbsp;크기의&nbsp;행렬을&nbsp;역행렬로&nbsp;만듭니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T,&nbsp;<span style="color:#4be6fa">std</span>::size_t&nbsp;n<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SquareMatrix:&nbsp;<span style="color:#ff3399">private</span>&nbsp;SquareMatrixBase<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">using</span>&nbsp;SquareMatrixBase<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>::invert;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;클래스의&nbsp;invert가&nbsp;가려지는&nbsp;것을</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;막기&nbsp;위한&nbsp;문장입니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;invert()&nbsp;{&nbsp;<span style="color:#ff3399">this</span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>invert(n);&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;invert의&nbsp;기본&nbsp;클래스&nbsp;버전에&nbsp;대해</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;인라인&nbsp;호출을&nbsp;수행합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     SquareMatrixBase가 템플릿인 것은 SquareMatrix와 마찬가지이지만, 행렬의 원소가 갖는 타입에 대해서만 템플릿화되어 있을 뿐이고 행렬의 크기는 매개변수로 받지 않는다는 것은 SquareMatrix와 다릅니다.
     따라서 같은 타입의 객체를 원소로 갖는 모든 정방행렬은 오직 한 가지의 SqureMatrixBase 클래스를 공유하기 때문에, 같은 원소 타입의 정방행렬이 사용하는 기본 클래스 버전의 invert 함수도 오직 한 개의 사본을 갖습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     SquareMatrixBase::invert 함수는 파생 클래스에서 코드 복제를 피할 목적으로만 마련한 장치이기 때문에, public 멤버가 아니라 protected 멤버로 되어 있습니다.
     참고로, 이 함수의 호출에 드는 추가 비용은 하나도 없어야 합니다.
     기본 클래스의 invert 함수를 호출하도록 구현된 파생 클래스의 invert 함수가 바로 인라인 함수이니까요(이 경우에는 암시적 인라인 함수입니다).
@@ -75,34 +75,34 @@ background: '/img/posts/EffectiveCpp.jpg'
     그리고 SqureMatrixBase와 SquareMatrix 사이의 상속 관계가 private인데, 기본 클래스를 사용한 데는 순전히 파생 클래스의 구현을 돕기 위한 것 외엔 아무 이유도 없어서입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     위에서 아직 해결하지 못한 문제가 하나 남았는데, SquareMatrixBase::invert 함수는 자신이 상대할 데이터가 어떤 것인지를 알 수 없습니다.
     정방행렬의 크기야 매개변수로 받으니까 쉽게 알 수 있지만, 진짜 행렬을 저장한 데이터가 어디에 있는지는 알 수 없습니다.
     지금 이 정보를 아는 쪽은 파생 클래스이기 때문에, 기본 클래스 쪽에서 역행렬을 만들 수 있도록 '정방행렬의 메모리 위치'를 파생 클래스가 기본 클래스로 넘겨주면 됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     한 가지 방법은 SquareMatrixBase::invert 함수가 매개변수를 하나 더 받도록 만드는 것입니다.
     이 매개변수는 행렬 데이터가 들어 있는 메모리의 시작주소를 가리키는 포인터일 것입니다.
     이 방법은 아주 잘 돌아가겠지만, invert처럼 행렬 크기에 상관없는 동작방식을 갖는 모든 함수에 매개변수를 하나씩 더 달아 주어야 합니다.
     암만 생각해도 이쯤 되면 이건 아닌 듯합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     다른 방법은 행렬 값을 담는 메모리에 대한 포인터를 SquareMatrixBase가 저장하게 하는 것입니다.
     그리고 이 클래스 템플릿에 포인터와 함께 행렬 크기도 저장합니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SquareMatrixBase&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">protected</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SquareMatrixBase(<span style="color:#4be6fa">std</span>::size_t&nbsp;n,&nbsp;T&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pMem)&nbsp;&nbsp;<span style="color:#999999">//&nbsp;행렬&nbsp;크기를&nbsp;저장하고,&nbsp;행렬&nbsp;값에</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<span style="color:#4be6fa">size</span>(n),&nbsp;pData(pMem)&nbsp;{}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;대한&nbsp;포인터를&nbsp;저장합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;setDataPtr(T&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>ptr)&nbsp;{&nbsp;pData&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;ptr;&nbsp;}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pData에&nbsp;다시&nbsp;대입합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::size_t&nbsp;<span style="color:#4be6fa">size</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;행렬의&nbsp;크기</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pData;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;행렬&nbsp;값에&nbsp;대한&nbsp;포인터</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이렇게 설계해 두면, 행렬 값을 담을 메모리 할당 방법의 결정 권한이 파생 클래스 쪽으로 넘어가게 됩니다.
     파생 클래스를 만드는 사람에 따라, 행렬 데이터를 SquareMatrix 객체 안에 데이터 멤버로 직접 넣는 것으로 결정할 수도 있겠지요.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">template</span><span style="color:#ff3399">&lt;</span><span style="color:#ff3399">typename</span>&nbsp;T,&nbsp;<span style="color:#4be6fa">std</span>::size_t&nbsp;n<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;SquareMatrix:&nbsp;<span style="color:#ff3399">private</span>&nbsp;SquareMatrixBase<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SquareMatrix()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;행렬&nbsp;크기(n)&nbsp;및&nbsp;데이터&nbsp;포인터를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;SquareMatrixBase<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>(n,&nbsp;data)&nbsp;{}&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;클래스로&nbsp;올려보냅니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;T&nbsp;data[n<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>n];</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이렇게 파생 클래스를 만들면 동적 메모리 할당이 필요 없는 객체가 되지만, 객체 자체의 크기가 좀 커질 수 있습니다.
     이 방법이 마음에 들지 않는 사람은 각 행렬의 데이터를 힙에 둘 수도 있습니다.
 </p>
@@ -111,27 +111,27 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">크기별 고정 버전 vs 크기 독립형 버전</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     어느 메모리에 데이터를 저장하느냐에 따라 설계가 다소 달라지긴 하지만, 코드 비대화의 측면에서 중요한 성과는 다음과 같습니다.
     SquareMatrix에 속해 있는 멤버 함수 중 상당수가 기본 클래스 버전을 호출하는 단순 인라인 함수가 될 수 있으며, 똑같은 타입의 데이터를 원소로 갖는 정방행렬들이 행렬 크기에 상관없이 이 기본 클래스 버전의 사본 하나를 공유한다는 것입니다.
     이와 동시에, 행렬 크기가 다른 SquareMatrix 객체는 저마다 고유의 타입을 갖고 있다는 점도 아주 중요합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     물론 행렬 크기가 미리 녹아든 상태로 별도로 버전이 만들어지는 invert 함수와 지금처럼 행렬 크기가 함수 매개변수로 넘겨지거나 객체에 저장된 형태로 다른 파생 클래스들이 공유하는 버전의 invert 함수를 비교해보면, 전자가 후자보다 더 좋은 코드를 생성할 가능성이 높습니다.
     예를 들어 크기별 고정 버전(전자)의 경우, 행렬 크기가 컴파일 시점에 투입되는 상수이기 때문에 상수 전파(constant propagation) 등의 최적화가 먹혀 들어가기에 좋습니다.
     생성되는 기계 명령어에 대해 이 크기 값이 즉치 피연산자(immediate operand)로 바로 박히는 것도 이런 종류의 최적화 중 하나입니다.
     이런 혜택은 크기 독립형 버전(후자)에서는 절대 얻어낼 수 없습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     반면, 여러 행렬 크기에 대해 한 가지 버전의 invert를 두도록 만들면 실행 코드의 크기가 작아지는 이점을 얻을 수 있습니다.
     그런데 실행 코드가 작아지면 작은 크기로 끝나는 것이 아니라, 프로그램 작업 세트(working set) 크기가 줄어들면서 명령어 캐시 내의 참조 지역성(locality of reference)도 향상됩니다.
     이렇게 되면 프로그램 실행 속도가 더 빨라질 수 있는데, 그 효과는 크기별 고정 버전의 invert 함수가 가진 최적화 효과를 얻지 못한 것에 대해 보상을 받고도 남을 수 있답니다.
     어떤 효과가 우선일지에 대한 정확한 판단을 위해서는 여러분이 쓰시는 플랫폼 및 대표적인 데이터 집합에 대해 직접 두 방법을 전부 적용해 보고 그 결과를 관찰하는 수밖에 없습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     효율에 대해 생각해 볼 문제가 하나 더 있는데, 바로 객체의 크기입니다.
     invert 비슷한 크기 독립형 버전의 함수를 기본 클래스 쪽으로 아무 생각 없이 옮겨 놓다 보면, 슬그머니 늘어나 버리는 각 객체의 전체 크기 때문에 황당한 지경에 빠질 수도 있습니다.
     위에서 본 예제에서도 SquareMatrix 객체는 메모리에 생길 때마다 SquareMatrixBase 클래스에 들어 있는 데이터를 가리키는 포인터를 하나씩 떠안고 있죠.
@@ -143,7 +143,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">타입 매개변수로 인한 코드 비대화</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     이번 항목에서는 비타입 템플릿 매개변수로 인한 코드 비대화만 다루었지만, 타입 매개변수가 비대화의 원인이 아니란 것은 아닙니다.
     간단한 예로 상당수의 플랫폼에서 int와 long의 이진 표현구조가 동일한데, 그렇기에 이를테면 vector&lt;int&gt;와 vector&lt;long&gt;의 멤버 함수는 서로 빼다 박은 듯 똑같게 나올 수 있습니다.
     어떤 링커의 경우엔 이렇게 동일한 표현구조를 가진 함수들을 합쳐 주는 경우도 있지만, 그렇지 않은 링커도 꽤 있습니다.
@@ -159,7 +159,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     템플릿을 사용하면 비슷비슷한 클래스와 함수가 여러 벌 만들어집니다.
     따라서 템플릿 매개변수에 종속되지 않은 템플릿 코드는 비대화의 원인이 됩니다.<br>
     비타입 템플릿 매개변수로 생기는 코드 비대화의 경우, 템플릿 매개변수를 함수 매개변수 혹은 클래스 데이터 멤버로 대체함으로써 비대화를 종종 없앨 수 있습니다.<br>

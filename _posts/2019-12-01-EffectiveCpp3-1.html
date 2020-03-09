@@ -8,7 +8,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">자원(resource)이란</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     프로그래밍 분야에서 자원(resource)이란, 사용을 일단 마치고 난 후엔 시스템이 돌려주어야 하는 모든 것을 일컫습니다.
     돌려주지 않는 순간부터 암울한 일들이 발생하는데, 예를 들어 C++ 프로그램에서 동적 할당한 메모리를 해제하지 않으면 메모리가 누출됩니다.
     자원에는 동적 메모리뿐만 아니라 파일 서술자(file descriptor)도 있고, 뮤텍스 잠금(mutex lock)도 있으며, 그래픽 유저 인터페이스(graphical user interface: GUI)에서 쓰이는 폰트(font)와 브러시(brush)도 자원입니다.
@@ -18,7 +18,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">객체 기반 방식의 자원 관리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     투자(주식이나 채권 등)를 모델링해 주는 클래스 라이브러리를 가지고 어떤 작업을 한다고 가정합시다.
     이 라이브러리는 Investment라는 최상위 클래스가 있고, 이것을 기본으로 하여 구체적인 형태의 투자 클래스가 파생되어 있습니다.
     또한 이 라이브러리는 Investment에서 파생된 클래스의 객체를 사용자가 얻어내는 용도로 팩토리 함수만을 쓰도록 만들어져 있다고 가정합시다. 
@@ -26,14 +26,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Investment&nbsp;{&nbsp;...&nbsp;};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;여러&nbsp;형태의&nbsp;투자를&nbsp;모델링한</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;클래스&nbsp;계통의&nbsp;최상위&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>&nbsp;createInvestment();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Investment&nbsp;클래스&nbsp;계통에&nbsp;속한</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;클래스&nbsp;객체를&nbsp;동적&nbsp;할당하고</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;그&nbsp;포인터를&nbsp;반환합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;이&nbsp;객체의&nbsp;해제는&nbsp;호출자&nbsp;쪽에서</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;직접&nbsp;해야&nbsp;합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     createInvestment 함수를 통해 얻어낸 객체를 사용할 일이 이제 없을 때 그 객체를 삭제해야 하는 쪽은 이 함수의 호출자(caller)입니다.
     따라서 함수 f를 아래와 같이 만듭니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;f()</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Investment&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pInv&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;createInvestment();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;팩토리&nbsp;함수를&nbsp;호출합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pInv를&nbsp;사용합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">delete</span>&nbsp;pInv;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;객체를&nbsp;해제합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     멀쩡해 보이지만, createInvestment 함수로부터 얻은 투자 객체의 삭제에 실패할 수 있는 경우가 한두 가지가 아닙니다.<br>
     첫 번째는 '...' 부분 어딘가에서 '도중하차' return 문이 들어 있을 가능성입니다.
     이 문장이 실행되면 프로그램의 제어가 delete문까지 도달하지 않게 됩니다.<br>
@@ -44,19 +44,19 @@ background: '/img/posts/EffectiveCpp.jpg'
     우선 투자 객체를 담고 있는 메모리가 누출되고, 그와 동시에 그 객체가 갖고 있던 자원까지 모두 샙니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     물론, 하나하나 따져 가면서 꼼꼼하게 프로그램을 만들면 이런 종류의 에러는 막을 수 있겠지만, 오랜 시간 동안 코드를 변경한다면 그러기가 어렵습니다.
     f가 항상 delete문으로 가 줄 거라고 믿지 마세요.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     createInvestment 함수로 얻어낸 자원이 항상 해제되도록 만들 방법은, 자원을 객체에 넣고 그 자원 해제를 소멸자가 맡도록 하며, 그 소멸자는 실행 제어가 f를 떠날 때 호출되도록 만드는 것입니다.
     자원을 객체에 넣음으로써, C++이 자동으로 호출해 주는 소멸자에 의해 해당 자원을 저절로 해제할 수 있습니다.
 </p>
 
 <h2 class="section-heading">auto_ptr</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     소프트웨어 개발에 쓰이는 상당수의 자원이 힙에서 동적으로 할당되고, 하나의 블록(block) 혹은 함수 안에서만 쓰이는 경우가 잦기 때문에 그 블록 혹은 함수로부터 실행 제어가 빠져나올 때 자원이 해제되는 게 맞습니다.
     표준 라이브러리를 보면 auto_ptr이란 것이 있는데, 바로 이런 용도에 쓰라고 마련된 클래스입니다.
     auto_ptr은 포인터와 비슷하게 동작하는 객체(스마트 포인터(smart pointer))로서, 가리키고 있는 대상에 대해 소멸자가 자동으로 delete를 불러주도록 설계되어 있습니다.
@@ -64,19 +64,19 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;f()</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::auto_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pInv&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;createInvestment();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;팩토리&nbsp;함수를</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;호출합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;예전처럼</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pInv를&nbsp;사용합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;auto_ptr의</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;소멸자를&nbsp;통해</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pInv를&nbsp;삭제합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     아주 간단한 예제이지만, 자원 관리에 객체를 사용하는 방법의 중요한 두 가지 특징을 끄집어낼 수 있습니다.<br>
     <strong>첫째, 자원을 획득한 후에 자원 관리 객체에게 넘깁니다.</strong>
     위의 에제를 보면, createInvestment 함수가 만들어 준 자원은 그 자원을 관리할 auto_ptr 객체를 초기화하는 데 쓰이고 있습니다.
     이렇게 자원 관리에 객체를 사용하는 아이디어는 업계에서 자주 통용되며, 자원 획득 즉 초기화(Resource Acquisition Is Initialization: RAII)라고 부릅니다.
     이런 이름이 나온 이유는 자원 획득과 자원 관리 객체의 초기화가 바로 한 문장에서 이루어지는 것이 너무나도 일상적이기 때문입니다.
 </p>
-<p>
+<p style="font-family: NanumGothic">
     <strong>둘째, 자원 관리 객체는 자신의 소멸자를 사용해서 자원이 확실히 해제되도록 합니다.</strong>
     소멸자는 어떤 객체가 소멸될 때(유효범위를 벗어나는 경우가 한 가지 예) 자동적으로 호출되기 때문에, 실행 제어가 어떤 경위로 블록을 떠나는가에 상관없이 자원 해제가 제대로 이루어지게 되는 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     auto_ptr은 자신이 소멸될 때 자신이 가리키고 있는 대상에 대해 자동으로 delete를 해주기 때문에, 어떤 객체를 가리키는 auto_ptr의 개수가 둘 이상이면 절대로 안 됩니다.
     자원이 두 번 삭제하려고 시도하면, 프로그램은 미정의 동작에 빠지게 되니까요.
     이런 불상사를 막기 위해, auto_ptr은 상당히 유벌난 특성을 지니게 되었는데, auto_ptr 객체를 복사하면(복사 생성자 혹은 복사 대입 연산자를 통해) 원본 객체는 null로 만듭니다.
@@ -87,20 +87,20 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">tr1::shared_ptr</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     auto_ptr을 쓸 수 없는 상황이라면 그 대안으로 <strong>참조 카운팅 방식 스마트 포인터(reference-counting smart pointer: RCSP)</strong>가 아주 괜찮습니다.
     RCSP는 특정한 어떤 자원을 가리키는(참조하는) 외부 객체의 개수를 유지하고 있다가 그 개수가 0이 되면 해당 자원을 자동으로 삭제하는 스마트 포인터입니다.
     RCSP의 동작은 가비지 컬렉션(garbage collection)과 상당히 흡사하나, 참조 상태가 고리를 이루는 경우(예를 들면 다른 두 객체가 서로를 가리키고 있다든지)를 없앨 수 있다는 점은 가비지 컬렉션과 다릅니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     TR1에서 제공되는 tr1::shared_ptr이 대표적인 RCSP입니다.
     이것을 써서 f 함수를 다시 작성해 보면 다음과 같습니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;f()</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">std</span>::tr1::shared_ptr<span style="color:#aaffaa"></span><span style="color:#ff3399">&lt;</span>Investment<span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pInv(createInvestment());&nbsp;&nbsp;<span style="color:#999999">//&nbsp;팩토리&nbsp;함수를&nbsp;호출합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;예전처럼&nbsp;pInv를&nbsp;사용합니다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;shared_ptr의&nbsp;소멸자를&nbsp;통해</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;pInv를&nbsp;자동으로&nbsp;삭제합니다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     auto_ptr을 사용한 버전과 거의 똑같아 보이는 코드이지만, shared_ptr의 복사가 훨씬 자연스러워졌습니다.
 </p>
 
@@ -108,27 +108,27 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">동적 할당된 배열 관리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     auto_ptr 및 tr1::shared_ptr은 소멸자 내부에서 delete 연산자를 사용합니다.
     delete [] 연산자가 아닙니다.
     말하자면, 동적으로 할당한 배열에 대해 auto_ptr이나 tr1::shared_ptr을 사용하면 난감하다는 이야기입니다.<br>
     <i>동적 배열을 썼을 때 컴파일 에러가 났으면 그나마 좋겠는데 애석하게도 컴파일 에러가 발생하지 않습니다.</i>
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     C++ 표준 라이브러리에는 동적 할당된 배열을 위해 준비된 auto_ptr 혹은 tr1::shared_ptr 같은 클래스가 제공되지 않습니다.
     왜냐하면 동적으로 할당된 배열은 이제 vector 및 string으로 거의 대체할 수 있기 때문입니다.
     배열에 쓸 수 있는 auto_ptr이라든지 tr1::shared_ptr이 있으면 좋겠다는 분이라면 <strong>부스트</strong>에 가 보세요.<br>
     <i>원하는 기능을 정확히 가지고 있는 boost::scoped_array와 boost::shared_array가 있을 것입니다.</i>
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     앞에서 본 createInvestment 함수의 반환 타입이 포인터로 되어 있는데, 이 부분 때문에 문제가 생길 수도 있습니다.
     반환된 포인터에 대한 delete 호출을 호출자 쪽에서 해야 하는데, 그것을 잊어버리고 넘어가기 쉽기 때문입니다(auto_ptr 혹은 tr1::shared_ptr을 써서 delete를 수행한다고 하더라도, createInvestment의 반환 값을 스마트 포인터에 저장해야 한다는 점만은 여전히 기억하고 있어야 하거든요).
     이 문제를 어떻게든 해결하려면 createInvestment를 수술해서 인터페이스를 고쳐야 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     자원 해제를 여러분이 일일이 하다 보면(자원 관리 클래스를 쓰지 않고 delete를 쓴다든지 해서) 언젠가 잘못을 저지르고 말게 됩니다.
     이미 널리 쓰이고 있는 auto_ptr이나 tr1::shared_ptr 같은 자원 관리 클래스를 활용하는 것도 자원 관리에 객체를 쓰는 한 방법입니다.
     다만 이런 클래스로도 제대로 관리할 수 없다면, 여러분만의 자원 관리 클래스를 직접 만들 수밖에 없습니다.
@@ -138,7 +138,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     자원 누출을 막기 위해, 생성자 안에서 자원을 획득하고 소멸자에서 그것을 해제하는 RAII 객체를 사용합시다.<br>
     일반적으로 널리 쓰이는 RAII 클래스는 tr1::shared_ptr 그리고 auto_ptr입니다.
     이 둘 가운데 tr1::shared_ptr이 복사 시의 동작이 직관적이기 때문에 대개 더 좋습니다.

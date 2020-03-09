@@ -8,13 +8,13 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">인터페이스 상속 vs 구현 상속</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     (public) 상속이라는 개념은 언뜻 보기에는 그다지 복잡하지 않은 것 같지만, 좀더 자세히 들여다보면 사실 두 가지로 나뉩니다.
     하나는 함수 인터페이스의 상속이고, 또 하나는 함수 구현의 상속입니다.
     인터페이스 상속 및 구현 상속의 차이는, 함수 선언(function declaration) 및 함수 정의(function definition)의 차이와 맥을 같이 한다고 보면 됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     클래스 설계자의 입장에서 보면, 멤버 함수의 인터페이스(선언)만을 파생 클래스에 상속받고 싶을 때가 분명히 있습니다.
     어쩔 때는 함수의 인터페이스 및 구현을 모두 상속받고 그 상속받은 구현이 오버라이드가 가능하게 만들었으면 하는 분도 계십니다.
     반대로, 인터페이스와 구현을 상속받되 어떤 것도 오버라이드할 수 없도록 막고 싶은 경우도 있을 거고요.
@@ -26,21 +26,21 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">순수 가상 함수의 상속</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     순수 가상 함수인 draw가 있기에 Shape는 추상 클래스입니다.
     따라서 Shape 클래스의 인스턴스를 만들려고 하면 안 되고, 이 클래스의 파생 클래스만 인스턴스화가 가능합니다.
     하지만 Shape가 이 클래스로부터 (public 상속에 의해) 파생된 클래스에 대해 미치는 영향은 막대합니다.
     이유는 멤버 함수 <strong>인터페이스는 항상 상속되게 되어 있기 때문입니다.</strong>
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     Shape 클래스에는 세 개의 함수가 선언되어 있습니다.
     첫째, draw 함수는 순수 가상 함수로, 암시적인 표시 장치에 현재의 객체를 그립니다.
     둘째, error 함수는 단순 가상 함수로, 다른 멤버 함수들이 호출하는 함수로, 이들이 에러를 보고할 필요가 있을 때 사용됩니다.
     셋째, objcetID 함수는 비가상 함수로, 주어진 객체에 붙는 유일한 정수 식별자를 반환합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     우선 순수 가상 함수인 draw부터 생각해 봅시다.
     순수 가상 함수의 가장 두드러진 특징이라면 두 가지입니다.
     첫째, 어떤 순수 가상 함수를 물려받은 구체 클래스가 해당 순수 가상 함수를 다시 선언해야 합니다.
@@ -53,20 +53,20 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">단순(비순수) 가상 함수의 상속</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     다음은 단순(비순수) 가상 함수입니다.
     단순 가상 함수의 이면에 들어 있는 속뜻은 순수 가상 함수의 그것과 비교할 때 몇 가지 다른 면을 갖고 있습니다.
     파생 클래스로 하여금 함수의 인터페이스를 상속하게 한다는 점은 똑같지만, 파생 클래스 쪽에서 오버라이드할 수 있는 함수 구현부도 제공한다는 점이 다릅니다.
     단순 가상 함수를 선언하는 목적은 파생 클래스로 하여금 함수의 <strong>인터페이스뿐만</strong> 아니라 <strong>그 함수의 기본 구현도</strong> 물려받게 하자는 것입니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     Shape::error 함수의 경우를 한 번 생각해 보죠.
     이 인터페이스가 전하는 바는, 실행 중에 에러와 마주쳤을 때 자동으로 호출될 함수를 제공하는 것은 모든 클래스가 해야하는 일이지만, 그렇다고 각 클래스마다 그때그때 꼭 맞는 방법으로 에러를 처리할 필요는 없다는 것입니다.
     에러가 생기더라도 특별히 해주는 일이 없는 클래스라면, Shape 클래스에서 기본으로 제공되는 에러 처리를 그냥 해도 됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     알고 보면 단순 가상 함수에서 함수 인터페이스와 기본 구현을 한꺼번에 지정하도록 내버려 두는 것은 위험할 수도 있습니다.
     이유를 설명하기 위해 예를 하나 들겠습니다.
     XYZ라는 이름의 가상의 항공사가 있고, 이 항공사의 비행기는 A 모델과 B 모델, 이렇게 두 가지밖에 없습니다.
@@ -75,19 +75,19 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Airport&nbsp;{&nbsp;...&nbsp;};&nbsp;&nbsp;<span style="color:#999999">//&nbsp;공항을&nbsp;나타내는&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;Airplane::fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;주어진&nbsp;목적지로&nbsp;비행기를&nbsp;날려&nbsp;보내는&nbsp;기본&nbsp;동작&nbsp;원리를&nbsp;가진&nbsp;코드</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelA:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelB:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{&nbsp;...&nbsp;};</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     보시다시피 Airplane::fly 함수는 가상 함수로 선언되어 있습니다.
     모든 비행기는 fly 함수를 지원해야 한다는 점을 나타내야 하니까요.
     또 모델이 다른 비행기는 원칙상 fly 함수에 대한 구현을 저마다 다르게 요구할 수도 있다는 사실을 알고 있다는 뜻도 되는 거죠.
     하지만 ModelA 및 ModelB 클래스에 대해 똑같은 코드를 작성하지는 말아야 하므로, 기본적인 비행 원리를 Airplane::fly 함수의 본문으로 제공함으로써 이것을 ModelA 및 ModelB가 물려받을 수 있도록 하였습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     두 클래스가 하나의 공통 특징(fly 함수를 구현하는 방법)을 공유하고 있으므로, 이 공통 특징을 기본 클래스로 올려보낸 뒤에 두 클래스가 이 특징을 물려받는 식으로 설계된 것입니다.
     설계를 이렇게 하면 우선 클래스 사이의 공통 사항으로 둘 수 있는 특징이 명확해지고, 코드가 중복되지 않게 되며, 이후의 기능 개선의 통로도 열려 있게 되는데다가, 장기적인 유지보수도 쉬워집니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     이와 같은 훌륭한 설계에 힘입어 XYZ 항공사가 새로운 항공기 형태를 도입하기로 결정합니다.
     이른바 C 모델입니다.
     C 모델은 지금까지의 A 모델 및 B 모델과 비교할 때 몇 가지가 사뭇 다른데, 특히 비행 방식이 완전히 다릅니다.
@@ -97,7 +97,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">Airport&nbsp;PDX&nbsp;{&nbsp;...&nbsp;};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">Airport&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">*</span>pa&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;ModelC;</div><div style="padding:0 6px; white-space:pre; line-height:130%">...</div><div style="padding:0 6px; white-space:pre; line-height:130%">pa<span style="color:#aaffaa"></span><span style="color:#ff3399">-</span><span style="color:#aaffaa"></span><span style="color:#ff3399">&gt;</span>fly(PDX);&nbsp;&nbsp;<span style="color:#999999">//&nbsp;Airplane::fly&nbsp;함수가&nbsp;호출됩니다!</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     작금의 문제는 Airplane::fly 함수가 기본 동작을 구현해서 갖고 있다는 점이 아니라, ModelC 클래스는 이 기본 동작을 원한다고 명시적으로 밝히지 않았는데도 이 동작을 물려받는 데 아무런 걸림돌이 없다는 점입니다.
     단, 기본 동작을 파생 클래스에게 제공하는 것도 쉽지만 파생 클래스에서 요구하지 않으면 주지 않는 방법도 그리 어렵지 않아서 다행입니다.
     일종의 수법인데요, 가상 함수의 인터페이스와 그 가상 함수의 기본 <strong>구현</strong>을 잇는 연결 관계를 끊어 버리는 것입니다.
@@ -105,7 +105,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">protected</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">void</span>&nbsp;defaultFly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination);</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;Airplane::defaultFly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;주어진&nbsp;목적지로&nbsp;비행기를&nbsp;날려&nbsp;보내는&nbsp;기본&nbsp;동작&nbsp;원리를&nbsp;가진&nbsp;코드</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     Airplane::fly 함수가 순수 가상 함수로 바뀌었는데, 이 가상 함수가 바로 fly 함수의 인터페이스를 제공하는 역할을 맡게 됩니다.
     그렇다고 이전의 기본 구현이 사라진 것은 아니고, 여전히 Airplane 클래스에 남아 있습니다.
     단, 지금은 defaultFly라는 이름의 별도의 함수로 거듭났습니다.
@@ -114,33 +114,33 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelA:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;defaultFly(destination);&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelB:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;defaultFly(destination);&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이제는 ModelC 클래스가 자신과 맞지 않는 기본 구현을 우연찮게 물려받을 가능성은 없어졌습니다.
     fly 함수가 Airplane 클래스의 순수 가상 함수로 선언되어 있어서, ModelC 자신만의 버전을 스스로 제공하지 않으면 안 되는 상황이니 말입니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelC:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;ModelC::fly(<span style="color:#ff3399">const</span>&nbsp;Airprot<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;주어진&nbsp;목적지로&nbsp;ModelC&nbsp;비행기를&nbsp;날려&nbsp;보내는&nbsp;코드</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     이 방법으로 프로그래머의 실수를 100% 막을 수는 없지만, 원래의 설계보다는 훨씬 믿고 쓸 만해졌습니다.
     Airplane::defaultFly 함수에 대해 부연설명을 하자면, 이 함수는 protected 멤버입니다.
     Airplane 및 그 클래스의 파생 클래스만 내부적으로 사용하는 구현 세부사항이기 때문에 그런 거죠.
     비행기를 사용하는 사용자는 '비행기가 날 수 있다'라는 점만 알면 될 뿐, '비행 동작이 어떻게 구현되는가'는 신경 쓰지 말아야 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     또 다른 중요사항은 Airplane::defaultFly 함수가 <strong>비가상</strong> 함수라는 점입니다.
     그 이유는 파생 클래스 쪽에서 이 함수를 재정의해선 안 되기 때문입니다.
     만일 defaultFly가 가상 함수이면, 어떤 파생 클래스에서 defaultFly를 재정의하는 것을 잊어버렸다면 어떻게 할 방법이 없습니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     인터페이스 및 기본 구현을 분리하여 제공하는 또 다른 방법으론 순수 가상 함수가 구체 파생 클래스에서 재선언되어야 한다는 사실을 활용하되, 자체적으로 순수 가상 함수의 구현을 구비해 두는 방법이 있습니다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div><div style="line-height:130%">25</div><div style="line-height:130%">26</div><div style="line-height:130%">27</div><div style="line-height:130%">28</div><div style="line-height:130%">29</div><div style="line-height:130%">30</div><div style="line-height:130%">31</div><div style="line-height:130%">32</div><div style="line-height:130%">33</div><div style="line-height:130%">34</div><div style="line-height:130%">35</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)&nbsp;<span style="color:#aaffaa"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;Airplane::fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)&nbsp;&nbsp;<span style="color:#999999">//&nbsp;순수&nbsp;가상&nbsp;함수의&nbsp;구현</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;주어진&nbsp;목적지로&nbsp;비행기를&nbsp;날려&nbsp;보내는&nbsp;기본&nbsp;동작&nbsp;원리를&nbsp;가진&nbsp;코드</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelA:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;Airplane::fly(destination);&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelB:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;Airplane::fly(destination);&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;ModelC:&nbsp;<span style="color:#ff3399">public</span>&nbsp;Airplane&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>:</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">virtual</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">void</span>&nbsp;ModelC::fly(<span style="color:#ff3399">const</span>&nbsp;Airport<span style="color:#aaffaa"></span><span style="color:#ff3399">&amp;</span>&nbsp;destination)</div><div style="padding:0 6px; white-space:pre; line-height:130%">{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;주어진&nbsp;목적지로&nbsp;ModelC&nbsp;비행기를&nbsp;날려&nbsp;보내는&nbsp;코드</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
-<p>
+<p style="font-family: NanumGothic">
     별도의 함수인 Airplane::defaultFly의 자리에 순수 가상 함수인 Airplane::fly의 본문이 들어와 있는 것만 제외하면 이전의 설계와 거의 똑같습니다.
     요컨대, fly 함수가 선언부 및 정의부의 두 쪽으로 나뉜 것입니다.
     선언부는 이 함수의 인터페이스(파생 클래스가 사용해야 하는)를 지정하고, 정의부는 이 함수의 기본 동작(파생 클래스가 사용해도 되나, 명시적으로 원할 경우에만 사용이 가능한)을 지정합니다.
@@ -150,7 +150,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">비가상 함수의 상속</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     이제는 세 번째 함수, Shape의 비가상 함수인 objectID입니다.
     멤버 함수가 비가상 함수로 되어 있다는 것은, 이 함수는 파생 클래스에서 다른 행동이 일어날 것으로 가정하지 않았다는 뜻입니다.
     실제로, 비가상 멤버 함수는 <strong>클래스 파생에 상관없이 변하지 않는 동작</strong>을 지정하는 데 쓰입니다.
@@ -161,14 +161,14 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading">클래스 설계 시 흔히 하는 실수</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     순수 가상 함수, 단순 가상 함수, 비가상 함수의 선언문이 가진 이런저런 차이점 덕택에, 여러분은 파생 클래스가 물려받았으면 하는 것들을 정밀하게 지정할 수 있습니다.
     판단에 따라 인터페이스만 상속시켜도 되고, 인터페이스와 기본 구현을 함께 상속시킬 수도 있으며, 아니면 인터페이스와 필수 구현을 상속시킬 수 있는 것입니다.
     각각의 선언문 형식만큼 뜻하는 바도 제각각이기 때문에, 어떤 클래스에 멤버 함수를 선언해 넣는 여러분은 이들 중 하나를 고를 때 각별히 신경을 쓰셔야 합니다.
     멤버 함수를 선언할 때, 클래스 설계를 많이 해 보지 못한 분들의 클래스에서 가장 흔히 발견되는 결정적인 실수 두 가지도 피해야 합니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     첫 번째 실수는 모든 멤버 함수를 비가상 함수로 선언하는 것입니다.
     이렇게 하면 파생 클래스를 만들더라도 기본 클래스의 동작을 특별하게 만들 만한 여지가 없어지게 되죠.
     특히 비가상 소멸자가 문젯거리가 될 수 있습니다.
@@ -177,7 +177,7 @@ background: '/img/posts/EffectiveCpp.jpg'
     기본 클래스로 쓰이는 클래스는 십중팔구 가상 함수를 갖고 있게 됩니다.
 </p>
 
-<p>
+<p style="font-family: NanumGothic">
     또 한 가지 실수는 모든 멤버 함수를 가상 함수로 선언하는 것입니다.
     물론 인터페이스 클래스처럼 맞을 경우도 있습니다.
     하지만 파생 클래스에서 재정의가 안 되어야 하는 함수도 분명히 있을 것입니다.
@@ -189,7 +189,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <h2 class="section-heading" style="color: red">정리</h2>
 
-<p>
+<p style="font-family: NanumGothic">
     인터페이스 상속은 구현 상속과 다릅니다.
     public 상속에서, 파생 클래스는 항상 기본 클래스의 인터페이스를 모두 물려받습니다.<br>
     순수 가상 함수는 인터페이스 상속만을 허용합니다.<br>
