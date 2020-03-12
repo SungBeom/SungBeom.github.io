@@ -1,0 +1,43 @@
+---
+layout: post
+title: "[Effective Java]인스턴스화를 막으려거든 private 생성자를 사용하라"
+subtitle: "객체 생성과 파괴, 네 번째 아이템"
+date: 2020-03-12 15:19:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    이따금 단순히 정적 메소드와 정적 필드만을 담은 클래스를 만들고 싶을 때가 있을 것이다.
+    예컨대 java.lang.Math와 java.util.Arrays처럼 기본 타입 값이나 배열 관련 메소드들을 모아놓거나, java.util.Collections처럼 특정 인터페이스를 구현하는 객체를 생성해주는 정적 메소드(혹은 팩토리)를 모아놓을 수도 있다.
+    마지막으로, final 클래스와 관련한 메소드들을 모아놓을 때도 사용한다.
+</p>
+
+<h2 class="section-heading">인스턴스화를 막는 방법</h2>
+
+<p style="font-family: NanumGothic">
+    정적 멤버만 담은 유틸리티 클래스는 인스턴스로 만들어 쓰려고 설계한 게 아니지만, 생성자를 명시하지 않으면 컴파일러가 자동으로 기본 생성자(매개변수를 받지 않는 public 생성자)를 만들어준다.
+    추상 클래스는 하위 클래스를 만들어 인스턴스화할 수 있기 떄문에, <strong>추상 클래스로 만드는 것으로는 인스턴스화를 막을 수 없다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    컴파일러가 기본 생성자를 만드는 경우는 오직 명시된 생성자가 없을 때뿐이니 <strong>private 생성자를 추가하면 클래스의 인스턴스화를 막을 수 있다.</strong>
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;인스턴스를&nbsp;만들&nbsp;수&nbsp;없는&nbsp;유틸리티&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;UtiliyuClass&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;기본&nbsp;생성자가&nbsp;만들어지는&nbsp;것을&nbsp;막는다(인스턴스화&nbsp;방지용).</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;UtilityClass()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;AssertionError();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;나머지&nbsp;코드는&nbsp;생략</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    명시적 생성자가 private이니 클래스 바깥에서는 접근할 수 없다.
+    꼭 Assertion Error를 던질 필요는 없지만, 클래스 안에서 실수로라도 생성자를 호출하지 않도록 해준다.
+    상속을 받으면 반드시 상위 클래스의 생성자를 호출하게 되는데 상위 클래스의 생성자가 private이라면 접근할 길이 없으니, 이 방식은 상속을 불가능하게 하는 효과도 있다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    명시적 생성자를 private으로 선언해두면 해당 클래스의 인스턴스화를 막을 수 있다.
+    또한 이 방식은 상속을 불가능하게 하는 효과도 있다.
+</p>
