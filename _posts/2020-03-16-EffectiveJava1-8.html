@@ -1,0 +1,107 @@
+---
+layout: post
+title: "[Effective Java]finalizer와 cleaner 사용을 피하라"
+subtitle: "객체 생성과 파괴, 여덟 번째 아이템"
+date: 2020-03-16 15:36:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    자바는 두 가지 객체 소멸자를 제공한다.
+    그중 <strong>finalizer는 예측할 수 없고, 상황에 따라 위험할 수 있어 일반적으로 불필요하다.</strong>
+    기본적으로 '쓰지 말아야' 하며, 자바 9에서는 finalizer의 대안으로 cleaner를 소개했다.
+    <strong>cleaner는 finalizer보다는 덜 위험하지만, 여전히 예측할 수 없고, 느리고, 일반적으로 불필요하다.</strong>
+</p>
+
+<h2 class="section-heading">finalizer와 cleaner의 문제점</h2>
+
+<p style="font-family: NanumGothic">
+    이 둘은 즉시 수행된다는 보장이 없으므로, <strong>finalizer와 cleaner로는 제때 실행되어야 하는 작업은 절대 할 수 없다.</strong>
+    finalizer나 cleaner를 얼마나 신속히 수행할지는 전적으로 가비지 컬렉터 알고리즘에 달렸으며, 이는 가비지 컬렉터 구현마다 천차만별이다.
+    따라서 finalizer나 cleaner의 수행 시점에 의존하는 프로그램의 동작 또한 마찬가지다.
+    예컨대 파일 닫기를 finalizer와 cleaner에 맡기거나, 클래스에 finalizer를 달아두면 중대한 오류를 일으킬 수 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    자바 언어 명세는 finalizer나 cleaner의 수행 시점뿐 아니라 수행 여부조차 보장하지 않기에, 접근할 수 없는 일부 객체에 딸린 종료 작업을 전혀 수행하지 못한 채 프로그램이 중단될 수도 있다.
+    따라서 프로그램 생애주기와 상관없는, <strong>상태를 영구적으로 수정하는 작업에서는 절대 finalizer나 cleaner에 의존해서는 안 된다.</strong>
+    finalizer나 cleaner에 데이터베이스 같은 공유 자원의 영구 락(lock) 해제를 맡겨 놓거나, System.gc나 System.runFinalization 메소드를 사용하면 문제가 생긴다.
+    또한 finalizer 동작 중 발생한 예외는 무시되며, 처리할 작업이 남았더라도 그 순간 종료된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>finalizer와 cleaner는 심각한 성능 문제도 동반한다.</strong>
+    finalizer가 가비지 컬렉터의 효율을 떨어뜨리기 때문이다.
+    cleaner도 클래스의 모든 인스턴스를 수거하는 형태로 사용하면 성능은 finalizer와 비슷하다.
+    하지만 안전망 형태로만 사용하면 훨씬 빠르지만, 안전망을 설치하는 대가로 쓰지 않는 경우보다 성능이 낮아지긴 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>finalizer를 사용한 클래스는 finalizer 공격에 노출되어 심각한 보안 문제를 일으킬 수도 있다.</strong>
+    finalizer 공격 원리는 생성자나 직렬화 과정에서 예외가 발생하면, 이 생성되다 만 객체에서 악의적인 하위 클래스의 finalizer가 수행될 수 있게 된다.
+    이 finalizer는 정적 필드에 자신의 참조를 할당하여 가비지 컬렉터가 수집하지 못하게 막고, 이 객체의 메소드를 호출했을 때 허용되지 않은 작업을 수행한다.
+    <strong>객체 생성을 막으려면 생성자에서 예외를 던지는 것만으로 충분하지만, finalizer가 있다면 그렇지도 않다.</strong>
+    final 클래스들은 그 누구도 하위 클래스를 만들 수 없으므로, <strong>final이 아닌 클래스를 finalizer 공격으로부터 방어하려면 아무 일도 하지 않는 finalize 메소드를 만들고 final을 선언하자.</strong>
+</p>
+
+<h2 class="section-heading">finalizer와 cleaner의 대안</h2>
+
+<p style="font-family: NanumGothic">
+    파일이나 스레드 등 종료해야 할 자원을 담고 있는 객체의 클래스에서 finalizer나 cleaner를 대신해줄 묘안은, 그저 <strong>AuthCloseable을 구현</strong>해주고, 클라이언트에서 인스턴스를 다 쓰고 나면 close 메소드를 호출하면 된다(일반적으로 예외가 발생해도 제대로 종료되도록 try-with-resources를 사용해야 한다).
+    구체적인 구현법과 관련하여 알아두면 좋은 게 있는데, 각 인스턴스는 자신이 닫혔는지를 추적하는 것이 좋다.
+    다시 말해, close 메소드에서 이 객체는 더 이상 유효하지 않음을 필드에 기록하고, 다른 메소드는 이 필드를 검사해서 객체가 닫힌 후에 불렸다면 IllegalStateException을 던지는 것이다.
+</p>
+
+<h2 class="section-heading">finalizer와 cleaner의 적절한 쓰임새</h2>
+
+<p style="font-family: NanumGothic">
+    cleaner와 finalizer의 적절한 쓰임새로는 자원의 소유자가 close 메소드를 호출하지 않는 것에 대비한 안전망 역할이다.
+    cleaner나 finalizer가 즉시 (혹은 끝까지) 호출되리라는 보장은 없지만, 클라이언트가 하지 않은 자원 회수를 늦게라도 해주는 것이 아예 안 하는 것보다는 나으니 말이다.
+    자바 라이브러리의 일부 클래스는 안전망 역할의 finalizer를 제공하는데, FileInputStream, FileOutputStream, ThreadPoolExecutor가 대표적이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    두 번째 예는 네이티브 피어(native peer, 일반 자바 객체가 네이티브 메소드를 통해 기능을 위임한 네이티브 객체)와 연결된 객체에서다.
+    네이티브 피어는 자바 객체가 아니니 가비지 컬렉터가 회수하지 못하므로, cleaner나 finalizer가 나서서 처리하기에 적당한 작업이다.
+    단, 성능 저하를 감당할 수 있고 네이티브 피어가 심각한 자원을 가지고 있지 않을 때에만 해당되며, 이 외의 경우에는 close 메소드를 사용해야 한다.
+</p>
+
+<h2 class="section-heading">cleaner의 사용 예시</h2>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div><div style="line-height:130%">25</div><div style="line-height:130%">26</div><div style="line-height:130%">27</div><div style="line-height:130%">28</div><div style="line-height:130%">29</div><div style="line-height:130%">30</div><div style="line-height:130%">31</div><div style="line-height:130%">32</div><div style="line-height:130%">33</div><div style="line-height:130%">34</div><div style="line-height:130%">35</div><div style="line-height:130%">36</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;cleaner를&nbsp;안전망으로&nbsp;활용하는&nbsp;AutoCloseable&nbsp;클래스</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;Room&nbsp;<span style="color:#ff3399">implements</span>&nbsp;AutoCloseable&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;Cleaner&nbsp;cleaner&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Cleaner.create();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;청소가&nbsp;필요한&nbsp;자원.&nbsp;절대&nbsp;Room을&nbsp;참조해서는&nbsp;안&nbsp;된다!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;State&nbsp;<span style="color:#ff3399">implements</span>&nbsp;Runnable&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;numJunkPiles;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;방(Room)&nbsp;안의&nbsp;쓰레기&nbsp;수</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;State(<span style="color:#4be6fa">int</span>&nbsp;numJunkPiles)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.numJunkPiles&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;numJunkPiles;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;close&nbsp;메소드나&nbsp;cleaner가&nbsp;호출한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;run()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">System</span>.<span style="color:#4be6fa">out</span>.<span style="color:#4be6fa">println</span>(<span style="color:#ffd500">"방&nbsp;청소"</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numJunkPiles&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;방의&nbsp;상태.&nbsp;cleanable과&nbsp;공유한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;State&nbsp;state;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;cleanable&nbsp;객체.&nbsp;수거&nbsp;대상이&nbsp;되면&nbsp;방을&nbsp;청소한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;Cleaner.Cleanable&nbsp;cleanable;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;Room(<span style="color:#4be6fa">int</span>&nbsp;numJunkPiles)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;state&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;State(numJunkPiles);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cleanable&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;cleaner.register(<span style="color:#ff3399">this</span>,&nbsp;state);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;close()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cleanable.clean();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    static으로 선언된 중첩 클래스인 State는 cleaner가 방을 청소할 때 수거할 자원들을 담고 있고, 방 안의 쓰레기 수를 뜻하는 numJunkPiles 필드가 수거할 자원에 해당한다.
+    State는 Runnable을 구현하고, 그 안의 run 메소드는 cleanable에 의해 딱 한 번만 호출될 것이다.
+    이 cleanable 객체는 Room 생성자에서 cleaner에 Room과 State를 등록할 때 얻는다.
+    run 메소드가 호출되는 상황은 둘 중 하나인데, 보통은 Room의 close 메소드를 호출할 때이고, 다른 경우는 가비지 컬렉터가 Room을 회수할 때까지 클라이언트가 close를 호출하지 않을 때이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    State 인스턴스는 '절대로' Room 인스턴스를 참조해서는 안 된다.
+    Room 인스턴스를 참조할 경우 순환참조가 생겨 가비지 컬렉터가 Room 인스턴스를 회수해갈 (따라서 자동 청소될) 기회가 오지 않는다.
+    State가 정적 중첩 클래스인 이유가 여기에 있는데, 정적이 아닌 중첩 클래스는 자동으로 바깥 객체의 참조를 갖게 되기 때문이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    Room의 cleaner는 단지 안전망으로만 쓰였는데, 클라이언트가 모든 Room 생성을 try-with-resources 블록으로 감쌌다면 자동 청소는 전혀 필요하지 않다.
+    다음은 잘 짜인 클라이언트 코드의 예다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;Adult&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;main(<span style="color:#4be6fa">String</span>[]&nbsp;args)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">try</span>&nbsp;(Room&nbsp;myRoom&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Room(<span style="color:#c10aff">7</span>))&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">System</span>.<span style="color:#4be6fa">out</span>.<span style="color:#4be6fa">println</span>(<span style="color:#ffd500">"안녕~"</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    기대한 대로 Adult 프로그램은 "안녕~"을 출력한 후, 이어서 "방 청소"를 출력한다.
+    하지만 try-with-resources 블록이 없다면 "방 청소"가 출력이 되는 것을 보장할 수 없다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    cleaner(자바 8까지는 finalizer)는 안전망 역할이나 중요하지 않은 네이티브 자원 회수용으로만 사용하자.
+    물론 이런 경우라도 불확실성과 성능 저하에 주의해야 한다.
+</p>
