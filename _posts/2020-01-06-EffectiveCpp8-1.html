@@ -165,7 +165,7 @@ background: '/img/posts/EffectiveCpp.jpg'
 
 <p style="font-family: NanumGothic">
     이 템플릿은 T를 쓸 필요가 전혀 없는데, 실제로 필요한 것은 NewHandlerSupport로부터 파생된 각 클래스에 대한 NewHandlerSupport 객체의 서로 다른 사본(더 정확히 말하면 정적 데이터 멤버인 currentHandler의 사본)밖에 없기 때문입니다.
-    따라서 템플릿 매커니즘 자체는 NewHandlerSupport가 인스턴스화될 때 전달되는 T를 위한 currentHandler의 사본을 자동으로 찍어내는 공장인 셈이죠.
+    따라서 템플릿 메커니즘 자체는 NewHandlerSupport가 인스턴스화될 때 전달되는 T를 위한 currentHandler의 사본을 자동으로 찍어내는 공장인 셈이죠.
     템플릿 매개변수로 Widget을 받아 만들어진 기본 클래스로부터 Widget이 파생된 모습은 뭔가 덜 떨어져 보이기도 하지만, 익숙해지기 시작하면 꽤 쓸만한 기법입니다.
     <strong>신기하게 반복되는 템플릿 패턴(curiously recurring template pattern: CRTP)</strong>이라 불립니다.
 </p>
