@@ -1,0 +1,108 @@
+---
+layout: post
+title: "[Effective Java]equals를 재정의하려거든 hashCode도 재정의하라"
+subtitle: "모든 객체의 공통 메소드, 두 번째 아이템"
+date: 2020-03-19 00:00:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">hashCode를 재정의하는 상황</h2>
+
+<p style="font-family: NanumGothic">
+    <strong>equals를 재정의한 클래스 모두에서 hashCode도 재정의해야 한다.</strong>
+    다음은 Object 명세에서 발췌한 규약이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    equals 비교에 사용되는 정보가 변경되지 않았다면, 애플리케이션이 실행되는 동안 그 객체의 hasCode 메소드는 몇 번을 호출해도 일관되게 항상 같은 값을 반환해야 한다.
+    단, 애플리케이션을 다시 실행한다면 이 값이 달라져도 상관없다.<br>
+    equals(Object)가 두 객체를 같다고 판단했다면, 두 객체의 hashCode는 똑같은 값을 반환해야 한다.<br>
+    equals(Object)가 두 객체를 다르다고 판단했더라도, 두 객체의 hashCode가 서로 다른 값을 반환할 필요는 없다.
+    단, 다른 객체에 대해서는 다른 값을 반환해야 해시테이블의 성능이 좋아진다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>hashCode 재정의를 잘못했을 때 크게 문제가 되는 조항은 두 번째다.</strong>
+    <strong>즉, 논리적으로 같은 객체는 같은 해시코드를 반환해야 한다.</strong>
+    예를 들어 PhoneNumber 클래스의 인스턴스를 HashMap의 원소로 사용한다고 해보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">Map<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>PhoneNumber,&nbsp;<span style="color:#4be6fa">String</span><span style="color:#ff3399">&gt;</span>&nbsp;m&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;HashMap<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>();</div><div style="padding:0 6px; white-space:pre; line-height:130%">m.put(<span style="color:#ff3399">new</span>&nbsp;PhoneNumber(<span style="color:#c10aff">707</span>,&nbsp;<span style="color:#c10aff">867</span>,&nbsp;<span style="color:#c10aff">5309</span>),&nbsp;<span style="color:#ffd500">"제니"</span>);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 코드 다음에 m.get(new PhoneNumber(707, 867, 5309))를 실행하면 "제니"가 나와야 할 것 같지만, 실제로는 null을 반환한다.
+    여기에는 2개의 PhoneNumber 인스턴스가 사용었기 때문인데, 하나는 HashMap에 "제니"를 넣을 때 사용됐고, 두 번째는 이를 꺼내려할 때 사용됐다.
+    PhoneNumber 클래스는 hashCode를 재정의하지 않았기 때문에 논리적 동치인 두 객체가 서로 다른 해시코드를 반환하여, get 메소드는 엉뚱한 해시 버킷에 가서 객체를 찾으려 한 것이다.
+    설사 두 인스턴스를 같은 버킷에 담았더라도 get 메소드는 여전히 null을 반환하는데, HashMap은 해시코드가 다른 엔트리끼리는 동치성 비교를 시도조차 하지 않도록 최적화되어 있기 때문이다.
+    이 문제는 PhoneNumber에 적절한 hashCode 메소드만 작성해주면 해결된다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;적법하지만&nbsp;최악의&nbsp;hashCode&nbsp;구현&nbsp;-&nbsp;사용&nbsp;금지!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;hashCode()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#c10aff">42</span>;&nbsp;}</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 코드는 동치인 모든 객체에서 똑같은 해시코드를 반환하지 적법하나, 모든 객체에게 똑같은 값만 내어주므로 모든 객체가 해시테이블의 버킷 하나에 담겨 마치 연결 리스트(linked list)처럼 동작한다.
+    그 결과 평균 수행 시간이 O(1)인 해시테이블이 O(n)으로 느려져서, 객체가 많아지면 도저히 쓸 수 없게 된다.
+</p>
+
+<h2 class="section-heading">전형적인 hashCode 메소드</h2>
+
+<p style="font-family: NanumGothic">
+    좋은 해시 함수라면 서로 다른 인스턴스에 다른 해시코드를 반환한다.
+    이상적인 해시 함수는 주어진 서로 다른 인스턴스들을 32비트 정수 범위에 균일하게 분배해야 한다.
+    다음은 나름 이상적으로 hashCode를 작성해 phoneNumber 클래스에 적용한 코드이다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;전형적인&nbsp;hashCode&nbsp;메소드</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;hashCode()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Short.hashCode(areaCode);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">31</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;Short.hashCode(prefix);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">31</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;Short.hashCode(lineNum);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;result;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 메소드는 PhoneNumber 인스턴스의 핵심 필드 3개만을 사용해 간단한 계산을 수행한다.
+    그 과정에 비결정적(undeterministic) 요소는 전혀 없으므로 동치인 PhoneNumber 인스턴스들은 같은 해시코드를 가질 것이 확실하다.
+    단순하고, 충분히 빠르고, 서로 다른 전화번호들은 다른 해시 버킷들로 제법 훌륭히 분배해준다.
+</p>
+
+<h2 class="section-heading">한 줄짜리 hashCode 메소드</h2>
+
+<p style="font-family: NanumGothic">
+    Object 클래스는 임의의 개수만큼 객체를 받아 해시코드를 계산해주는 정적 메소드인 hash를 제공한다.
+    앞서 구현한 코드와 비슷한 수준의 hashCode 함수를 단 한 줄로 작성할 수 있으나, 아쉽게도 속도는 더 느리다.
+    입력 인수를 담기 위한 배열이 만들어지고, 입력 중 기본 타입이 있다면 박싱과 언박싱도 거쳐야 하기 때문이다.
+    다음 코드는 PhoneNumber의 hashCode를 이 방식으로 구현한 예다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;한&nbsp;줄짜리&nbsp;hashCode&nbsp;메소드&nbsp;-&nbsp;성능이&nbsp;살짝&nbsp;아쉽다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;hashCode()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;Objects.hash(lineNum,&nbsp;prefix,&nbsp;areaCode);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">해시코드를 지연 초기화하는 hashCode 메소드</h2>
+
+<p style="font-family: NanumGothic">
+    클래스가 불변이고 해시코드를 계산하는 비용이 크다면, 매번 새로 계산하기보다는 캐싱하는 방식을 고려해야 한다.
+    이 타입의 객체가 주로 해시의 키로 사용될 것 같다면 인스턴스가 만들어질 때 해시코드를 계산해둬야 한다.
+    해시의 키로 사용되지 않는 경우라면 hashCode가 처음 불릴 때 계산하는 지연 초기화(lazy initialization) 전략을 쓰되, 클래스를 스레드 안전하게 만들도록 신경 써야 한다.
+    다음은 해시코드를 지연 초기화하는 hashCode 메소드의 예다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;해시코드를&nbsp;지연&nbsp;초기화하는&nbsp;hashCode&nbsp;메소드&nbsp;-&nbsp;스레드&nbsp;안전성까지&nbsp;고려해야&nbsp;한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;hashCode;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;자동으로&nbsp;0으로&nbsp;초기화된다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;hashCode()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;hashCode;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Short.hashCode(areadCode);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">31</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;Short.hashCode(prefix);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">31</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;Short.hashCode(lineNum);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hashCode&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;result;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;result;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">hashCode 재정의 시 주의사항</h2>
+
+<p style="font-family: NanumGothic">
+    <strong>성능을 높인답시고 해시코드를 계산할 때 핵심 필드를 생략해서는 안 된다.</strong>
+    속도야 빨라지겠지만, 해시 품질이 나빠져 해시테이블의 성능을 심각하게 떨어뜨릴 수도 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>hashCode가 반환하는 값의 생성 규칙을 API 사용자에게 자세히 공표하지 말자.</strong>
+    <strong>그래야 클라이언트가 이 값에 의지하지 않게 되고, 추후에 계산 방식을 바꿀 수도 있다.</strong>
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    equals를 재정의할 때는 hashCode도 반드시 재정의해야 한다.
+    그렇지 않으면 프로그램이 제대로 동작하지 않을 것이다.
+    재정의한 hashCode는 Object의 API 문서에 기술된 일반 규약을 따라야 하며, 서로 다른 인스턴스라면 되도록 해시코드도 서로 다르게 구현해야 한다.
+    이렇게 구현하기가 어렵지는 않지만 조금 따분한 일이긴 하다.
+    하지만 AutoValue 프레임워크를 사용하면 equals와 hashCode를 자동으로 만들어준다.
+    IDE들도 이런 기능을 일부 제공한다.
+</p>
