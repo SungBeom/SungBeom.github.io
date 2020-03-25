@@ -1,0 +1,145 @@
+---
+layout: post
+title: "[Effective Java]변경 가능성을 최소화하라"
+subtitle: "클래스와 인터페이스, 세 번째 아이템"
+date: 2020-03-25 15:54:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    불변 클래스란 간단히 말해 그 인스턴스의 내부 값을 수정할 수 없는 클래스다.
+    자바 플랫폼 라이브러리의 String, 기본 타입의 박싱된 클래스들, BigInteger, BigDecimal이 여기에 속한다.
+    불변 클래스는 가변 클래스보다 설계하고 구현하고 사용하기 쉬우며, 오류가 생길 여지도 적고 훨씬 안전하다.
+</p>
+
+<h2 class="section-heading">불변 클래스를 만드는 방법</h2>
+
+<p style="font-family: NanumGothic">
+    클래스를 불변으로 만들려면 다음 다섯 가지 규칙을 따르면 된다.<br>
+    <strong>1. 객체의 상태를 변경하는 메소드(변경자)를 제공하지 않는다.</strong><br>
+    <strong>2. 클래스를 확장할 수 없도록 한다.</strong>
+    하위 클래스에서 부주의하게 혹은 나쁜 의도로 객체의 상태를 변하게 만드는 사태를 막아준다.<br>
+    <strong>3. 모든 필드를 final로 선언한다.</strong>
+    시스템이 강제하는 수단을 이용해 설계자의 의도를 명확히 드러내는 방법이다.<br>
+    <strong>4. 모든 필드를 private로 선언한다.</strong>
+    필드가 참조하는 가변 객체를 클라이언트에서 직접 접근해 수정하는 일을 막아준다.<br>
+    <strong>5. 자신 외에는 내부의 가변 컴포넌트에 접근할 수 없도록 한다.</strong>
+    클래스에 가변 객체를 참조하는 필드가 하나라도 있다면 클라이언트에서 그 객체의 참조를 얻을 수 없도록 해야 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    복소수(실수부와 허수부로 구성된 수)를 표현하는 클래스를 예를 보도록 하자.
+    Object의 메소드를 몇 개 재정의했고, 실수부와 허수부 값을 반환하는 접근자 메소드(realPart와 imaginaryPart)와 사친연산 메소드(plus, minus, times, dividedBy)를 정의한다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div><div style="line-height:130%">25</div><div style="line-height:130%">26</div><div style="line-height:130%">27</div><div style="line-height:130%">28</div><div style="line-height:130%">29</div><div style="line-height:130%">30</div><div style="line-height:130%">31</div><div style="line-height:130%">32</div><div style="line-height:130%">33</div><div style="line-height:130%">34</div><div style="line-height:130%">35</div><div style="line-height:130%">36</div><div style="line-height:130%">37</div><div style="line-height:130%">38</div><div style="line-height:130%">39</div><div style="line-height:130%">40</div><div style="line-height:130%">41</div><div style="line-height:130%">42</div><div style="line-height:130%">43</div><div style="line-height:130%">44</div><div style="line-height:130%">45</div><div style="line-height:130%">46</div><div style="line-height:130%">47</div><div style="line-height:130%">48</div><div style="line-height:130%">49</div><div style="line-height:130%">50</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;Complex&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;re;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;im;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;Complex(<span style="color:#4be6fa">double</span>&nbsp;re,&nbsp;<span style="color:#4be6fa">double</span>&nbsp;im)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;re;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;im;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;realPart()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;re;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;imaginaryPart()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;im;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;Complex&nbsp;plus(Complex&nbsp;c)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex(re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;c.re,&nbsp;im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;c.im);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;Complex&nbsp;minus(Complex&nbsp;c)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex(re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span>&nbsp;c.re,&nbsp;im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span>&nbsp;c.im);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;Complex&nbsp;times(Complex&nbsp;c)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex(re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span>&nbsp;im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.im,</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.re);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;Complex&nbsp;dividedBy(Complex&nbsp;c)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">double</span>&nbsp;tmp&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;c.re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;c.im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.im;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex((re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.im)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>&nbsp;tmp,</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span>&nbsp;re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;c.im)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>&nbsp;tmp);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;<span style="color:#4be6fa">equals</span>(Object&nbsp;o)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(o&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">this</span>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#c10aff">true</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(<span style="color:#0086b3"></span><span style="color:#ff3399">!</span>(o&nbsp;<span style="color:#ff3399">instanceof</span>&nbsp;Complex))</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#c10aff">false</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Complex&nbsp;c&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;(Complex)&nbsp;o;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;Double.compare(c.re,&nbsp;re)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&amp;</span><span style="color:#0086b3"></span><span style="color:#ff3399">&amp;</span>&nbsp;Double.compare(c.im,&nbsp;im)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;hashCode()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#c10aff">31</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;Double.hashCode(re)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;Double.hashCode(im);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">String</span>&nbsp;<span style="color:#4be6fa">toString</span>()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ffd500">"("</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;<span style="color:#ffd500">"&nbsp;+&nbsp;"</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;<span style="color:#ffd500">"i)"</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    사칙연산 메소드들이 인스턴스 자신은 수정하지 않고 새로운 Complex 인스턴스를 만들어 반환하는 모습에 주목하자.
+    이처럼 피연산자에 함수를 적용해 그 결과를 반환하지만, 피연산자 자체는 그대로인 프로그래밍 패턴을 함수형 프로그래밍이라 한다.
+    이 방식으로 프로그래밍하면 코드에서 불변이 되는 영역의 비율이 높아지는 장점을 누릴 수 있다.
+</p>
+
+<h2 class="section-heading">불변 클래스의 장점</h2>
+
+<p style="font-family: NanumGothic">
+    <strong>불변 객체는 단순하다.</strong>
+    모든 생성자가 클래스 불변식(class invariant)을 보장한다면 그 클래스를 사용하는 프로그래머가 다른 노력을 들이지 않더라도 영원히 불변으로 남는다.
+    <strong>불변 객체는 근본적으로 스레드 안전하여 따로 동기화할 필요 없다.</strong>
+    여러 스레드가 동시에 사용해도 절대 훼손되지 않기 때문에, 클래스를 스레드 안전하게 만드는 가장 쉬운 방법이기도 하다.
+    불변 객체에 대해서는 그 어떤 스레드도 다른 스레드에 영향을 줄 수 없으니 <strong>불변 객체는 안심하고 공유할 수 있다.</strong>
+    따라서 불변 클래스라면 한번 만든 인스턴스를 최대한 재활용하기를 권한다.
+    예컨대 Compex 클래스는 다음 상수들을 제공할 수 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;Complex&nbsp;ZERO&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex(<span style="color:#c10aff">0</span>,&nbsp;<span style="color:#c10aff">0</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;Complex&nbsp;ONE&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex(<span style="color:#c10aff">1</span>,&nbsp;<span style="color:#c10aff">0</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;Complex&nbsp;I&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex(<span style="color:#c10aff">0</span>,&nbsp;<span style="color:#c10aff">1</span>);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    불변 클래스는 자주 사용되는 인스턴스를 캐싱하여 같은 인스턴스를 중복 생성하지 않게 해주는 정적 팩토리를 제공할 수 있다.
+    박싱된 기본 타입 클래스 전부와 BigInteger가 여기 속한다.
+    이런 정적 픽토리를 사용하면 여러 클라이언트가 인스턴스를 공유하여 메모리 사용량과 가비지 컬렉션 비용이 줄어든다.
+</p>
+
+<p style="font-family: NanumGothic">
+    또한 불변 객체를 자유롭게 공유할 수 있다는 점은 방어적 복사도 필요 없다는 결론으로 자연스럽게 이어진다.
+    그러니 불변 클래스는 clone 메소드나 복사 생성자를 제공하지 않는 게 좋다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>불변 객체는 자유롭게 공유할 수 있음은 물론, 불변 객체끼리는 내부 데이터를 공유할 수 있다.</strong>
+    예컨대 BigInteger 클래스는 내부에서 값의 부호(sign)와 크기(magnitude)를 따로 표현한다.
+    한편 negate 메소드는 크기가 같고 부호만 반대인 새로운 BigInteger를 생성하는데, 이때 배열은 비록 가변이지만 복사하지 않고 원본 인스턴스와 공유해도 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>객체를 만들 때 다른 불변 객체들을 구성요소로 사용하면 이점이 많다.</strong>
+    값이 바뀌지 않는 구성요소들로 이뤄진 객체라면 그 구조가 아무리 복잡하더라도 불변식을 유지하기 훨씬 수월하기 때문이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>불변 객체는 그 자체로 실패 원자성을 제공한다.</strong>
+    상태가 절대 변하지 않으니 잠깐이라도 불일치 상태에 빠질 가능성이 없다.
+</p>
+
+<h2 class="section-heading">불변 클래스의 단점과 대처 방법</h2>
+
+<p style="font-family: NanumGothic">
+    <strong>불변 클래스에도 단점은 있다.</strong>
+    <strong>값이 다르면 반드시 독립된 객체로 만들어야 한다는 것이다.</strong>
+    값의 가짓수가 많다면 이들을 모두 만드는 데 큰 비용을 치러야 한다.
+    원하는 객체를 완성하기까지의 단계가 많고, 그 중간 단계에서 만들어진 객체들이 모두 버려진다면 성능 문제가 더 불거진다.
+</p>
+
+<p style="font-family: NanumGothic">
+    이 문제에 대처하는 방법은 흔히 쓰일 다단계 연산(multistep operation)들을 예측하여 기본 기능으로 제공하는 방법이다.
+    이러한 다단계 연산을 기본적으로 제공한다면 더 이상 각 단계마다 객체를 생성하지 않아도 된다.
+    예컨대 BigInteger는 모듈러 지수 같은 다단계 연산 속도를 높여주는 가변 동반 클래스(companion class)를 package-private으로 두고 있다.
+    클라이언트들이 원하는 복잡한 연산들을 정확히 예측할 수 있다면 package-private의 가변 동반 클래스만으로 충분하다.
+    그렇지 않다면 이 클래스를 public으로 제공하는 게 최선이다.
+</p>
+
+<h2 class="section-heading">클래스 자신을 상속하지 못하게 하는 또 다른 방법</h2>
+
+<p style="font-family: NanumGothic">
+    자신을 상속하지 못하게 하는 가장 쉬운 방법은 final 클래스로 선언하는 것이지만, 더 유연한 방법이 있다.
+    모든 생성자를 private 혹은 package-private으로 만들고 public 정적 팩토리를 제공하는 방법이다.
+    앞의 예제인 Complex 클래스를 이 방식으로 구현한 코드를 보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;Complex&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;re;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;im;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;Complex(<span style="color:#4be6fa">double</span>&nbsp;re,&nbsp;<span style="color:#4be6fa">double</span>&nbsp;im)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.re&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;re;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.im&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;im;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;Complex&nbsp;<span style="color:#4be6fa">valueOf</span>(<span style="color:#4be6fa">double</span>&nbsp;re,&nbsp;<span style="color:#4be6fa">double</span>&nbsp;im)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Complex(re,&nbsp;im);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;나머지&nbsp;코드는&nbsp;생략</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 방법이 최선일 때가 많다.
+    바깥에서 볼 수 없는 package-private 구현 클래스를 원하는 만큼 만들어 활용할 수 있으니 훨씬 유연하다.
+    public이나 protected 생성자가 없으니 다른 패키지에서는 이 클래스를 확장하는 게 불가능하여, 패키지 바깥의 클라이언트에서 바라본 이 불변 객체는 사실상 final이다.
+    정적 팩토리 방식은 다수의 구현 클래스를 활용한 유연성을 제공하고, 객체 캐싱 기능을 추가해 성능을 끌어올릴 수도 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    정리해보자면 <strong>클래스는 꼭 필요한 경우가 아니라면 불변이어야 한다.</strong>
+    불변 클래스는 장점이 많으며, 단점이라곤 특정 상황에서의 잠재적 성능 저하뿐이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    한편, 모든 클래스를 분변으로 만들 수는 없다.
+    <strong>불변으로 만들 수 없는 클래스라도 변경할 수 있는 부분을 최소한으로 줄이자.</strong>
+    객체가 가질 수 있는 상태의 수를 줄이면 그 객체를 예측하기 쉬워지고 오류가 생길 가능성이 줄어드므로, 꼭 변경해야 할 필드를 뺀 나머지 모두를 final로 선언하자.
+    즉, <strong>다른 합당한 이유가 없다면 모든 필드는 private final이어야 한다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>생성자는 불변식 설정이 모두 완료된, 초기화가 완벽히 끝난 상태의 객체를 생성해야 한다.</strong>
+    확실한 이유가 없다면 생성자와 정적 팩토리 외에는 그 어떤 초기화 매소드도 public으로 제공해서는 안 된다.
+    객체를 재활용할 목적으로 상태를 다시 초기화하는 메소드도 안 된다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    클래스는 꼭 필요한 경우가 아니라면 불변이어야 하며 최대한 변경할 수 있는 부분을 최소한으로 줄여야 한다.
+    불변 객체에는 여러 장점이 있고, 보통의 경우 모든 생성자를 private 혹은 package-private로 만들고 public 정적 팩토리를 제공하는 것이 최선의 방법이다.
+</p>
