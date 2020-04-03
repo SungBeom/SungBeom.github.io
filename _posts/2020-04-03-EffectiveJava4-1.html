@@ -1,0 +1,116 @@
+---
+layout: post
+title: "[Effective Java]로 타입은 사용하지 말라"
+subtitle: "제네릭, 첫 번째 아이템"
+date: 2020-04-03 19:21:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    클래스와 인터페이스 선언에 타입 매개변수(type parameter)가 쓰이면, 이를 <strong>제네릭 클래스</strong> 혹은 <strong>제네릭 인터페이스</strong>라 한다.
+    예컨대 List 인터페이스는 원소의 타입을 나타내는 타입 매개변수 E를 받는다.
+    그래서 이 인터페이스의 완전한 이름은 List&lt;E&gt;지만, 짧게 그냥 List라고도 자주 쓴다.
+    제네릭 클래스와 제네릭 인터페이스를 통틀어 <strong>제네릭 타입</strong>(generic type)이라 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    각각의 제네릭 타입은 일련의 <strong>매개변수화 타입</strong>(parameterized type)을 정의한다.
+    먼저 클래스(혹은 인터페이스) 이름이 나오고, 이어서 꺾쇠괄호 안에 실제 타입 매개변수들을 나열한다.
+    예컨대 List&lt;String&gt;은 원소의 타입이 String인 리스트를 뜻하는 매개변수화 타입이다.
+    여기서 String이 정규(formal) 타입 매개변수 E에 해당하는 실제(actual) 타입 매개변수다.
+</p>
+
+<p style="font-family: NanumGothic">
+    마지막으로, 제네릭 타입을 하나 정의하면 그에 딸린 <strong>로 타입</strong>(raw type)도 함께 정의된다.
+    로 타입이란 제네릭 타입에서 타입 매개변수를 전혀 사용하지 않을 때를 말한다.
+    예컨대 List&lt;E&gt;의 로 타입은 List다.
+</p>
+
+<h2 class="section-heading">로 타입의 문제점</h2>
+
+<p style="font-family: NanumGothic">
+    로 타입을 쓴다면 실수로 원하는 타입과 다른 타입을 넣을 가능성이 있다.
+    컬렉션에서는 의도하지 않은 타입을 넣어도 아무 오류 없이 컴파일되고 실행되며, 컬렉션에서는 다시 꺼내기 전에는 오류를 알아채지 못한다.
+    컬렉션과 반복자의 예를 보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;컬렉션의&nbsp;로&nbsp;타입&nbsp;-&nbsp;따라&nbsp;하지&nbsp;말&nbsp;것!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;Stamp&nbsp;인스턴스만&nbsp;취급한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;Collection&nbsp;stamps&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;...;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;실수로&nbsp;동전을&nbsp;넣는다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">stamps.<span style="color:#4be6fa">add</span>(<span style="color:#ff3399">new</span>&nbsp;Coin(...));&nbsp;&nbsp;<span style="color:#999999">//&nbsp;"unchecked&nbsp;call"&nbsp;경고를&nbsp;내뱉는다.</span></div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<br>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;반복자의&nbsp;로&nbsp;타입&nbsp;-&nbsp;따라&nbsp;하지&nbsp;말&nbsp;것!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">for</span>&nbsp;(Iterator&nbsp;i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;stamps.iterator();&nbsp;i.hasNext();)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Stamp&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;stamp&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;(Stamp)&nbsp;i.next();&nbsp;&nbsp;<span style="color:#999999">//&nbsp;ClassCastException을&nbsp;던진다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;stamp.cancel();</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    오류는 가능한 한 발생 즉시, 이상적으로는 컴파일할 때 발견하는 것이 좋다.
+    제네릭을 활용하면 타입 선언 자체에 어떤 타입을 넣어야 하는지에 대한 정보가 녹아든다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;매개변수화된&nbsp;컬렉션&nbsp;타입&nbsp;-&nbsp;타입&nbsp;안전성&nbsp;확보!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;Collecton<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>Stamp<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;stamps&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;...;</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이렇게 선언하면 stamps에는 Stamp의 인스턴스만 넣어야 함을 컴파일러가 인지하게 된다.
+    따라서 아무런 경고 없이 컴파일이된다면 의도대로 동작할 것임을 보장한다(물론 컴파일러 경고를 숨기지 않았어야 한다).
+    이제 stamps에 엉뚱한 타입의 인스턴스를 넣으려 하면 컴파일 오류가 발생하며 무엇이 잘못됐는지를 정확히 알려준다.
+    또한 컴파일러는 컬렉션에서 원소를 꺼내는 모든 곳에 보이지 않는 형벼환을 추가하여 절대 실패하지 않음을 보장한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    로 타입(타입 매개변수가 없는 제네릭 타입)을 만든 이유는 제네릭을 사용하기 전 기존 코드를 수용하기 위해서이다.
+    따라서 로 타입을 쓰는 걸 언어 차원에서 막아 놓지는 않았지만 절대로 써서는 안 된다.
+    <strong>로 타입을 쓰면 제네릭이 안겨주는 안전성과 표현력을 모두 잃게 된다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    List 같은 로 타입은 사용해서는 안 되나, List&lt;Object&gt;처럼 임의 객체를 허용하는 매개변수화 타입은 괜찮다.
+    List는 제네릭 타입에서 완전히 발을 뺀 것이고, List&lt;Object&gt;는 모든 타입을 허용한다는 의사를 컴파일러에 명확히 전달한 차이가 있다.
+    제네릭 하위 타입의 규칙 때문에 매개변수로 List를 받는 메소드에 List&lt;String&lt;은 넘길 수 있지만, List&lt;Object&lt;를 받는 메소드에는 넘길 수 없다.
+    List&lt;String&gt;은 로 타입인 List의 하위 타입이지만, List&lt;Object&gt;의 하위 타입은 아니다.
+    그 결과, <strong>List&lt;Object&lt; 같은 매개변수화 타입을 사용할 때와 달리 List 같은 로 타입을 사용하면 타입 안전성을 읽게 된다.</strong>
+</p>
+
+<h2 class="section-heading">비한정적 와일드카드 타입</h2>
+
+<p style="font-family: NanumGothic">
+    원소의 타입을 몰라도 되는 로 타입을 쓰고 싶어질 수 있으나 안전하지 않으므로, 비한정적 와일드카드 타입(unbounded wildcard type)을 대신 사용하는 게 좋다.
+    제네릭 타입을 쓰고 싶지만 실제 타입 매개변수가 무엇인지 신경 쓰고 싶지 않다면 물음표(?)를 사용하자.
+    예컨대 제네릭 타입인 Set&lt;E&gt;의 비한정적 와일드카드 타입은 Set&lt;?&gt;다.
+</p>
+
+<p style="font-family: NanumGothic">
+    비한정적 와일드카드 타입은 안전하고, 로 타입은 안전하지 않다.
+    로 타입 컬렉션에는 아무 원소나 넣을 수 있으니 타입 불변식을 훼손하기 쉽다.
+    반면, <strong>Collection&lt;?&gt;에는 null 외에는 어떤 원소도 넣을 수 없다.</strong>
+    또한 컬렉션에서 꺼낼 수 있는 객체의 타입도 전혀 알 수 없게 했다.
+    이러한 제약을 받아들일 수 없다면 제네릭 메소드나 한정적 와일드카드 타입을 사용하면 된다.
+</p>
+
+<h2 class="section-heading">로 타입을 쓰는 예외</h2>
+
+<p style="font-family: NanumGothic">
+    <strong>class 리터럴에는 로 타입을 써야 한다.</strong>
+    자바 명세는 class 리터럴에 매개변수화 타입을 사용하지 못하게 했다(배열과 기본 타입은 허용한다).
+    예를 들어 List.class, String[].class, int.class는 허용하고 List&lt;String&gt;.class와 List&lt;?&gt;.class는 허용하지 않는다.
+</p>
+
+<p style="font-family: NanumGothic">
+    런타임에는 제네릭 타입 정보가 지워지므로 instanceof 연산자는 비한정적 와일드카드 타입 이외의 매개변수화 타입에는 적용할 수 없다.
+    그리고 로 타입이든 비한정적 와일드카드 타입이든 instanceof는 완전히 똑같이 동작한다.
+    <strong>다음은 제네릭 타입에 instanceof를 사용하는 올바른 예다.</strong>
+    다만 타입을 확인한 다음 와일드카드 타입으로 형변환해야 한다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;로&nbsp;타입을&nbsp;써도&nbsp;좋은&nbsp;예&nbsp;-&nbsp;instanceof&nbsp;연산자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">if</span>&nbsp;(o&nbsp;<span style="color:#ff3399">instanceof</span>&nbsp;Set)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;로&nbsp;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Set<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;s&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;(Set<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>)&nbsp;o;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;와일드카드&nbsp;타입</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    로 타입을 사용하면 런타임에 예외가 일어날 수 있으니 사용하면 안 된다.
+    로 타입은 제네릭이 도입되기 이전 코드와의 호환성을 위해 제공될 뿐이다.
+    빠르게 훑어보자면, Set&lt;Object&gt;는 어떤 타입의 객체도 저장할 수 있는 매개변수화 타입이고, Set&lt;?&gt;는 모종의 타입 객체만 저장할 수 있는 와일드카드 타입이다.
+    그리고 이들의 로 타입인 Set은 제네릭 타입 시스템에 속하지 않는다.
+    Set&lt;Object&gt;와 Set&lt;?&gt;는 안전하지만, 로 타입인 Set은 안전하지 않다.
+</p>
