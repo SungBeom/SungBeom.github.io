@@ -1,0 +1,113 @@
+---
+layout: post
+title: "[Effective Java]타입 안전 이종 컨테이너를 고려하라"
+subtitle: "제네릭, 여덟 번째 아이템"
+date: 2020-04-10 23:46:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    제네릭은 Set&lt;E&gt;, Map&lt;K,V&gt; 등의 컬렉션과 ThreadLocal&lt;T&gt;, AtomicReference&lt;T&gt; 등의 단일원소 컨테이너에도 흔히 쓰인다.
+    이런 모든 쓰임에서 매개변수화되는 대상은 원소가 아닌 컨테이너 자신이므로, 하나의 컨테이너에서 매개변수화할 수 있는 타입의 수가 제한된다.
+    예컨대 Set에는 원소의 타입을 뜻하는 단 하나의 타입 매개변수만 있으면 되며, Map에는 키와 값의 타입을 뜻하는 2개만 필요한 식이다.
+</p>
+
+<h2 class="section-heading">타입 안전 이종 컨테이너 패턴</h2>
+
+<p style="font-family: NanumGothic">
+    하지만 더 유연한 수단이 필요할 때도 종종 있다.
+    예컨대 데이터베이스의 행(row)은 임의 개수의 열(column)을 가질 수 있는데, 모두 열을 타입 안전하게 이용할 수 있다면 멋질 것이다.
+    다행히 쉬운 해법이 있는데, 컨테이너 대신 키를 매개변수화한 다음, 컨테이너에 값을 넣거나 뺄 때 매개변수화한 키를 함께 제공하면 된다.
+    이렇게 하면 제네릭 타입 시스템이 값의 타입이 키와 같음을 보장해주고, 이러한 설계 방식을 타입 안전 이종 컨테이너 패턴(type safe heterogeneous container pattern)이라 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    간단한 예로 타입별로 즐겨 찾는 인스턴스를 저장하고 검색할 수 있는 Favorites 클래스와 이를 사용하는 예시를 보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;타입&nbsp;안전&nbsp;이종&nbsp;컨테이너&nbsp;패턴&nbsp;-&nbsp;API</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;Favorites&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;putFavorite(Class<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;type,&nbsp;T&nbsp;instance);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;T&nbsp;getFavorite(Class<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;type);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<br>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;타입&nbsp;안전&nbsp;이종&nbsp;컨테이너&nbsp;패턴&nbsp;-&nbsp;클라이언트</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;main(<span style="color:#4be6fa">String</span>[]&nbsp;args)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Favorites&nbsp;f&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;Favorites();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;f.putFavorite(<span style="color:#4be6fa">String</span>.<span style="color:#ff3399">class</span>,&nbsp;<span style="color:#ffd500">"Java"</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;f.putFavorite(Integer.<span style="color:#ff3399">class</span>,&nbsp;<span style="color:#c10aff">0xcafebabe</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;f.putFavorite(Class.<span style="color:#ff3399">class</span>,&nbsp;Favorites.<span style="color:#ff3399">class</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">String</span>&nbsp;favoriteString&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;f.getFavorite(<span style="color:#4be6fa">String</span>.<span style="color:#ff3399">class</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;favoriteInteger&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;f.getFavorite(Integer.<span style="color:#ff3399">class</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Class<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;favoriteClass&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;f.getFavorite(Class.<span style="color:#ff3399">class</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">System</span>.<span style="color:#4be6fa">out</span>.printf(<span style="color:#ffd500">"%s&nbsp;%x&nbsp;%s%n"</span>,&nbsp;favoriteString,</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;favoriteInteger,&nbsp;favoriteClass.getName());</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    기대한 대로 이 프로그램은 Java cafebabe Favorites를 출력하며, Favorites 인스턴스는 타입 안전하다.
+    String을 요청했는데 Integer를 반환하는 일은 절대 없고, 모든 키의 타입이 제각각이라 일반적인 맵과 달리 여러 가지 타입의 원소를 담을 수 있다.
+    따라서 Favorites는 타입 안전 이종(heterogeneous) 컨테이너라 할 만하다.
+</p>
+
+<h2 class="section-heading">타입 안전 이종 컨테이너의 구현</h2>
+
+<p style="font-family: NanumGothic">
+    Favorites의 구현은 놀랍도록 간단한데, 다음 코드가 전부다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;타입&nbsp;안전&nbsp;이종&nbsp;컨테이너&nbsp;패턴&nbsp;-&nbsp;클라이언트</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;Favorites&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;Map<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>Class<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>,&nbsp;Object<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;favorites&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;HashMap<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;putFavorite(Class<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;type,&nbsp;T&nbsp;instance)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;favorites.put(Objects.requireNonNull(type),&nbsp;instance);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;T&nbsp;getFavorite(Class<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>T<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;type)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;type.cast(favorites.get(type));</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    Favorites가 사용하는 private 맵 변수인 favorites의 타입은 Map&lt;Class&lt;?&gt;, Object&gt;이다.
+    비한정적 와일드카드 타입이라 이 맵 안에 아무것도 넣을 수 없다고 생각할 수 있지만, 사실은 그 반대로 와일드카드 타입이 중첩(nested)된 것이다.
+    맵이 아니라 키가 와일드카드 타입이므로, 모든 키가 서로 다른 매개변수화 타입일 수 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    다음은 favorites 맵의 값 타입은 단순히 Object이므로, 키와 값 사이의 타입 관계를 보장하지 않는다.
+    즉, 모든 값이 키로 명시한 타입임을 보증하지 않는다.
+    사실 자바의 타입 시스템에서는 이 관계를 명시할 방법이 없지만, 우리는 이 관계가 성립함을 알고 있고, 즐겨찾기를 검색할 때 그 이점을 누리게 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    putFavorite 구현은 아주 쉬운데, 주어진 Class 객체와 즐겨찾기 인스턴스를 favorites에 추가해 관계를 지으면 끝이다.
+    말했듯이, 키와 값 사이의 '타입 링크(type linkage)' 정보는 버려져서, 그 값이 그 키 타입의 인스턴스라는 정보가 사라진다.
+    하지만 getFavorite 메소드에서 이 관계를 되살릴 수 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    getFavorite은 먼저 주어진 Class 객체에 해당하는 값을 favorites 맵에서 꺼낸다.
+    이 객체가 바로 반환해야 할 객체가 맞지만, 잘못된 컴파일타임 타입을 가지고 있다.
+    이 객체의 타입은 favorites 맵의 값 타입인 Object이나, 우리는 이를 T로 바꿔 반환해야 한다.
+    따라서 getFavorite 구현은 Class의 cast 메소드를 사용해 이 객체 참조를 Class 객체가 가리키는 타입을 동적 형변환한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    cast 메소드는 형변환 연산자의 동적 버전으로, 단순히 주어진 인수가 Class 객체가 알려주는 타입의 인스턴스인지를 검사한 다음, 맞다면 그 인수를 그대로 반환하고, 아니면 ClassCastException을 던진다.
+    클라이언트 코드가 깔끔히 컴파일된다면 getFavorite이 호출하는 cast는 ClassCastException을 던지지 않을 것임을 우리는 알고 있다.
+    다시 말해 favorites 맵 안의 값은 해당 키의 타입과 항상 일치함을 알고 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    cast 메소드가 단지 인수를 그대로 반환하기만 하는데 사용하는 이유는, cast 메소드의 시그니처가 Class 클래스가 제네릭이라는 이점을 완벽히 활용하기 때문이다.
+    cast의 반환 타입은 Class 객체의 타입 매개변수와 같다는 점이 T로 비검사 형변환하는 손실 없이도 Favorites를 타입 안전하게 만드는 비결이다.
+</p>
+
+<h2 class="section-heading">타입 안전 이종 컨테이너의 제약</h2>
+
+<p style="font-family: NanumGothic">
+    지금의 Favorites 클래스에는 알아두어야 할 제약이 두 가지 있다.
+    첫 번째, 악의적인 클라이언트가 Class 객체를 제네릭이 아닌 로 타입으로 넘기면 Favorites 인스턴스의 타입 안전성이 쉽게 깨진다.
+    하지만 이렇게 짜여진 클라이언트 코드에서는 컴파일할 때 비검사 경고가 뜰 것이다.
+    Favorites가 타입 불변식을 어기는 일이 없도록 보장하려면 putFavorite 메소드에서 인수로 주어진 instance의 타입이 type으로 명시한 타입과 같은지 확인하면 된다.
+    그 방법은 그냥 동적 형변환을 쓰면 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    Favorites 클래스의 두 번째 제약은 실체화 불가 타입에는 사용할 수 없다는 것이다.
+    다시 말해, 즐겨 찾는 String이나 String[]은 저장할 수 있어도 즐겨 찾는 List&lt;String&gt;은 저장할 수 없다.
+    List&lt;String&gt;용 Class 객체를 얻을 수 없기 때문에 List&lt;String&gt;을 저장하려는 코드는 컴파일되지 않을 것이다.
+    List&lt;String&gt;.class라고 쓰면 문법 오류가 난다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    컬렉션 API로 대표되는 일반적인 제네릭 형태에서는 한 컨테이너가 다룰 수 있는 타입 매개변수의 수가 고정되어 있다.
+    하지만 컨테이너 자체가 아닌 키를 타입 매개변수로 바꾸면 이런 제약이 없는 타입 안전 이종 컨테이너를 만들 수 있다.
+    타입 안전 이종 컨테이너는 Class를 키로 쓰며, 이런 식으로 쓰이는 Class 객체를 타입 토큰이라 한다.
+    또한, 직접 구현한 키 타입도 쓸 수 있다.
+    예컨대 데이터베이스의 행(컨테이너)을 표현한 DatabaseRow 타입에는 제네릭 타입인 Column&lt;T&gt;를 키로 사용할 수 있다.
+</p>
