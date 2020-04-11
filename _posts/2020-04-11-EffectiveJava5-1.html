@@ -1,0 +1,126 @@
+---
+layout: post
+title: "[Effective Java]int 상수 대신 열거 타입을 사용하라"
+subtitle: "열거 타입과 애너테이션, 첫 번째 아이템"
+date: 2020-04-1 23:06:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">정수 상수</h2>
+
+<p style="font-family: NanumGothic">
+    열거 타입은 일정 개수의 상수 값을 정의한 다음, 그 외의 값은 허용하지 않는 타입이다.
+    사계절, 태양계의 행성, 카드게임의 카드 종류 등이 좋은 예다.
+    자바에서 열거 타입을 지원하기 전에는 정수 상수를 한 묶음 선언해서 사용하곤 했다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;정수&nbsp;열거&nbsp;패턴&nbsp;-&nbsp;상당히&nbsp;취약하다!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;APPLE_FUJI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;APPLE_PIPPIN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">1</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;APPLE_GRANNY_SMITH&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">2</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;ORANGE_NAVEL&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;ORANGE_TEMPLE&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">1</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;ORANGE_BLOOD&nbsp;&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">2</span>;</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    정수 열거 패턴(int enum pattern) 기법에는 단점이 많다.
+    타입 안전을 보장할 방법이 없으며 표현력도 좋지 않다.
+    오렌지를 건네야 할 메소드에 사과를 보내고 동등 연산자(==)로 비교하더라도 컴파일러는 아무런 경고 메시지를 출력하지 않는다.
+</p>
+
+<p style="font-family: NanumGothic">
+    시과용 상수의 이름은 모두 APPLE_로 시작하고, 오렌지용 상수는 모두 ORANGE_로 시작한다.
+    자바가 정수 열거 패턴을 위한 별도 이름공간(namespace)을 지원하지 않기 때문에 어쩔 수 없이 접두어를 써서 이름 충돌을 방지하는 것이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    정수 열거 패턴을 사용한 프로그램은 깨지기 쉽다.
+    평범한 상수를 나열한 것뿐이라 컴파일하면 그 값이 클라이언트 파일에 그대로 새겨지므로, 상수의 값이 바뀌면 클라이언트도 반드시 다시 컴파일해야 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    정수 상수는 문자열로 출력하기가 다소 까다롭다.
+    그 값을 출력하거나 디버거로 살펴보면 의미가 아닌 단지 숫자로만 보여서 썩 도움이 되지 않는다.
+    같은 정수 열거 그룹에 속한 모든 상수를 한 바퀴 순회하는 방법도 마땅치 않으며, 그 안에 상수가 몇 개인지도 알 수 없다.
+</p>
+
+<p style="font-family: NanumGothic">
+    정수 대신 문자열 상수를 사용하는 변형 패턴도 있다.
+    문자열 열거 패턴(string enum pattern)이라 하는 이 변형은 더 나쁘다.
+    상수의 의미를 출력할 수 있다는 점은 좋지만, 경험이 부족한 프로그래머가 문자열 상수의 이름 대신 문자열 값을 그대로 하드코딩하게 만들기 때문이다.
+    문제는 이렇게 하드코딩한 문자열에 오타가 있어도 컴파일러는 확인할 길이 없기 때문에 런타임 버그가 생길 수도 있다.
+</p>
+
+<h2 class="section-heading">열거 타입</h2>
+
+<p style="font-family: NanumGothic">
+    다행히 자바는 열거 패턴의 단점을 말끔히 씻어주는 동시에 여러 장점을 안겨주는 대안을 제시했는데, 그게 바로 열거 타입(enum type)이다.
+    겉보기에는 C, C++, C# 같은 다른 언어의 열거 타입과 비슷하지만, 자바의 열거 타입은 완전한 형태의 클래스라서 단순한 정숫값일 뿐인 다른 언어의 열거 타입보다 훨씬 강력하다.
+    다음은 열거 타입의 가장 단순한 형태이다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;가장&nbsp;단순한&nbsp;열거&nbsp;타입</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;enum&nbsp;Apple&nbsp;&nbsp;{&nbsp;FUJI,&nbsp;PIPPIN,&nbsp;GRANNY_SMITH&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;enum&nbsp;Orange&nbsp;{&nbsp;NAVEL,&nbsp;TEMPLE,&nbsp;BLOOD&nbsp;}</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    열거 타입 자체는 클래스이며, 상수 하나당 자신의 인스턴스를 하나씩 만들어 public static final 필드로 공개한다.
+    열거 타입은 밖에서 접근할 수 있는 생성자를 제공하지 않으므로 사실상 final이다.
+    따라서 클라이언트가 인스턴스를 직접 생성하거나 확장할 수 없으니 열거 타입 선언으로 만들어진 인스턴스들은 딱 하나씩만 존재함이 보장된다.
+    다시 말해 열거 타입은 인스턴스 통제되며, 싱글턴은 원소가 하나뿐인 열거 타입이라 할 수 있고, 거꾸로 열거 타입은 싱글턴을 일반화한 형태라고 볼 수 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    열거 타입은 컴파일타임 타입 안전성을 제공한다.
+    Apple의 열거 타입을 매개변수로 받는 메소드를 선언했다면, 건네받은 참조는 null이 아니라면 Apple의 세 가지 값 중 하나임이 확실하다.
+    다른 타입의 값을 넘기려 하면 컴파일 오류가 난다.
+</p>
+
+<p style="font-family: NanumGothic">
+    열거 타입에는 각자의 이름공간이 있어서 이름이 같은 상수도 평화롭게 공존한다.
+    공개되는 것이 오직 필드의 이름뿐이라, 정수 열거 패턴과 달리 상수 값이 클라이언트로 컴파일되어 각인되지 않기 때문에, 열거 타입에 새로운 상수를 추가하거나 순서를 바꿔도 다시 컴파일하지 않아도 된다.
+    마지막으로 열거 타입의 toString 메소드는 출력하기에 적합한 문자열을 내어준다.
+</p>
+
+<p style="font-family: NanumGothic">
+    이처럼 열거 타입은 정수 열거 패턴의 단점들을 해소해준다.
+    또한 열거 타입에는 임의의 메소드나 필드를 추가할 수 있고 임의의 인터페이스를 구현하게 할 수도 있다.
+</p>
+
+<h2 class="section-heading">데이터와 메소드를 갖는 열거 타입</h2>
+
+<p style="font-family: NanumGothic">
+    열거 타입에 메소드나 필드를 추가하는 기능은 상수와 연관된 데이터를 해당 상수 자체에 내재시키고 싶을 때 필요한 기능이다.
+    Apple과 Orange를 예로 들면, 과일의 색을 알려주거나 과일 이미지를 반환하는 메소드를 추가하고 싶을 수 있는데, 열거 타입에는 어떤 메소드도 추가할 수 있다.
+    그저 상수 모음일 뿐인 열거 타입이지만, 실제로는 클래스이므로 고차원의 추상 개념 하나를 완벽히 표현해낼 수도 있는 것이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    태양계의 여덟 행성은 열거 타입을 설명하기 좋은 예다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div><div style="line-height:130%">22</div><div style="line-height:130%">23</div><div style="line-height:130%">24</div><div style="line-height:130%">25</div><div style="line-height:130%">26</div><div style="line-height:130%">27</div><div style="line-height:130%">28</div><div style="line-height:130%">29</div><div style="line-height:130%">30</div><div style="line-height:130%">31</div><div style="line-height:130%">32</div><div style="line-height:130%">33</div><div style="line-height:130%">34</div><div style="line-height:130%">35</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;데이터와&nbsp;메소드를&nbsp;갖는&nbsp;열거&nbsp;타입</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;enum&nbsp;Planet&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;MERCURY(<span style="color:#c10aff">3.</span>302e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">23</span>,&nbsp;<span style="color:#c10aff">2.</span><span style="color:#c10aff">439e6</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;VENUS&nbsp;&nbsp;(<span style="color:#c10aff">4.</span>869e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">24</span>,&nbsp;<span style="color:#c10aff">6.</span><span style="color:#c10aff">052e6</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;EARTH&nbsp;&nbsp;(<span style="color:#c10aff">5.</span>975e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">24</span>,&nbsp;<span style="color:#c10aff">6.</span><span style="color:#c10aff">378e6</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;MARS&nbsp;&nbsp;&nbsp;(<span style="color:#c10aff">6.</span>419e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">23</span>,&nbsp;<span style="color:#c10aff">3.</span><span style="color:#c10aff">393e6</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;JUPITER(<span style="color:#c10aff">1.</span>899e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">27</span>,&nbsp;<span style="color:#c10aff">7.</span><span style="color:#c10aff">149e7</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SATURN&nbsp;(<span style="color:#c10aff">5.</span>685e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">26</span>,&nbsp;<span style="color:#c10aff">6.</span><span style="color:#c10aff">027e7</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;URANUS&nbsp;(<span style="color:#c10aff">8.</span>683e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">25</span>,&nbsp;<span style="color:#c10aff">2.</span><span style="color:#c10aff">556e7</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;NEPTUNE(<span style="color:#c10aff">1.</span>024e<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#c10aff">26</span>,&nbsp;<span style="color:#c10aff">2.</span><span style="color:#c10aff">477e7</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;mass;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;질량(단위:&nbsp;킬로그램)</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;radius;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;반지름(단위:&nbsp;미터)</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;surfaceGravity;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;표면중력(단위:&nbsp;m&nbsp;/&nbsp;s^2)</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;중력상수(단위:&nbsp;m^3&nbsp;/&nbsp;kg&nbsp;s^2)</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;G&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">6.</span>67300E<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#c10aff">11</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;생성자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Planet(<span style="color:#4be6fa">double</span>&nbsp;mass,&nbsp;<span style="color:#4be6fa">double</span>&nbsp;radius)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.mass&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;mass;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.radius&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;radius;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;surfaceGravity&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;G&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;mass&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>&nbsp;(radius&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;radius);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;mass()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;mass;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;radius()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;radius;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;surfaceGravity()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;surfaceGravity;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;surfaceWeight(<span style="color:#4be6fa">double</span>&nbsp;mass)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;mass&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;surfaceGravity;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;F&nbsp;=&nbsp;ma</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    거대한 열거 타입을 만드는 일도 그리 어렵지 않다.
+    <strong>열거 타입 상수 각각을 특정 데이터와 연결지으려면 생성자에서 데이터를 받아 인스턴스 필드에 저장하면 된다.</strong>
+    열거 타입은 근본적으로 불변이라 모든 필드는 final이어야 한다.
+    필드를 public으로 선언해도 되지만, private으로 두고 별도의 public 접근자 메소드를 두는 게 낫다.
+</p>
+
+<p style="font-family: NanumGothic">
+    Planet 열거 타입은 단순하지만 놀랍도록 강력하다.
+    어떤 객체의 지구에서의 무게를 입력받아 여덟 행성에서의 무게를 출력하는 일은 다음처럼 짧은 코드로 작성할 수 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;WieghtTable&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;main(<span style="color:#4be6fa">String</span>[]&nbsp;args)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">double</span>&nbsp;earthWeight&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Double.parseDouble(args[<span style="color:#c10aff">0</span>]);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">double</span>&nbsp;mass&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;earthWeight&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>&nbsp;Planet.EARTH.surfaceGravity();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">for</span>&nbsp;(Planet&nbsp;p&nbsp;:&nbsp;Planet.values())</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">System</span>.<span style="color:#4be6fa">out</span>.printf(<span style="color:#ffd500">"%s에서의&nbsp;무게는&nbsp;%f이다.%n"</span>,</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p,&nbsp;p.surfaceWeight(mass));</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    열거 타입은 자신 안에 정의된 상수들의 값을 배열에 담아 반환하는 정적 메소드인 values를 제공한다.
+    값들은 선언된 순서로 저장되며, 각 열거 타입 값의 toString 메소드는 상수 이름을 문자열로 반환하므로 println과 printf로 출력하기에 안성맞춤이다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    열거 타입은 확실히 정수 상수보다 뛰어나다.
+    더 읽기 쉽고 안전하고 강력하다.
+    대다수 열거 타입이 명시적 생성자나 메소드 없이 쓰이지만, 각 상수를 특정 데이터와 연결짓거나 상수마다 다르게 동작하게 할 때는 필요하다.
+    드물게는 하나의 메소드가 상수별로 다르게 동작해야 할 때도 있다.
+    이런 열거 타입에서는 switch 문 대신 상수별 메소드 구현을 사용하자.
+    열거 타입 상수 일부가 같은 동작을 공유한다면 전략 열거 타입 패턴을 사용하자.
+</p>
