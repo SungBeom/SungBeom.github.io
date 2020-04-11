@@ -6,16 +6,96 @@ date: 2020-04-08 23:00:00
 background: '/img/posts/EffectiveJava.jpg'
 ---
 
-<h2 class="section-heading">Intro</h2>
+<h2 class="section-heading">한정적 와일드카드 타입</h2>
 
 <p style="font-family: NanumGothic">
-    때로는 불공변(invariant) 방식보다 유연한 무언가가 필요하다.
+    매개변수화 타입은 불공변(invariant)이다.
+    하지만 때로는 불공변(invariant) 방식보다 유연한 무언가가 필요하다.
     자바는 해결책으로 한정적 와일드카드 타입이라는 특별한 매개변수화 타입을 지원한다.
+    먼저 와일드카드 타입을 사용하지 않는 메소드를 보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;와일드카드&nbsp;타입을&nbsp;사용하지&nbsp;않는&nbsp;pushAll&nbsp;메소드&nbsp;-&nbsp;결함이&nbsp;있다!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;pushAll(Iterable<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;src)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">for</span>&nbsp;(E&nbsp;e&nbsp;:&nbsp;src)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;push(e);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 메소드는 깨끗이 컴파일되지만 완벽하지 않다.
+    Iterable src의 원소 타입이 스택의 원소 타입과 일치하면 잘 작동하지만, Stack&lt;Number&gt;로 선언한 후 Inter 타입인 intVal을 이용해 pushAll(intVal)을 호출하면 오류 메시지가 뜬다.
+    매개변수화 타입이 불공변이기 때문이다.
+    이번에는 와일드카드 타입을 사용하는 pushAll 메소드를 보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;생산자(producer)&nbsp;매개변수에&nbsp;와일드카드&nbsp;타입&nbsp;적용</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;pushAll(Iterable<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?&nbsp;<span style="color:#ff3399">extends</span>&nbsp;E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;src)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">for</span>&nbsp;(E&nbsp;e&nbsp;:&nbsp;src)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;push(e);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이번 수정으로 Stack은 물론 이를 사용하는 클라이언트 코드도 말끔히 컴파일 된다.
+    Stack과 클라이언트 모두 깔끔히 컴파일되었다는 건 모든 것이 타입 안전하다는 뜻이다.
 </p>
 
 <p style="font-family: NanumGothic">
-    <strong>유연성을 극대화하려면 원소의 생산자나 소비자용 입력 매개변수에 와일드카드 타입을 사용하라.</strong>
+    이제 pushAll과 짝을 이루는 popAll 메소드를 보자.
+    먼저 와일드카드 타입을 사용하지 않는 메소드다.
 </p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;와일드카드&nbsp;타입을&nbsp;사용하지&nbsp;않는&nbsp;popAll&nbsp;메소드&nbsp;-&nbsp;결함이&nbsp;있다!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;popAll(Collection<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;dst)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">while</span>&nbsp;(<span style="color:#0086b3"></span><span style="color:#ff3399">!</span>isEmpty())</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dst.<span style="color:#4be6fa">add</span>(pop());</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이번에도 주어진 컬렉션의 원소 타입이 스택의 원소 타입과 일치한다면 말끔히 컴파일되고 문제없이 동작한다.
+    하지만 Stack&lt;Number&gt;의 원소를 Object용 컬렉션으로 옮기려 하면 와일드타입을 사용하지 않는 pushAll과 비슷한 오류가 발생한다.
+    pushAll 메소드와 동일하게 와일드카드 타입으로 해결할 수 있는데, 이번에는 popAll의 입력 매개변수의 타입이 'E의 Collection'이 아니라 'E의 상위 타입의 Collection'이어야 한다.
+    이를 popAll에 적용해보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;소비자(consumer)&nbsp;매개변수에&nbsp;와일드카드&nbsp;타입&nbsp;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;popAll(Collection<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?&nbsp;<span style="color:#ff3399">super</span>&nbsp;E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;dst)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">while</span>&nbsp;(<span style="color:#0086b3"></span><span style="color:#ff3399">!</span>isEmpty())</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dst.<span style="color:#4be6fa">add</span>(pop());</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이제 Stack과 클라이언트 코드 모두 말끔히 컴파일 된다.
+    메시지는 분명한데, <strong>유연성을 극대화하려면 원소의 생산자나 소비자용 입력 매개변수에 와일드카드 타입을 사용하라.</strong>
+    한편, 입력 매개변수가 생산자와 소비자 역할을 동시에 한다면 와일드카드 타입을 써도 좋을 게 없다.
+    타입을 정확히 지정해야 하는 상황으로, 이때는 와일드카드 타입을 쓰지 말아야 한다.
+</p>
+
+<h2 class="section-heading">PECS</h2>
+
+<p style="font-family: NanumGothic">
+    펙스(PECS): producer-extends, consumer-super<br>
+    이 공식을 외워두면 어떤 와일드카드 타입을 써야 하는지 기억하는 데 도움이 될 것이다.
+    즉, 매개변수화 타입 T가 생산자라면 &lt;? extends T&gt;를 사용하고, 소비자라면 &lt;? super T&gt;를 사용하라.
+    PECS 공식은 와일드카드 타입을 사용하는 기본 원칙이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    PECS를 제대로만 사용한다면 클래스 사용자는 와일드카드 타입이 쓰였다는 사실조차 의식하지 못할 것이다.
+    받아들어야 할 매개변수를 받고 거절해야 할 매개변수는 거절하는 작업이 알아서 이뤄진다.
+    <strong>클래스 사용자가 와일드카드 타입을 신경 써야 한다면 그 API에 무슨 문제가 있을 가능성이 크다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    타입 매개변수 E를 사용한 예를 보자.
+    Comparable은 언제나 소비자이므로, 일반적으로 <strong>Comparable&lt;E&gt;보다는 Comparable&lt;? super E&gt;를 사용하는 편이 낫다.</strong>
+    Comparator도 마찬가지로 알반적으로 <strong>Comparator&lt;E&gt;보다는 Comprator&lt;? super E&gt;를 사용하는 편이 낫다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    타입 매개변수와 와일드카드에는 공통되는 부분이 있어서, 메소드를 정의할 때 둘 중 어느 것을 사용해도 괜찮을 때가 많다.
+    두 인덱스의 아이템들을 교환(swap)하는 정적 메소드를 비한정적 타입 매개변수를 사용한 방법과 비한정적 와일드카드를 사용한 방법 모두를 보자. 
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;swap&nbsp;메소드의&nbsp;두&nbsp;가지&nbsp;선언</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;swap(List<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;list,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;i,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;j);</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;swap(List<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;list,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;i,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;j);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    어떤 선언이 낫고 더 나은 이유는 무엇일까?
+    public API라면 간단한 두 번째가 낫다.
+    기본 규칙은 <strong>메소드 선언에 타입 매개변수가 한 번만 나오면 와일드 카드로 대체하라.</strong>
+    이때 비한정적 타입 매개변수라면 와일드카드로 바꾸고, 한정적 타입 매개변수라면 한정적 와일드카드로 바꾸면 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    두 번째 swap 선언에서 리스트의 타입이 List&lt;?&gt;인데, List&lt;?&gt;에는 null 외에는 어떤 값도 넣을 수 없어서 문제가 생긴다.
+    다행히 해결할 길이 있는데, 와일드카드 타입의 실제 타입을 알려주는 메소드를 private 도우미 메소드로 따로 작성하여 활용하는 방법이다.
+    실제 타입을 알아내려면 이 도우미 메소드는 제네릭 메소드여야 한다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;swap(List<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>?<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;list,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;i,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;j)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;swapHelper(list,&nbsp;i,&nbsp;j);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;와일드카드&nbsp;타입을&nbsp;실제&nbsp;타입으로&nbsp;바꿔주는&nbsp;private&nbsp;도우미&nbsp;메소드</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;swapHelper(List<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;list,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;i,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;j)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;list.set(i,&nbsp;list.set(j,&nbsp;list.get(i)));</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
 <br>
 
