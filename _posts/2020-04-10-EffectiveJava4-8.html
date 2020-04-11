@@ -98,6 +98,15 @@ background: '/img/posts/EffectiveJava.jpg'
     다시 말해, 즐겨 찾는 String이나 String[]은 저장할 수 있어도 즐겨 찾는 List&lt;String&gt;은 저장할 수 없다.
     List&lt;String&gt;용 Class 객체를 얻을 수 없기 때문에 List&lt;String&gt;을 저장하려는 코드는 컴파일되지 않을 것이다.
     List&lt;String&gt;.class라고 쓰면 문법 오류가 난다.
+    이 제약은 슈퍼 타입 토큰(super type token)으로 해결하려는 시도도 있다.
+</p>
+
+<h2 class="section-heading">한정적 타입 토큰</h2>
+
+<p style="font-family: NanumGothic">
+    Favorites가 사용하는 타입 토큰은 비한정적으로 getFavorite과 putFavorite은 어떤 Class 객체든 받아들인다.
+    때로는 이 메소드들이 허용하는 타입을 제한하고 싶을 수 있는데, 한정적 타입 토큰을 활용하면 가능하다.
+    한정적 타입 토큰이란 단순히 한정적 타입 매개변수나 한정적 와일드카드를 사용하여 표현 가능한 타입을 제한하는 타입 토큰이다.
 </p>
 
 <br>
