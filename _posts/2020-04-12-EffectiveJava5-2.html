@@ -1,0 +1,51 @@
+---
+layout: post
+title: "[Effective Java]ordinal 메소드 대신 인스턴스 필드를 사용하라"
+subtitle: "열거 타입과 애너테이션, 두 번째 아이템"
+date: 2020-04-12 23:44:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">ordinal 메소드</h2>
+
+<p style="font-family: NanumGothic">
+    대부분의 열거 타입 상수는 자연스럽게 하나의 정숫값에 대응된다.
+    그리고 모든 열거 타입은 해당 상수가 그 열거 타입에서 몇 번째 위치인지를 반환하는 ordinal이라는 메소드를 제공한다.
+    ordinal 메소드를 이용한 예를 보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;ordinal을&nbsp;잘못&nbsp;사용한&nbsp;예&nbsp;-&nbsp;따라&nbsp;하지&nbsp;말&nbsp;것!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;enum&nbsp;Ensemble&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SOLO,&nbsp;DUET,&nbsp;TRIO,&nbsp;QUARTET,&nbsp;QUINTET,</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SEXTET,&nbsp;SEPTET,&nbsp;OCTET,&nbsp;NONET,&nbsp;DECTET;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;numberOfMusicians()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;ordinal()&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;<span style="color:#c10aff">1</span>;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    동작은 하지만 유지보수하기가 끔찍한 코드다.
+    상수 선언 순서를 바꾸는 순간 numberOfMusicians가 오동작하며, 이미 사용 중인 정수와 값이 같은 상수는 추가할 방법이 없다.
+    예컨대 8중주(octet) 상수가 이미 있으니 똑같이 8명이 연주하는 복4중주(double quartet)는 추가할 수 없다.
+</p>
+
+<p style="font-family: NanumGothic">
+    또한, 값을 중간에 비워둘 수도 없다.
+    예컨대 12명이 연주하는 3중 4중주(triple quartet)를 추가한다고 하면, 중간에 11명짜리 상수도 채워야 하는데, 11명으로 구성된 연주를 일컫는 이름이 없다.
+    그래서 더미(dummy) 상수를 같이 추가해야만 하는데, 이는 코드가 깔끔하지 못할 뿐 아니라, 쓰이지 않는 값이 많아질수록 실용성이 떨어진다.
+</p>
+
+<h2 class="section-heading">인스턴스 필드</h2>
+
+<p style="font-family: NanumGothic">
+    해결책은 간단한데, <strong>열거 타입 상수에 연결된 값은 ordinal 메소드로 얻지 말고, 인스턴스 필드에 저장하자.</strong>
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;ordinal을&nbsp;잘못&nbsp;사용한&nbsp;예&nbsp;-&nbsp;따라&nbsp;하지&nbsp;말&nbsp;것!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;enum&nbsp;Ensemble&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SOLO(<span style="color:#c10aff">1</span>),&nbsp;DUET(<span style="color:#c10aff">2</span>),&nbsp;TRIO(<span style="color:#c10aff">3</span>),&nbsp;QUARTET(<span style="color:#c10aff">4</span>),&nbsp;QUINTET(<span style="color:#c10aff">5</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;SEXTET(<span style="color:#c10aff">6</span>),&nbsp;SEPTET(<span style="color:#c10aff">7</span>),&nbsp;OCTET(<span style="color:#c10aff">8</span>),&nbsp;DOUBLE_QUARTET(<span style="color:#c10aff">8</span>),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;NONET(<span style="color:#c10aff">9</span>),&nbsp;DECTET(<span style="color:#c10aff">10</span>),&nbsp;TRIPLE_QUARTET(<span style="color:#c10aff">12</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;numberOfMusicians;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Ensemble(<span style="color:#4be6fa">int</span>&nbsp;size)&nbsp;{&nbsp;<span style="color:#ff3399">this</span>.numberOfMusicians&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;size;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;numberOfMusicians()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;numberOfMusicians;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    ordinal 메소드는 EnumSet과 EnumMap 같이 열거 타입 기반의 범용 자료구조에 쓸 목적으로 설계되었다.
+    띠리사 이런 용도가 아니라면 ordinal 메소드는 절대 사용하지 말자.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    ordinal 메소드는 EnumSet과 EnumMap 같이 특수한 상황이 아니면 절대 사용하지 말자.
+    대신 인스턴스 메소드를 사용하자.
+</p>
