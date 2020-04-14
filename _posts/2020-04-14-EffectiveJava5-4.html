@@ -1,0 +1,26 @@
+---
+layout: post
+title: "[Effective Java]ordinal 인덱싱 대신 EnumMap을 사용하라"
+subtitle: "열거 타입과 애너테이션, 네 번째 아이템"
+date: 2020-04-14 23:04:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">ordinal 메소드</h2>
+
+<p style="font-family: NanumGothic">
+    이따금 배열이나 리스트에서 원소를 꺼낼 때 ordinal 메소드로 인덱스를 얻는 코드가 있다.
+    식물을 간단히 나타낸 다음 클래스를 예로 살펴보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">class</span>&nbsp;Plant&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;enum&nbsp;LifeCycle&nbsp;{&nbsp;ANNUAL,&nbsp;PERNNIAL,&nbsp;BIENNIAL&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">String</span>&nbsp;name;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">final</span>&nbsp;LifeCycle&nbsp;lifeCycle;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Plant(<span style="color:#4be6fa">String</span>&nbsp;name,&nbsp;LifeCyle&nbsp;lifeCycle)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.name&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;name;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.lifeCycle&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;lifeCycle;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">String</span>&nbsp;<span style="color:#4be6fa">toString</span>()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;name;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    배열의 인덱스를 얻기 위해 ordinal을 쓰는 것은 일반적으로 좋지 않으니, 대신 EnumMap을 사용하라.
+    다차원 관계는 EnumMap&lt;..., EnumMap&lt;...&gt;&gt;으로 표현하라.
+    "애플리케이션 프로그래머는 Enum.ordinal을 웬만해서는 사용하지 말아야 한다"는 일반 원칙의 특수한 사례다.
+</p>
