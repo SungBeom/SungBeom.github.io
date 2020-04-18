@@ -25,6 +25,26 @@ background: '/img/posts/EffectiveJava.jpg'
 <p style="font-family: NanumGothic">
     안타깝게도 equals를 '재정의(overrideing)'한 게 아니라 '다중정의(overloading)'해버렸다.
     Object의 equals를 재정의하려면 매개변수 타입을 Object로 해야만 하는데, 그렇게 하지 않고 Object에서 상속한 equals와는 별개인 equals를 새로 정의한 꼴이 되었다.
+    이 오류는 컴파일러가 찾아낼 수 있지만, 그러려면 Object.equals를 재정의한다는 의도를 @Override 애너테이션을 달아 명시해야 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    그러니 <strong>상위 클래스의 메소드를 재정의하려는 모든 메소드에 @Override 애너테이션을 달자.</strong>
+    예외적으로 구체 클래스에서 상위 클래스의 추상 메소드를 재정의할 때는 굳이 @Override를 달지 않아도 된다.
+    구체 클래스인데 아직 구현하지 않은 추상 메소드가 남아 있다면 컴파일러가 그 사실을 바로 알려주기 때문이다.
+    물론 재정의 메소드 모두에 @Override를 일괄로 붙여두는 게 좋아 보인다면 그래도 상관없다.
+</p>
+
+<p style="font-family: NanumGothic">
+    IDE는 @Override를 일관되게 사용하도록 부추기기도 한다.
+    IDE에서 관련 설정을 활성화해놓으면 @Override가 달려있지 않은 메소드가 실제로는 재정의를 했다면 경고를 준다.
+    재정의할 의도였으나 실수로 새로운 메소드를 추가했을 때 알려주는 컴파일 오류의 보완제 역할로 보면 되겠다.
+</p>
+
+<p style="font-family: NanumGothic">
+    @Override는 클래스뿐 아니라 인터페이스의 메소드를 재정의할 때도 사용할 수 있다.
+    디폴트 메소드를 지원하기 시작하면서, 인터페이스 메소드를 구현한 메소드에도 @Override를 다는 습관을 들이면 시그니처가 올바른지 재차 확신할 수 있다.
+    구현하려는 인터페이스에 디폴트 메소드가 없음을 안다면 이를 구현한 메소드에서는 @Override를 생략해 코드를 조금 더 깔끔히 유지해도 좋으나, 추상 클래스나 인터페이스에서는 상위 클래스나 상위 인터페이스의 메소드를 재정의하는 모든 메소드에 @Override를 다는 것이 좋다.
 </p>
 
 <br>
