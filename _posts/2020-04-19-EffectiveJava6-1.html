@@ -1,0 +1,99 @@
+---
+layout: post
+title: "[Effective Java]익명 클래스보다는 람다를 사용하라"
+subtitle: "람다와 스트림, 첫 번째 아이템"
+date: 2020-04-18 17:06:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">익명 클래스</h2>
+
+<p style="font-family: NanumGothic">
+    예전에는 자바에서 함수 타입을 표현할 때 추상 메소드를 하나만 담은 인터페이스(드물게는 추상 클래스)를 사용했다.
+    이런 인터페이스의 인스턴스를 함수 객체(function object)라고 하여, 특정 함수나 동작을 나타내는 데 썼다.
+    함수 객체를 만드는 주요 수단은 익명 클래스였는데, 문자열을 길이순으로 정렬할 때 정렬을 위한 비교 함수를 예로 보자.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;익명&nbsp;클래스의&nbsp;인스턴스를&nbsp;함수&nbsp;객체로&nbsp;사용&nbsp;-&nbsp;낡은&nbsp;기법이다!</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Collections.sort(words,&nbsp;<span style="color:#ff3399">new</span>&nbsp;Comparator<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span><span style="color:#4be6fa">String</span><span style="color:#ff3399">&gt;</span>()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;compare(<span style="color:#4be6fa">String</span>&nbsp;s1,&nbsp;<span style="color:#4be6fa">String</span>&nbsp;s2)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;Integer.compare(s1.<span style="color:#4be6fa">length</span>(),&nbsp;s2.<span style="color:#4be6fa">length</span>());</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">});</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    전략 패턴처럼 함수 객체를 사용하는 과거 객체 지향 디자인 패턴에는 익명 클래스면 충분했다.
+    하지만 익명 클래스 방식은 코드가 너무 길기 때문에 자바는 함수형 프로그래밍에 적합하지 않았다.
+</p>
+
+<h2 class="section-heading">람다</h2>
+
+<p style="font-family: NanumGothic">
+    자바 8에 와서 추상 메소드 하나짜리 인터페이스는 특별한 의미를 인정받아 특별한 대우를 받게 되는데, 지금은 함수형 인터페이스라 부르는 이 인터페이스들의 인스턴스를 람다식(lambda expression, 혹은 짧게 람다)을 사용해 만들 수 있게 된 것이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    람다는 함수나 익명 클래스와 개념은 비슷하지만 코드는 훨씬 간결하다.
+    다음은 익명 클래스를 사용한 앞의 코드를 람다 방식으로 바꾼 모습이다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;람다식을&nbsp;함수&nbsp;객체로&nbsp;사용&nbsp;-&nbsp;익명&nbsp;클래스&nbsp;대체</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Collections.sort(words,</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(s1,&nbsp;s2)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;Integer.compare(s1.<span style="color:#4be6fa">length</span>(),&nbsp;s2.<span style="color:#4be6fa">length</span>()));</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    여기서 람다, 매개변수(s1, s2), 반환값의 타입은 각각 (Comparator&lt;String&gt;), String, int지만 코드에서는 언급이 없다.
+    우리 대신 컴파일러가 문맥을 살펴 타입을 추론해준 것이다.
+    상황에 따라 컴파일러가 타입을 결정하지 못할 수도 있는데, 그럴 때는 프로그래머가 직접 명시해야 한다.
+    <strong>타입을 명시해야 코드가 더 정확할 때만 제외하고는, 람다의 모든 매개변수 타입은 생략하자.</strong>
+    컴파일러가 "타입을 알 수 없다"는 오류를 낼 때만 해당 타입을 명시하면 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    람다 자리에 비교자 생성 메소드를 사용하면 이 코드를 더 간결하게 만들 수 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">Collections.sort(words,&nbsp;comparingInt(<span style="color:#4be6fa">String</span>::<span style="color:#4be6fa">length</span>));</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    더 나아가 자바 8 때 List 인터페이스에 추가된 sort 메소드를 이용하면 더욱 짧아진다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">words.sort(comparingInt(<span style="color:#4be6fa">String</span>::<span style="color:#4be6fa">length</span>));</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    람다를 언어 차원에서 지원하면서 기존에는 적합하지 않았던 곳에서도 함수 객체를 실용적으로 사용할 수 있게 되었다.
+    다음은 Operation 열거 타입을 람다를 이용해 구현한 예다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div><div style="line-height:130%">14</div><div style="line-height:130%">15</div><div style="line-height:130%">16</div><div style="line-height:130%">17</div><div style="line-height:130%">18</div><div style="line-height:130%">19</div><div style="line-height:130%">20</div><div style="line-height:130%">21</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;함수&nbsp;객체(람다)를&nbsp;인스턴스&nbsp;필드에&nbsp;저장해&nbsp;상수별&nbsp;동작을&nbsp;구현한&nbsp;열거&nbsp;타입</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;enum&nbsp;Operation&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;PLUS&nbsp;&nbsp;(<span style="color:#ffd500">"+"</span>,&nbsp;(x,&nbsp;y)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;x&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;y),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;MINUS&nbsp;(<span style="color:#ffd500">"-"</span>,&nbsp;(x,&nbsp;y)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;x&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span>&nbsp;y),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;TIMES&nbsp;(<span style="color:#ffd500">"*"</span>,&nbsp;(x,&nbsp;y)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;x&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">*</span>&nbsp;y),</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;DIVIDE(<span style="color:#ffd500">"/"</span>,&nbsp;(x,&nbsp;y)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;x&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">/</span>&nbsp;y);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;<span style="color:#4be6fa">String</span>&nbsp;symbol;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">private</span>&nbsp;<span style="color:#ff3399">final</span>&nbsp;DoubleBinaryOperator&nbsp;op;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Operation(<span style="color:#4be6fa">String</span>&nbsp;symbol,&nbsp;DoubleBinaryOperator&nbsp;op)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.symbol&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;symbol;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">this</span>.op&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;op;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;@Override&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">String</span>&nbsp;<span style="color:#4be6fa">toString</span>()&nbsp;{&nbsp;<span style="color:#ff3399">return</span>&nbsp;symbol;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#4be6fa">double</span>&nbsp;apply(<span style="color:#4be6fa">double</span>&nbsp;x,&nbsp;<span style="color:#4be6fa">double</span>&nbsp;y)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;op.applyAsDouble(x,&nbsp;y);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    람다를 이용하면 열거 타입의 인스턴스 필드를 이용하는 방식으로 상수별로 다르게 동작하는 코드를 쉽게 구현할 수 있다.
+    단순히 각 열거 타입의 상수의 동작을 람다로 구현해 생성자에 넘기고, 생성자는 이 람다를 인스턴스 필드로 저정해둔 다음, apply 메소드에서 필드에 저장된 람다를 호출하기만 하면 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    람다 기반 Operation 열거 타입을 보면 상수별 클래스 몸체는 더 이상 사용할 이유가 없다고 느낄지 모르지만, 꼭 그렇지는 않다.
+    메소드나 클래스와 달리, <strong>람다는 이름이 없고 문서화도 못한다.</strong>
+    <strong>따라서 코드 자체로 동작이 명확히 설명되지 않거나 코드 줄 수가 많아지면 람다를 쓰지 말아야 한다.</strong>
+    람다는 한 줄일 때 가장 좋고 길어야 세 줄 안에 끝내는 게 좋다.
+</p>
+
+<p style="font-family: NanumGothic">
+    람다가 도입되면서 익명 클래스의 입지가 좁아지긴 했으나, 람다로 대체할 수 없는 곳이 있다.
+    람다는 함수형 인터페이스에서만 쓰인다.
+    예컨대 추상 클래스의 인스턴스를 만들 때 람다를 쓸 수 없으니, 익명 클래스를 써야 한다.
+    비슷하게 추상 메소드가 여러 개인 인터페이스의 인스턴스를 만들 때도 익명 클래스를 쓸 수 있다.
+    마지막으로, 람다는 자신을 참조할 수 없다.
+    람다에서의 this 키워드는 바깥 인스턴스를 가리키는 반면, 익명 클래스에서의 this는 익명 클래스의 인스턴스 자신을 가리키기 때문에 함수 객체가 자신을 참조해야 한다면 반드시 익명 클래스를 써야 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    람다로 익명 클래스처럼 직렬화 형태가 구현별로 다를 수 있다.
+    따라서 <strong>람다를 직렬화하는 일은 극히 삼가야 한다</strong>(익명 클래스의 인스턴스도 마찬가지다).
+    직렬화해야만 하는 함수 객체가 있다면 private 정적 중첩 클래스의 인스턴스를 사용하자.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    자바가 8로 판올림되면서 작은 함수 객체를 구현하는 데 적합한 람다가 도입되었다.
+    익명 클래스는 함수형 인터페이스가 아닌 타입의 인스턴스를 만들 때만 사용하라.
+    람다는 작은 함수 객체를 아주 쉽게 표현할 수 있어 이전 자바에서는 실용적이지 않던 함수형 프로그래밍의 지평을 열었다.
+</p>
