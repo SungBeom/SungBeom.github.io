@@ -11,17 +11,15 @@ background: '/img/posts/EffectiveJava.jpg'
 <p style="font-family: NanumGothic">
     람다가 익명 클래스보다 나은 점 중에서 가장 큰 특징은 간결함이다.
     그런데 자바에는 함수 객체를 심지어 람다보다도 더 간결하게 만드는 방법이 있으니, 바로 메소드 참조(method reference)다.
-    다음 코드는 임의의 키와 Integer 값의 매핑을 관리하는 프로그램의 일부다.
+    다음 코드는 임의의 키와 Integer 값의 매핑을 관리하는 프로그램으로 키가 맵 안에 없다면 키와 숫자 1을 매핑하고, 이미 있다면 기존 매핑 값을 증가시키는 코드의 일부다.
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">map.merge(key,&nbsp;<span style="color:#c10aff">1</span>,&nbsp;(count,&nbsp;incr)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;count&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;incr);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
 
 <p style="font-family: NanumGothic">
-    위 코드는 키가 맵 안에 없다면 키와 숫자 1을 매핑하고, 이미 있다면 기존 매핑 값을 증가시킨다.
     merge 메소드는 키, 값, 함수를 인수로 받으며, 주어진 키가 맵 안에 아직 없다면 주어진 {키, 값} 쌍을 그대로 저장한다.
     반대로 키가 이미 있다면 세 번째 인수로 받은 함수를 현재 값과 주어진 값에 적용한 다음, 그 결과로 현재 값을 덮어쓴다.
     즉, 맵에 {키, 함수의 결과} 쌍을 저장한다.
-    이 코드는 merge 메소드의 전형적인 쓰임을 잘 보여주고 있다.
 </p>
 
 <p style="font-family: NanumGothic">
@@ -29,6 +27,47 @@ background: '/img/posts/EffectiveJava.jpg'
     매개변수인 count와 incr은 크게 하는 일 없이 공간을 꽤 차지한다.
     사실 이 람다는 두 인수의 합을 단순히 반환할 뿐이다.
     자바 8이 되면서 Integer 클래스(와 모든 기본 타입의 박싱 타입)는 이 람다와 기능이 같은 정적 메소드 sum을 제공하여 람다 대신 이 메소드의 참조를 전달하면 똑같은 결과를 더 보기 좋게 얻을 수 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">map.merge(key,&nbsp;<span style="color:#c10aff">1</span>,&nbsp;Integer::sum);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">람다 vs 메소드 참조</h2>
+
+<p style="font-family: NanumGothic">
+    매개변수 수가 늘어날수록 메소드 참조로 제거할 수 있는 코드양도 늘어난다.
+    하지만 어떤 람다에서는 매개변수의 이름 자체가 프로그래머에게 좋은 가이드가 되기도 한다.
+    이런 람다는 길이는 더 길지만 메소드 참조보다 읽기 쉽고 유지보수도 쉬울 수 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    람다로 할 수 없는 일이라면 메소드 참조로도 할 수 없다(딱 한가지 예외가 있는데 바로 제네릭 함수 타입(generic function type) 구현이다).
+    그렇더라도 메소드 참조를 사용하는 편이 보통은 더 짧고 간결하므로, 람다로 구현했을 때 너무 길거나 복잡하다면 메소드 참조가 좋은 대안이 되어준다.
+    즉, 람다로 작성할 코드를 새로운 메소드에 담은 다음, 람다 대신 그 메소드 참조를 사용하는 식이다.
+    메소드 참조에는 기능을 잘 드러내는 이름을 지어줄 수 있고 친절한 설명을 문서로 남길 수도 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    IDE들은 람다를 메소드 참조로 대체하라고 권할 것이다.
+    하지만 때론 람다가 메소드 참조보다 간결할 때가 있고, 메소드 참조 쪽이 명확하지 않을 때가 있다.
+    이런 경우에는 람다를 쓰는 쪽이 낫다.
+</p>
+
+<h2 class="section-heading">메소드 참조의 유형</h2>
+
+<p style="font-family: NanumGothic">
+    메소드 참조의 유형은 다섯 가지로, 가장 흔한 유형은 앞의 예에서 본 것처럼 정적 메소드를 가리키는 메소드 참조다.
+</p>
+
+<p style="font-family: NanumGothic">
+    나머지 중에 인스턴스 메소드를 참조하는 유형이 두 가지 있다.
+    그 중 하나는 수신 객체(receiving object, 참조 대상 인스턴스)를 특정하는 한정적(bound) 인스턴스 메소드 참조이고, 다른 하나는 수신 객체를 특정하지 않는 비한정적(unbound) 인스턴스 메소드 참조다.
+    함정적 참조는 근본적으로 정적 참조와 비슷한데, 함수 객체가 받는 인수와 참조되는 메소드가 받는 인수가 똑같다.
+    비한정적 참조에서는 함수 객체를 적용하는 시점에 수신 객체를 알려주므로, 수신 객체 전달용 매개변수가 매개변수 목록의 첫 번째로 추가되며, 그 뒤로는 참조되는 메소드 선언에 정의된 매개변수들이 뒤따른다.
+</p>
+
+<p style="font-family: NanumGothic">
+    마지막으로, 클래스 생성자를 가리키는 메소드 참조와 배열 생성자를 가리키는 메소드 참조가 있다.
+    생성자 참조는 팩토리 객체로 사용된다.
 </p>
 
 <br>
