@@ -1,0 +1,41 @@
+---
+layout: post
+title: "[Effective Java]람다보다는 메소드 참조를 사용하라"
+subtitle: "람다와 스트림, 두 번째 아이템"
+date: 2020-04-18 23:00:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">메소드 참조</h2>
+
+<p style="font-family: NanumGothic">
+    람다가 익명 클래스보다 나은 점 중에서 가장 큰 특징은 간결함이다.
+    그런데 자바에는 함수 객체를 심지어 람다보다도 더 간결하게 만드는 방법이 있으니, 바로 메소드 참조(method reference)다.
+    다음 코드는 임의의 키와 Integer 값의 매핑을 관리하는 프로그램의 일부다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%">map.merge(key,&nbsp;<span style="color:#c10aff">1</span>,&nbsp;(count,&nbsp;incr)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;count&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span>&nbsp;incr);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    위 코드는 키가 맵 안에 없다면 키와 숫자 1을 매핑하고, 이미 있다면 기존 매핑 값을 증가시킨다.
+    merge 메소드는 키, 값, 함수를 인수로 받으며, 주어진 키가 맵 안에 아직 없다면 주어진 {키, 값} 쌍을 그대로 저장한다.
+    반대로 키가 이미 있다면 세 번째 인수로 받은 함수를 현재 값과 주어진 값에 적용한 다음, 그 결과로 현재 값을 덮어쓴다.
+    즉, 맵에 {키, 함수의 결과} 쌍을 저장한다.
+    이 코드는 merge 메소드의 전형적인 쓰임을 잘 보여주고 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    깔끔해 보이는 코드지만 아직도 거추장스러운 부분이 남아 있다.
+    매개변수인 count와 incr은 크게 하는 일 없이 공간을 꽤 차지한다.
+    사실 이 람다는 두 인수의 합을 단순히 반환할 뿐이다.
+    자바 8이 되면서 Integer 클래스(와 모든 기본 타입의 박싱 타입)는 이 람다와 기능이 같은 정적 메소드 sum을 제공하여 람다 대신 이 메소드의 참조를 전달하면 똑같은 결과를 더 보기 좋게 얻을 수 있다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    메소드 참조는 람다의 간단명료한 대안이 될 수 있다.
+    메소드 참조 쪽이 짧고 명확하다면 메소드 참조를 쓰고, 그렇지 않을 때만 람다를 사용하라.
+</p>
