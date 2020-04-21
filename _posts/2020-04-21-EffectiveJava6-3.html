@@ -1,0 +1,116 @@
+---
+layout: post
+title: "[Effective Java]표준 함수형 인터페이스를 사용하라"
+subtitle: "람다와 스트림, 세 번째 아이템"
+date: 2020-04-21 23:00:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    자바가 람다를 지원하면서 API를 작성하는 모범 사례도 크게 바뀌었다.
+    예컨대 상위 클래스의 기본 메소드를 재정의해 원하는 동작을 구현하는 템플릿 메소드 패턴의 매력이 크게 줄고, 이를 같은 효과의 함수 객체를 받는 정적 팩토리나 생성자를 제공하는 추세다.
+    일반화해서 말하면 함수 객체를 매개변수로 받는 생성자와 메소드를 더 많이 만들어야 한다는 것이다.
+    이때 함수형 매개변수 타입을 올바르게 선택해야 한다.
+</p>
+
+<h2 class="section-heading">함수형 인터페이스</h2>
+
+<p style="font-family: NanumGothic">
+    LinkedHashMap의 경우 protected 메소드인 removeEldestEntry를 재정의하면 캐시로 사용할 수 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">protected</span>&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;removeEldestEntry(Map.Entry<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>K,V<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;eldest)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;size()&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#c10aff">100</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    잘 동작하지만 람다를 사용하면 훨씬 잘 해낼 수 있다.
+    LinkedHashMap을 오늘날 다시 구현한다면 함수 객체를 받는 정적 팩토리나 생성자를 제공했을 것이다.
+    함수형 인터페이스는 다음처럼 선언할 수 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;불필요한&nbsp;함수형&nbsp;인터페이스&nbsp;-&nbsp;대신&nbsp;표준&nbsp;함수형&nbsp;인터페이스를&nbsp;사용하라</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">@FunctionalInterface&nbsp;<span style="color:#ff3399">interface</span>&nbsp;EldestEntryRemovalFunction<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>K,V<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">boolean</span>&nbsp;remove(Map<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>K,V<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;map,&nbsp;Map.Entry<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>K,V<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;eldest);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 인터페이스도 잘 동작하기는 하지만, 굳이 사용할 이유는 없다.
+    자바 표준 라이브러리에 이미 같은 모양의 인터페이스가 준비되어 있기 때문이다.
+    <strong>필요한 용도에 맞는 게 있다면, 직접 구현하지 말고 표준 함수형 인터페이스를 활용하라.</strong>
+    그러면 API가 다루는 개념의 수가 줄어들어 익히기 더 쉬워지고, 표준 함수형 인터페이스들은 유용한 디폴트 메소드를 많이 제공하므로 다른 코드와의 상호운용성도 크게 좋아질 것이다.
+</p>
+
+<h2 class="section-heading">표준 함수형 인터페이스</h2>
+
+<p style="font-family: NanumGothic">
+    java.util.function 패키지에는 총 43개의 인터페이스가 담겨 있다.
+    그 중 참조 타입용 기본 인터페이스 6개를 보자.
+</p>
+
+<p style="font-family: NanumGothic">
+    Operator 인터페이스는 인수가 1개인 UnaryOperator와 2개의 BinaryOperator로 나뉘며, 반환값과 인수의 타입이 같은 함수를 뜻한다.
+    Predicate 인터페이스는 인수 하나를 받아 boolean을 반환하는 함수를 뜻하며, Function 인터페이스는 인수와 반환 타입이 다른 함수를 뜻한다.
+    Supplier 인터페이스는 인수를 받지 않고 값을 반환(혹은 제공)하는 함수를, Consumer 인터페이스는 인수를 하나 받고 반환값은 없는(특히 인수를 소비하는) 함수를 뜻한다.
+    나머지는 앞서 언급한 6개의 기본 인터페이스의 변형이다.
+    자주 쓰이는 함수형 인터페이스 중 상당수를 제공하며, 필요할 때 찾아 쓸 수 있을 만큼은 범용적인 이름을 사용했다.
+</p>
+
+<p style="font-family: NanumGothic">
+    표준 함수형 인터페이스 대부분은 기본 타입만 지원한다.
+    그렇다고 <strong>기본 함수형 인터페이스에 박싱된 기본 타입을 넣어 사용하지는 말자.</strong>
+    동작은 하지만 계산량이 많을 때는 성능이 처참히 느려질 수 있다.
+</p>
+
+<h2 class="section-heading">전용 함수형 인터페이스를 작성하는 경우</h2>
+
+<p style="font-family: NanumGothic">
+    표준 인터페이스 중 필요한 용도에 맞는 게 없다면 직접 작성해야 한다.
+    또한 구조적으로 똑같은 표준 함수형 인터페이스가 있더라도, 다음 세 가지 조건 중 하나 이상을 만족한다면 전용 함수형 인터페이스를 구현해야 하는 건 아닌지 진중히 고민해야 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    첫 번째, 자주 쓰이며 이름 자체가 용도를 명확히 설명해준다.<br>
+    두 번째, 반드시 따라야 하는 규약이 있다.<br>
+    세 번째, 유용한 디폴트 메소드를 제공할 수 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    전용 함수형 인터페이스를 작성하기로 했다면, 자신이 작성하는 게 다른 것도 아닌 '인터페이스'임을 명심해야 한다.
+    아주 주의해서 설계해야 한다는 뜻이다.
+</p>
+
+<h2 class="section-heading">@FunctionalInterface 애너테이션</h2>
+
+<p style="font-family: NanumGothic">
+    @FunctionalInterface 애너테이션을 사용하는 이유는 @Override를 사용하는 이유와 비슷하다.
+    프로그래머의 의도를 명시하는 것으로, 크게 세 가지 목적이 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    첫 번째, 해당 클래스의 코드나 설명 문서를 읽을 이에게 그 인터페이스가 람다용으로 설계된 것임을 알려준다.<br>
+    두 번째, 해당 인터페이스가 추상 메소드를 오직 하나만 가지고 있어야 컴파일되게 해준다.<br>
+    세 번째, 그 결과 유지보수 과정에서 누군가 실수로 메소드를 추가하지 못하게 막아준다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>그러니 직접 만든 함수형 인터페이스는 항상 @FunctionalInterface 애너테이션을 사용하라.</strong>
+</p>
+
+<h2 class="section-heading">함수형 인터페이스를 API에서 사용할 때의 주의점</h2>
+
+<p style="font-family: NanumGothic">
+    함수형 인터페이스를 API에서 사용할 때는 서로 다른 함수형 인터페이스를 같은 위치의 인수로 받는 메소드들을 다중정의해서는 안 된다.
+    클라이언트에게 불필요한 모호함만 안겨줄 뿐이며, 이 모호함으로 인해 실제로 문제가 일어나기도 한다.
+    이런 문제를 피하는 가장 쉬운 방법은 서로 다른 함수형 인터페이스를 같은 위치의 인수로 사용하는 다중정의를 피하는 것이다.
+
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    이제 자바도 람다를 지원한다.
+    여러분도 지금부터는 API를 설계할 때 람다도 염두에 두어야 한다는 뜻이다.
+    입력값과 반환값에 함수형 인터페이스 타입을 활용하라.
+    보통은 java.util.function 패키지의 표준 함수형 인터페이스를 사용하는 것이 가장 좋은 선택이다.
+    단, 흔치는 않지만 직접 새로운 함수형 인터페이스를 만들어 쓰는 편이 나을 수도 있음을 잊지 말자.
+</p>
