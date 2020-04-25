@@ -1,0 +1,28 @@
+---
+layout: post
+title: "[Effective Java]스트림 병렬화는 주의해서 적용하라"
+subtitle: "람다와 스트림, 일곱 번째 아이템"
+date: 2020-04-25 23:26:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    동시성 프로그래밍 측면에서 자바는 항상 앞서갔다.
+    1996년부터 스레드, 동기화, wait/notify를 지원했다.
+    자바 5부터는 동시성 컬렉션인 java.util.concurrent 라이브러리와 실행자(Executor) 프레임워크를 지원했고, 자바 7부터는 고성능 병렬 분해(parallel decom-position) 프레임워크인 포크-조인(fork-join) 패키지를 추가했다.
+    그리고 자바 8부터는 parallel 메소드만 한 번 호출하면 파이프라인을 병렬 실행할 수 있는 스트림을 지원했다.
+    자바로 동시성 프로그램을 작성하기가 점점 쉬워지고는 있지만, 병렬 스트림 파이프라인에서 안전성(safety)과 응답 가능(liveness) 상태를 유지하기는 여전히 어려운 작업이다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    계산도 올바로 수행하고 성능도 빨라질 거라는 확신 없이는 스트림 파이프라인 병렬화는 시도조차 하지 말라.
+    스트림을 잘못 병렬화하면 프로그램을 오동작하게 하거나 성능을 급격히 떨어뜨린다.
+    병렬화하는 편이 낫다고 믿더라도, 수정 후의 코드가 여전히 정확한지 확인하고 운영 환경과 유사한 조건에서 수행해보며 성능지표를 유심히 관찰하라.
+    그래서 계산도 정확하고 성능도 좋아졌음이 확실해졌을 때, 오직 그럴 때만 병렬화 버전 코드를 운영 코드에 반영하라.
+</p>
