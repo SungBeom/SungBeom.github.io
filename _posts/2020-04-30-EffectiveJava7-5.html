@@ -1,0 +1,58 @@
+---
+layout: post
+title: "[Effective Java]가변인수는 신중히 사용하라"
+subtitle: "메소드, 다섯 번째 아이템"
+date: 2020-04-30 15:34:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">가변인수 메소드</h2>
+
+<p style="font-family: NanumGothic">
+    가변인수(varargs) 메소드는 명시한 타입의 인수를 0개 이상 받을 수 있다.
+    가변인수 메소드를 호출하면, 가장 먼저 인수의 개수와 길이가 같은 배열을 만들고 인수들을 이 배열에 저장하여 가변인수 메소드에 건네준다.
+    다음은 입력받은 int 인수들의 합을 계산해주는 가변인수 메소드다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#d1c1c1;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;간단한&nbsp;가변인수&nbsp;활용&nbsp;예</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">static</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;sum(<span style="color:#4be6fa">int</span>...&nbsp;args)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;sum&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">for</span>&nbsp;(<span style="color:#4be6fa">int</span>&nbsp;arg&nbsp;:&nbsp;args)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;arg;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;sum;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    인수가 1개 이상이어야 할 때도 있다.
+    예컨대 최소값을 찾는 메소드인데 인수를 0개만 받을 수도 있도록 설계하는 건 좋지 않다.
+    인수 개수는 런타임에 자동 생성된 배열의 길이로 알 수 있다.
+    이럴 때는 매개변수를 2개 받도록 하면 된다.
+    즉, 첫 번째로는 평범한 매개변수를 받고, 가변인수는 두 번째로 받으면 된다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;인수가&nbsp;1개&nbsp;이상이어야&nbsp;할&nbsp;때&nbsp;가변인수를&nbsp;사용하는&nbsp;방법</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">static</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;min(<span style="color:#4be6fa">int</span>&nbsp;firstArg,&nbsp;<span style="color:#4be6fa">int</span>...&nbsp;remainArgs)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;min&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;firstArg;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">for</span>&nbsp;(<span style="color:#4be6fa">int</span>&nbsp;arg&nbsp;:&nbsp;remainingArgs)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(arg&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;min)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;arg;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;min;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    가변인수는 인수 개수가 정해지지 않았을 때 아주 유용하다.
+    printf는 가변인수와 한 묶음으로 자바에 도입되었고, 이때 핵심 리플렉션 기능도 재정비되었다.
+</p>
+
+<p style="font-family: NanumGothic">
+    그런데 성능에 민감한 상황이라면 가변인수가 걸림돌이 될 수 있다.
+    가변인수 메소드는 호출될 때마다 배열을 새로 하나 할당하고 초기화한다.
+    다행히, 이 비용을 감당할 수는 없지만 가변인수의 유연성이 필요할 때 선택할 수 있는 멋진 패턴이 있다.
+    예를 들어 해당 메소드 호출의 95%가 인수를 3개 이하로 사용한다고 하면, 인수가 0개인 것부터 4개인 것까지 다중정의하자.
+    마지막 다중정의 메소드가 인수 4개 이상인 5%의 호출을 담당하는 것이다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;foo()&nbsp;{&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;foo(<span style="color:#4be6fa">int</span>&nbsp;a1)&nbsp;{&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;foo(<span style="color:#4be6fa">int</span>&nbsp;a1,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;a2)&nbsp;{&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;foo(<span style="color:#4be6fa">int</span>&nbsp;a1,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;a2,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;a3)&nbsp;{&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;foo(<span style="color:#4be6fa">int</span>&nbsp;a1,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;a2,&nbsp;<span style="color:#4be6fa">int</span>&nbsp;a3,&nbsp;<span style="color:#4be6fa">int</span>...&nbsp;rest)&nbsp;{&nbsp;}</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    따라서 메소드 호출 중 단 5%만이 배열을 생성한다.
+    대다수의 성능 최적화와 마찬가지로 이 기법도 보통 때는 별 이득이 없지만, 꼭 필요한 특수 상황에서는 효과적이다.
+    EnumSet의 정적 팩토리도 이 기법을 사용해 열거 타입 집합 생성 비용을 최소화한다.
+    EnumSet은 비트 필드를 대체하면서 성능까지 유지해야 하므로 아주 적절하게 활용한 예라 할 수 있다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    인수 개수가 일정하지 않은 메소드를 정의해야 한다면 가변인수가 반드시 필요하다.
+    메소드를 정의할 때 필수 매개변수는 가변인수 앞에 두고, 가변인수를 사용할 때는 성능 문제까지 고려하자.
+</p>
