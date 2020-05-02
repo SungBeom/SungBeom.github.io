@@ -6,7 +6,7 @@ date: 2020-05-01 22:38:00
 background: '/img/posts/EffectiveJava.jpg'
 ---
 
-<h2 class="section-heading"></h2>
+<h2 class="section-heading">null 반환의 문제점</h2>
 
 <p style="font-family: NanumGothic">
     컬렉션이나 배열 같은 컨테이너(container)가 비었을 때 null을 반환하는 코드는 주변에서 흔히 볼 수 있다.
@@ -14,6 +14,8 @@ background: '/img/posts/EffectiveJava.jpg'
     클라이언트에서 방어 코드를 빼먹으면 오류가 발생할 수 있다.
     한편, null을 반환하려면 반환하는 쪽에서도 이 상황을 특별히 취급해줘야 해서 코드가 더 복잡해진다.
 </p>
+
+<h2 class="section-heading">빈 컬렉션을 반환하는 방법</h2>
 
 <p style="font-family: NanumGothic">
     빈 컨테이너를 할당하는 데도 비용이 드니 null을 반환하는 쪽이 낫다는 주장도 있지만, 이는 두 가지 면에서 틀린 주장이다.
@@ -32,6 +34,8 @@ background: '/img/posts/EffectiveJava.jpg'
 </p>
 
 <div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;최적화&nbsp;-&nbsp;빈&nbsp;컬렉션을&nbsp;매번&nbsp;새로&nbsp;할당하지&nbsp;않도록&nbsp;했다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;List<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>Cheese<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;getCheeses()&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;cheesesInStock.isEmpty()&nbsp;?&nbsp;Collections.emptyList()</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<span style="color:#ff3399">new</span>&nbsp;ArrayList<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>(cheesesInStock);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">빈 배열을 반환하는 방법</h2>
 
 <p style="font-family: NanumGothic">
     배열을 쓸 때도 마찬가지로, 절대 null을 반환하지 말고 길이가 0인 배열을 반환하라.
