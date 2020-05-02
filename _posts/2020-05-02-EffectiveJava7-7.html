@@ -1,0 +1,136 @@
+---
+layout: post
+title: "[Effective Java]옵셔널 반환은 신중히 하라"
+subtitle: "메소드, 일곱 번째 아이템"
+date: 2020-05-02 13:51:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    자바 8 전에는 메소드가 특정 조건에서 값을 반환할 수 없을 때 취할 수 있는 선택지가 두 가지 있었다.
+    예외를 던지거나, 반환 타입이 객체 참조라면 null을 반환하는 것이다.
+    예외는 진짜 예외적인 상황에서만 사용해야 하며 예외를 생성할 때 스택 추적 전체를 캡처하므로 비용이 만만치 않았다.
+    null을 반환하면 이런 문제는 생기지 않지만, 별도의 null 처리 코드를 추가해야 하며 무시했다간 상관없는 코드에서 NullPointerException이 발생할 수 있다.
+</p>
+
+<h2 class="section-heading">Optional 반환</h2>
+
+<p style="font-family: NanumGothic">
+    자바 버전이 8로 올라가면서 원소를 최대 1개 가질 수 있는 '불변' 컬렉션인  Optional&lt;T&gt;이 생겼다.
+    옵셔널은 null이 아닌 T 타입 참조를 하나 담거나, 혹은 아무것도 담지 않을 수 있다.
+    아무것도 담지 않은 옵셔널은 '비었다'고 말하고, 반대로 어떤 값을 담은 옵셔널은 '비지 않았다'고 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    보통은 T를 반환해야 하지만 특정 조건에서는 아무것도 반환하지 않아야 할 때 T 대신 Optional&lt;T&gt;를 반환하도록 선언하면 된다.
+    그러면 유효한 반환값이 없을 때는 빈 결과를 반환하는 메소드가 만들어진다.
+    옵셔널을 반환하는 메소드는 예외를 던지는 메소드보다 유연하고 사용하기 쉬우며, null을 반환하는 메소드보다 오류 가능성이 작다.
+</p>
+
+<p style="font-family: NanumGothic">
+    주어진 컬렉션에서 최댓값을 뽑아주는 메소드를 Optional&lt;E&gt;를 이용해 만들면 다음과 같다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div><div style="line-height:130%">10</div><div style="line-height:130%">11</div><div style="line-height:130%">12</div><div style="line-height:130%">13</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;컬렉션에서&nbsp;최댓값을&nbsp;구해&nbsp;Optional&lt;E&gt;로&nbsp;반환한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E&nbsp;<span style="color:#ff3399">extends</span>&nbsp;Comparable<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Optional<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;max(Collcetion<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;c)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(c.isEmpty())</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;Optional.empty();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;E&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#4be6fa">null</span>;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">for</span>&nbsp;(E&nbsp;e&nbsp;:&nbsp;C)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#4be6fa">null</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">|</span><span style="color:#0086b3"></span><span style="color:#ff3399">|</span>&nbsp;e.compareTo(result)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;<span style="color:#c10aff">0</span>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Objects.requireNonNull(e);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;Optional.of(result);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    옵셔널을 반환하도록 구현하려면 적절한 정적 팩토리를 사용해 옵셔널을 생성해주기만 하면 된다.
+    이 코드에서는 두 가지 팩토리를 사용했다.
+    빈 옵셔널은 Optionalempty()로 만들고, 값이 든 옵셔널은 Optional.of(value)로 생성했다.
+    Optional.of(value)에 null을 넣으면 NullPointerException을 던지니, null값도 허용하는 옵셔널을 만들려면 Optional.ofNullable(value)를 사용하면 된다.
+    <strong>옵셔널을 반환하는 메소드에서는 절대 null을 반환하지 말자.</strong>
+    옵셔널을 도입한 취지를 완전히 무시하는 행위다.
+</p>
+
+<p style="font-family: NanumGothic">
+    스트림의 종단 연산 중 상당수가 옵셔널을 반환한다.
+    앞의 max 메소드를 스트림 버전으로 다시 작성한다면 Stream의 max 연산이 우리에게 필요한 옵셔널을 생성해줄 것이다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;컬렉션에서&nbsp;최댓값을&nbsp;구해&nbsp;Optional&lt;E&gt;로&nbsp;반환한다.&nbsp;-&nbsp;스트림&nbsp;버전</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E&nbsp;<span style="color:#ff3399">extends</span>&nbsp;Comparable<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Optional<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;max(Collcetion<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>E<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;c)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;c.stream().max(Comparator.naturalOrder());</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">Optional 처리</h2>
+
+<p style="font-family: NanumGothic">
+    그렇다면 null을 반환하거나 예외를 던지는 대신 옵셔널 반환을 선택해야 하는 기준은 무엇인가?
+    <strong>옵셔널은 검사 예외와 취지가 비슷하다.</strong>
+    즉, 반환값이 없을 수도 있음을 API 사용자에게 명확히 알려준다.
+    비검사 예외를 던지거나 null을 반환한다면 API 사용자가 그 사실을 인지하지 못해 끔찍한 결과로 이어질 수 있다.
+    하지만 검사 예외를 던지면 클라이언트에서는 반드시 이에 대처하는 코드를 작성해넣어야 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    비슷하게, 메소드가 옵셔널을 반환한다면 클라이언트는 값을 받지 못했을 때 취할 행동을 선택해야 한다.
+    기본값을 설정하는 방법, 상황에 맞는 예외를 던지는 방법, 항상 값이 채워져 있다고 가정하는 방법이 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;옵셔널&nbsp;활용&nbsp;1&nbsp;-&nbsp;기본값을&nbsp;정해둘&nbsp;수&nbsp;있다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#4be6fa">String</span>&nbsp;lastWordInLexicon&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;max(words).orElse(<span style="color:#ffd500">"단어&nbsp;없음..."</span>);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;옵셔널&nbsp;활용&nbsp;2&nbsp;-&nbsp;원하는&nbsp;예외를&nbsp;던질&nbsp;수&nbsp;있다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Toy&nbsp;myToy&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;max(toys).orElseThrow(TemperTantrumException::<span style="color:#ff3399">new</span>);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;옵셔널&nbsp;활용&nbsp;3&nbsp;-&nbsp;항상&nbsp;값이&nbsp;채워져&nbsp;있다고&nbsp;가정한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Element&nbsp;lastNobleGas&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;max(Elements.NOBLE_GASES).get();</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    예외를 던지는 방법에서는 실제 예외가 아니라 예외 팩토리를 건네어 예외가 실제로 발생하지 않는 한 예외 생성 비용은 들지 않는다.
+    옵셔널에 항상 값이 채워져 있다고 가정하는 방법에서 잘못 판단한 것이라면 NoSuchElementException이 발생할 것이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    이따금 기본값을 설정하는 비용이 아주 커서 부담될 때가 있다.
+    그럴 때는 Supplier&lt;T&gt;를 인수로 받는 orElseGet을 사용하면, 값이 처음 필요할 때 Supplier&lt;T&gt;를 사용해 생성하므로 초기 설정 비용을 낮출 수 있다.
+    앞서의 기본 메소드로 처리하기 어려워 보인다면 더 특별한 쓰임에 대비한 메소드인 filter, map, flatMap, ifPresent를 고려해볼 수 있다.
+    API 문서를 참조해 이 고급 메소드들이 문제를 해결해줄 수 있을지 검토해보자.
+</p>
+
+<p style="font-family: NanumGothic">
+    여전히 적합한 메소드를 찾지 못했다면 isPresent 메소드를 살펴보자.
+    안전밸브 역할의 메소드로, 옵셔널이 채워져 있으면 true를, 비어 있으면 false를 반환한다.
+    이 메소드로 원하는 모든 작업을 수행할 수 있지만, 실제로 isPresent를 쓴 코드 중 상당수는 앞서 언급한 메소드들로 더 짧고 명확하고 용법에 맞는 코드로 대체할 수 있다.
+</p>
+
+<h2 class="section-heading">Optional 예외</h2>
+
+<p style="font-family: NanumGothic">
+    반환값으로 옵셔널을 사용한다고 해서 무조건 득이 되는 건 아니다.
+    <strong>컬렉션, 스트림, 배열, 옵셔널 같은 컨테이너 타입은 옵셔널로 감싸면 안 된다.</strong>
+    빈 컨테이너를 그대로 반환하면 클라이언트에 옵셔널 처리 코드를 넣지 않아도 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    그렇다면 어떤 경우에 메소드 반환 타입을 T 대신 Optional&lt;T&gt;로 선언해야 할까?
+    기본적으로 <strong>결과가 없을 수 있으며, 클라이언트가 이 상황을 특별하게 처리해야 한다면 Optional&lt;T&gt;를 반환한다.</strong>
+    그런데 이렇게 하더라도 Optional은 엄연히 새로 할당하고 초기화해야 하는 객체이고, 그 안에서 값을 꺼내려면 메소드를 호출해야 하니 Optional&lt;T&gt;를 반환하는 데는 대가가 따른다.
+    그래서 성능이 중요한 상황에서는 옵셔널이 맞지 않을 구 있고, 어떤 메소드가 이 상황에 처하는지 알아내려면 세심히 측정해보는 수밖에 없다.
+</p>
+
+<p style="font-family: NanumGothic">
+    박싱된 기본 타입을 담는 옵셔널은 값을 두 겹이나 감싸기 때문에 기본 타입 자체보다 무거울 수밖에 없다.
+    그래서 int, long, double 전용 옵셔널 클래스인 OptionalInt, OptionalLong, OptionalDouble이 준비되어 있다.
+    이렇게 대체재까지 있으니 <strong>박싱된 기본 타입을 담은 옵셔널을 반환하는 일은 없도록 하자.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    옵셔널을 맵의 값으로 사용하면 절대 안 된다.
+    만약 그리 한다면 맵 안에 키가 없다는 사실을 나타내는 방법이 두 가지가 된다.
+    하나는 키 자체가 없는 경우고, 다른 하나는 키는 있지만 그 키가 속이 빈 옵셔널인 경우다.
+    쓸데없이 복잡성만 높여서 혼란과 오류 가능성을 키울 뿐이다.
+    일반화해 이야기하면 <strong>옵셔널을 컬렉션의 키, 값, 원소나 배열의 원소로 사용하는 게 적절한 상황은 거의 없다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    옵셔널을 인스턴스 필드에 저장해두는 게 필요할 때가 있을까?
+    대부분은 필수 필드를 갖는 클래스와, 이를 확장해 선택적 필드를 추가한 하위 클래스를 따로 만들어야 하는 것이 맞다.
+    가끔은 적절한 상황도 있는데, 이럴 때는 필드 자체를 옵셔널로 선언하는 것도 좋은 방법이다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    값을 반환하지 못할 가능성이 있고, 호출할 때마다 반환값이 없을 가능성을 염두에 둬야 하는 메소드라면 옵셔널을 반환해야 할 상황일 수 있다.
+    하지만 옵셔널 반환에는 성능 저하가 뒤따르니, 성능에 민감한 메소드라면 null을 반환하거나 예외를 던지는 편이 나을 수 있다.
+    그리고 옵셔널을 반환값 이외의 용도로 쓰는 경우는 매우 드물다.
+</p>
