@@ -1,0 +1,92 @@
+---
+layout: post
+title: "[Effective Java]라이브러리를 익히고 사용하라"
+subtitle: "일반적인 프로그래밍 원칙, 세 번째 아이템"
+date: 2020-05-06 21:26:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">random 메소드의 결함</h2>
+
+<p style="font-family: NanumGothic">
+    0부터 명시한 수 사이의 값을 갖는 무작위 정수 하나를 생성하고 싶다고 해보자.
+    아주 흔히 마주치는 문제로, 많은 프로그래머가 다음과 같은 짤막한 메소드를 만들곤 한다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">static</span>&nbsp;<span style="color:#4be6fa">Random</span>&nbsp;rnd&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;<span style="color:#4be6fa">Random</span>();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">static</span>&nbsp;<span style="color:#4be6fa">int</span>&nbsp;random(<span style="color:#4be6fa">int</span>&nbsp;n)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;Math.abs(rnd.nextInt())&nbsp;%&nbsp;n;</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    괜찮은 듯 보여도 문제를 세 가지나 내포하고 있다.
+    첫 번째, n이 그리 크지 않은 2의 제곱수라면 얼마 지나지 않아 같은 수열이 반복된다.
+    두 번째, n이 제 2의 제곱수가 아니라면 몇몇 숫자가 평균적으로 더 자주 반환되며, n 값이 크면 이 현상은 더 두드러진다.
+    세 번째, 지정한 범위 '바깥'의 수가 종종 튀어나올 수 있다.
+    이 문제를 해결하려면 의사난수 생성기, 정수론, 2의 보수 계산 등에 조예가 깊어야 한다.
+</p>
+
+<h2 class="section-heading">라이브러리의 장점</h2>
+
+<p style="font-family: NanumGothic">
+    다행히 여러분이 직접 해결할 필요는 없는데, Random.nextInt(int)가 이미 해결해놨기 때문이다.
+    이 메소드의 자세한 동작 방식은 몰라도 되고, 제대로 동작하지 않을까 걱정할 필요도 없다.
+    <strong>표준 라이브러리를 사용하면 그 코드를 작성한 전문가의 지식과 여러분보다 앞서 사용한 다른 프로그래머들의 경험을 활용할 수 있다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    참고로 자바 7부터는 Random을 사용하는 대신, <strong>ThreadLocalRandom으로 대체하면 대부분 잘 작동한다.</strong>
+    Random보다 더 고품질의 무작위 수를 생성할 뿐 아니라 속도도 더 빠르다.
+    한편, 포크조인 풀이나 병렬 스트림에서는 SplittableRandom을 사용하라.
+</p>
+
+<p style="font-family: NanumGothic">
+    표준 라이브러리를 쓰는 두 번째 이점은 핵심적인 일과 크게 관련 없는 문제를 해결하느라 시간을 허비하지 않아도 된다는 것이다.
+    프로그래머들은 하부 공사를 하기보다는 애플리케이션 기능 개발에 집중하고 싶어 하며, 여러분도 마찬가지일 것이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    세 번째 이점은 따로 노력하지 않아도 성능이 지속해서 개선된다는 점이다.
+    사용자가 많고, 업계 표준 벤치마크를 사용해 성능을 확인하기 때문에 표준 라이브러리 제작자들은 더 나은 방법을 꾸준히 모색할 수밖에 없다.
+    자바 플랫폼 라이브러리 또한 마찬가지다.
+</p>
+
+<p style="font-family: NanumGothic">
+    네 번째 이점은 기능이 점점 많아진다는 것이다.
+    라이브러리에 부족한 부분이 있다면 개발자 커뮤니티에서 이야기가 나오고 논의된 후 다음 릴리즈에 해당 기능이 추가되곤 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    마지막 이점은 여러분이 작성한 코드가 많은 사람에게 낯익은 코드가 된다는 것이다.
+    자연스럽게 다른 개발자들이 더 읽기 좋고, 유지보수하기 좋고, 재활용하기 쉬운 코드가 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    <strong>메이저 릴리즈마다 주목할 만한 수많은 기능이 라이브러리에 추가된다.</strong>
+    자바는 메이저 릴리즈마다 새로운 기능을 설명하는 웹페이지를 공시하는데, 한 번쯤 읽어볼 만하다.
+    라이브러리가 너무 방대하여 모든 API 문서를 공부하기는 벅차겠지만 <strong>자바 프로그래머라면 적어도 java.lang, java.util, java.io와 그 하위 패키지들에는 익숙해져야 한다.</strong>
+    컬렉션 프레임워크와 스트림 라이브러리, java.util.concurrent의 동시성 기능도 알아두면 큰 도움이 된다. 
+    다른 라이브러리들은 필요할 때마다 익히기 바란다.
+</p>
+
+<p style="font-family: NanumGothic">
+    때때로 라이브러리가 여러분에게 필요한 기능을 충분히 제공하지 못할 수 있다.
+    더 전문적인 기능을 요구할수록 이런 일이 더 자주 생길 것이다.
+    우선은 라이브러리를 사용하려 시도해보자.
+    어떤 영역의 기능을 제공하는지 살펴보고, 여러분이 원하는 기능이 아니라 판단되면 대안을 사용하자.
+    어떤 라아브러리든 제공하는 기능은 유한하므로 항상 빈 구멍이 있기 마련이다.
+    자바 표준 라이브러리에서 원하는 기능을 찾지 못하면, 그다음 선택지는 고품질의 서드파티 라이브러리가 될 것이다.
+    적합한 서드파티 라이브러리도 찾지 못했다면, 다른 선택이 없으니 직접 구현하자.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    바퀴를 다시 발명하지 말자.
+    아주 특별한 나만의 기능이 아니라면 누군가 이미 라이브러리 형태로 구현해놓았을 가능성이 크다.
+    그런 라이브러리가 있다면, 쓰면 된다.
+    있는지 잘 모르겠다면 찾아보라.
+    일반적으로 라이브러리의 코드는 여러분이 직접 작성한 것보다 품질이 좋고, 점차 개선될 가능성이 크다.
+    여러분의 실력을 폄하하는 게 아니다.
+    코드 품질에도 규모의 경제가 적용된다.
+    즉, 라이브러리 코드는 개발자 각자가 작성하는 것보다 주목을 훨씬 많이 받으므로 코드 품질도 그만큼 높아진다.
+</p>
