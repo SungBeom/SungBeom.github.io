@@ -1,0 +1,111 @@
+---
+layout: post
+title: "[Effective Java]박싱된 기본 타입보다는 기본 타입을 사용하라"
+subtitle: "일반적인 프로그래밍 원칙, 다섯 번째 아이템"
+date: 2020-05-08 10:14:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    자바의 데이터 타입은 크게 두 가지로 나눌 수 있다.
+    바로 int, double, boolean 같은 기본 타입과 String, List 같은 참조 타입이다.
+    그리고 각각의 기본 타입에는 대응하는 참조 타입이 하나씩 있으며, 이를 박싱된 기본 타입이라고 한다.
+    예컨대 int, double, boolean에 대응하는 박싱된 기본 타입은 Integer, Double, Boolean이다.
+</p>
+
+<p style="font-family: NanumGothic">
+    오토박싱과 오토언박싱 덕분에 두 타입을 크게 구분하지 않고 사용할 수는 있지만, 그렇다고 차이가 사라지는 것은 아니다.
+    둘 사이에는 분명한 차이가 있으므로 어떤 타입을 사용하는지는 상당히 중요하기 때문에 주의해서 선택해야 한다.
+</p>
+
+<h2 class="section-heading">기본 타입과 박싱된 기본 타입의 차이</h2>
+
+<p style="font-family: NanumGothic">
+    기본 타입과 박싱된 기본 타입의 주된 차이는 크게 세 가지다.<br>
+    첫 번째, 기본 타입은 값만 가지고 있으나, 박싱된 기본 타입의 값에 더해 식별성(identity)이란 속성을 갖는다.
+    달리 말하면 박싱된 기본 타입의 두 인스턴스는 값이 같아도 서로 다르다고 식별될 수 있다.<br>
+    두 번째, 기본 타입의 값은 언제나 유효하나, 박싱된 기본 타입은 유효하지 않은 값, 즉 null을 가질 수 있다.<br>
+    세 번째, 기본 타입이 박싱된 기본 타입보다 시간과 메모리 사용면에서 더 효율적이다.<br>
+    이상의 세 가지 차이 때문에 주의하지 않고 사용하면 진짜로 문제가 발생할 수 있다.
+</p>
+
+<h2 class="section-heading">기본 타입과 박싱된 기본 타입을 혼용했을 시의 문제점: 식별성 검사</h2>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;잘못&nbsp;구현된&nbsp;비교자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Comparator<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>Integer<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;naturalOrder&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;(i,&nbsp;j)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;(i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;j)&nbsp;?&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#c10aff">1</span>&nbsp;:&nbsp;(i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;j&nbsp;?&nbsp;<span style="color:#c10aff">0</span>&nbsp;:&nbsp;<span style="color:#c10aff">1</span>);</div></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    위 코드는 Integer 값을 오름차순으로 정렬하는 비교자다.
+    첫 번째 원소가 두 번째 원소보다 작으면 음수, 같으면 0, 크면 양수를 반환하는데 심각한 결함이 있다.
+    예를 들어 naturalOrder.compare(new Integer(42), new Integer(42))의 값을 출력하면 0을 출력해야 하지만, 실제로는 1을 출력한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    원인은 == 연산자를 사용해 검사를 진행하게 되면, 두 '객체 참조'의 식별성을 검사하게 된다.
+    i와 j가 서로 다른 Integer 인스턴스라면 비록 값은 같더라도 이 비교의 결과는 false가 되고, 비교자는 잘못된 결과인 1을 반환한다.
+    이처럼 같은 객체를 비교하는 게 아니라면 <strong>박싱된 기본 타입에 == 연산자를 사용하면 오류가 일어난다.</strong>
+</p>
+
+<p style="font-family: NanumGothic">
+    실무에서 이와 같이 기본 타입을 다루는 비교자가 필요하다면 Comparator.naturalOrder()를 사용하자.
+    비교자를 직접 만들면 비교자 생성 메소드나 기본 타입을 받는 정적 compare 메소드를 사용해야 한다.
+    그렇더라도 이 문제를 고치려면 지역변수 2개를 두어 각각 박싱된 Integer 매개변수의 값을 기본 타입 정수로 저장한 다음, 모든 비교를 이 기본 타입 변수로 수행해야 한다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;문제를&nbsp;수정한&nbsp;비교자</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">Comparator<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>Integer<span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;naturalOrder&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;(iBoxed,&nbsp;jBoxed)&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#0086b3"></span><span style="color:#ff3399">&gt;</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">int</span>&nbsp;i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;iBoxed,&nbsp;j&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;jBoxed;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;오토박싱</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">return</span>&nbsp;i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span>&nbsp;j&nbsp;?&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">-</span><span style="color:#c10aff">1</span>&nbsp;:&nbsp;(i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;j&nbsp;?&nbsp;<span style="color:#c10aff">0</span>&nbsp;:&nbsp;<span style="color:#c10aff">1</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">};</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">기본 타입과 박싱된 기본 타입을 혼용했을 시의 문제점: NullPointerException</h2>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;기이하게&nbsp;동작하는&nbsp;프로그램</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">class</span>&nbsp;Unbelievable&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">static</span>&nbsp;Integer&nbsp;i;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;main(<span style="color:#4be6fa">String</span>[]&nbsp;args)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">if</span>&nbsp;(i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">42</span>)</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">System</span>.<span style="color:#4be6fa">out</span>.<span style="color:#4be6fa">println</span>(<span style="color:#ffd500">"믿을&nbsp;수&nbsp;없군!"</span>);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 프로그램은 "믿을 수 없군!"을 출력하지 않지만 그만큼 기이한 결과를 보여준다.
+    i == 42를 검사할 때 NullPointerException을 던지는 것이다.
+    원인은 i가 int가 아닌 Integere이며, 다른 참조 타입 필드와 마찬가지로 i의 초깃값도 null이라서, i == 42는 Integer와 int를 비교하는 것이다.
+    거의 예외 없이 <strong>기본 타입과 박싱된 기본 타입을 혼용한 연산에서는 박싱된 기본 타입의 박싱이 자동으로 풀린다.</strong>
+    그리고 null 참조를 언박싱하면 NullPointerException이 발생한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    이런 일은 어디서든 벌어질 수 있다.
+    다행히 해법은 간단한데, i를 int로 선언해주면 끝이다.
+</p>
+
+<h2 class="section-heading">기본 타입과 박싱된 기본 타입을 혼용했을 시의 문제점: 반복되는 박싱과 언박싱</h2>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;끔찍이&nbsp;느리다!&nbsp;객체가&nbsp;만들어지는&nbsp;위치를&nbsp;찾았는가?</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">public</span>&nbsp;<span style="color:#ff3399">static</span>&nbsp;<span style="color:#ff3399">void</span>&nbsp;main(<span style="color:#4be6fa">String</span>[]&nbsp;args)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;Long&nbsp;sum&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;0L;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">for</span>&nbsp;(<span style="color:#4be6fa">long</span>&nbsp;i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;<span style="color:#c10aff">0</span>;&nbsp;i&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">&lt;</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Integer.MAX_VALUE;&nbsp;i<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#0086b3"></span><span style="color:#ff3399">+</span>)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">+</span><span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;i;</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;}</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#4be6fa">System</span>.<span style="color:#4be6fa">out</span>.<span style="color:#4be6fa">println</span>(sum);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    이 프로그램은 실수로 지역변수 sum을 박싱된 기본 타입으로 선언하여 느려졌다.
+    오류나 경고 없이 컴파일되지만, 박싱과 언박싱이 반복해서 일어나 체감될 정도로 성능이 느려진다.
+</p>
+
+<h2 class="section-heading">박싱된 기본 타입의 사용 시점</h2>
+
+<p style="font-family: NanumGothic">
+    위에서 다룬 문제점의 원인은 프로그래머가 기본 타입과 박싱된 기본 타입의 차이를 무시하고 사용했던 것이다.
+    처음 두 프로그램은 뼈아픈 실패로 이어졌고, 마지막은 심각한 성능 문제가 발생했다.
+</p>
+
+<p style="font-family: NanumGothic">
+    박싱된 기본 타입이 적절히 쓰이는 경우가 몇 가지 있다.
+    먼저 컬렉션의 원소, 키, 값으로 쓴다.
+    컬렉션은 기본 타입을 담을 수 없으므로 어쩔 수 없이 박싱된 기본 타입을 써야만 한다.
+    더 일반화해 말하면, 자바 언어가 타입 매개변수로 기본 타입을 지원하지 않기 때문에, 매개변수화 타입이나 매개변수화 메소드의 타입 매개변수로는 박싱된 기본 타입을 써야 한다.
+    또한 리플렉션을 통해 메소드를 호출할 때도 박싱된 기본 타입을 사용해야 한다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    기본 타입과 박싱된 기본 타입 중 하나를 선택해야 한다면 가능하면 기본 타입을 사용하라.
+    기본 타입은 간단하고 빠르다.
+    박싱된 기본 타입을 써야 한다면 주의를 기울이자.
+    오토박싱이 박싱된 기본 타입을 사용할 때의 번거로움을 줄여주지만, 그 위험까지 없애주지는 않는다.
+    두 박싱된 기본 타입을 == 연산자로 비교한다면 식별성 비교가 이뤄지는데, 이는 여러분이 원한 게 아닐 가능성이 크다.
+    같은 연산에서 기본 타입과 박싱된 기본 타입을 혼용하면 언박싱이 이뤄지며, 언박싱 과정에서 NullPointerException을 던질 수 있다.
+    마지막으로, 기본 타입을 박싱하는 작업은 필요 없는 객체를 생성하는 부작용을 나을 수 있다.
+</p>
