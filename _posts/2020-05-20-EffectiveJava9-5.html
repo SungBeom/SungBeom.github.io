@@ -1,0 +1,31 @@
+---
+layout: post
+title: "[Effective Java]추상화 수준에 맞는 예외를 던지라"
+subtitle: "예외, 다섯 번째 아이템"
+date: 2020-05-19 23:26:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    수행하려는 일과 관련 없어 보이는 예외가 튀어나오면 당황스러울 것이다.
+    메소드가 저수준 예외를 처리하지 않고 바깥으로 전파해버릴 때 종종 일어나는 일이다.
+    이는 내부 구현 방식을 드러내어 윗 레벨 API를 오염시키기 때문에, 다음 릴리즈에서 구현 방식을 바꾸면 다른 예외가 튀어나와 기존 클라이언트 프로그램을 깨지게 할 수도 있다.
+</p>
+
+<h2 class="section-heading">예외 번역</h2>
+
+<p style="font-family: NanumGothic">
+    이 문제를 피하려면 <strong>상위 계층에서는 저수준 예외를 잡아 자신의 추상화 수준에 맞는 예외로 바꿔 던져야 한다.</strong>
+    이를 예외 번역(exception translation)이라 한다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    아래 계층의 예외를 예방하거나 스스로 처리할 수 없고, 그 예외를 상위 계층에 그대로 노출하기 곤란하다면 예외 번역을 사용하라.
+    이때 예외 연쇄를 이용하면 상위 계층에는 맥락에 어울리는 고수준 예외를 던지면서 근본 원인도 함께 알려주어 오류를 분석하기에 좋다.
+</p>
