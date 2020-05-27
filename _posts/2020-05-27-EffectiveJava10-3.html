@@ -1,0 +1,43 @@
+---
+layout: post
+title: "[Effective Java]스레드보다는 실행자, 태스크, 스트림을 애용하라"
+subtitle: "동시성, 세 번째 아이템"
+date: 2020-05-27 23:50:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">실행자 프레임워크</h2>
+
+<p style="font-family: NanumGothic">
+    java.util.concurrent 패키지에는 실행자 프레임워크(Executor Framework)라고 하는 인터페이스 기반의 유연한 태스크 실행 기능이 있다.
+    이를 이용하면 작업 큐(work queue)를 간단하게 구현할 수 있게 된다.
+    다음은 작업 큐를 생성하고, 실행자에 실행할 태스크(task, 작업)를 넘기고, 종료시키는 방법이다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;작업&nbsp;큐&nbsp;생성</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">ExecutorService&nbsp;exec&nbsp;<span style="color:#0086b3"></span><span style="color:#ff3399">=</span>&nbsp;Executors.newSingleThreadExecutor();</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;태스크&nbsp;넘기기</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">exec.execute(runnable);</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;</div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">//&nbsp;실행자&nbsp;종료</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">exec.shutdown();</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    실행자 서비스의 기능은 이 외에도 많다.
+    주요 기능으로 특정 태스크, 태스크 모음 중 아무것 하나(invokeAny 메소드) 혹은 모든 태스크(invokeAll 메소드)가 완료되기를 기다리거나, 실행자 서비스가 종료하기를 기다린다(awaitTermination 메소드).
+    완료된 태스크들의 결과를 차례로 받거나(ExecutorCompletionService 이용), 태스크를 특정 시간에 혹은 주시적으로 실행하게 한다(ScheduledThreadPoolExecutor 이용).
+</p>
+
+<p style="font-family: NanumGothic">
+    큐를 둘 이상의 스레드가 처리하게 하고 싶다면 간단히 다른 정적 팩토리를 이용하여 다른 종류의 실행자 서비스(스레드 풀)를 생성하면 된다.
+    스레드 풀의 스레드 개수는 상황에 맞게 설정할 수 있는데, 필요한 대부분은 java.util.concurrent.Executors의 정적 팩토리들을 이용해 생성할 수 있을 것이다.
+    평범하지 않은 실행자를 원한다면 스레드 풀 동작을 결정하는 거의 모든 속성을 설정할 수 있는 ThreadPoolExecutor 클래스를 직접 사용해도 된다.
+</p>
+
+<p style="font-family: NanumGothic">
+    실행자 서비스를 사용하기에 까다로운 애플리케이션도 있다.
+    작은 프로그램이나 가벼운 서버라면 Executors.newCachedThreadPool이 일반적으로 좋은 선택일 것이다.
+    특별히 설정할 게 없고 일반적인 용도에 적합하게 동작한다.
+    하지만 CachedThreadPool은 요청받은 태스크들이 큐에 쌓이지 않고 즉시 스레드에 위임돼 실행되기 때문에 무거운 프로덕션 서버에는 좋지 못하다!
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+</p>
