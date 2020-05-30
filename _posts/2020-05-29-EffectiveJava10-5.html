@@ -34,7 +34,7 @@ background: '/img/posts/EffectiveJava.jpg'
     <strong>조건부 스레드 안전</strong>(conditionally thread-safe): 무조건적 스레드 안전과 같으나, 일부 메소드는 동시에 사용하려면 외부 동기화가 필요하다.
     Collections.synchronized 래퍼 메소드가 반환한 컬렉션들이 여기 속한다.<br>
     <strong>스레드 안전하지 않음</strong>(not thread-safe): 이 클래스의 인스턴스는 수정될 수 있다.
-    동시에 사용하려면 각각의(혹은 일련의) 메소드 호출을 클라이언트가 선택한 외부 동기화 매커니즘으로 감싸야 한다.
+    동시에 사용하려면 각각의(혹은 일련의) 메소드 호출을 클라이언트가 선택한 외부 동기화 메커니즘으로 감싸야 한다.
     ArrayList, HashMap 같은 기본 컬렉션이 여기 속한다.<br>
     <strong>스레드 적대적</strong>(thread-hostile): 이 클래스는 모든 메소드 호출을 외부 동기화로 감싸더라도 멀티스레드 환경에서 안전하지 않다.
     이 수준의 클래스는 일반적으로 정적 데이터를 아무 동기화 없이 수정한다.
