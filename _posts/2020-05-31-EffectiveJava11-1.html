@@ -1,0 +1,29 @@
+---
+layout: post
+title: "[Effective Java]자바 직렬화 대안을 찾으라"
+subtitle: "직렬화, 첫 번째 아이템"
+date: 2020-05-31 22:42:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading">Intro</h2>
+
+<p style="font-family: NanumGothic">
+    직렬화의 근본적인 문제는 공격 범위가 너무 넓고 지속적으로 더 넓어져 방어하기 어렵다는 점이다.
+    ObjectInputStream의 readObject 메소드를 호출하면서 객체 그래프가 역직렬화되기 때문이다.
+    readObject 메소드는 Serializable 인터페이스를 구현했다면 클래스패스 안의 거의 모든 타입의 객체를 만들어낼 수 있는, 사실상 마법 같은 생성자다.
+    바이트 스트림을 역직렬화하는 과정에서 이 메소드는 그 타입들 안의 모든 코드를 수행할 수 있다.
+    이 말인즉슨, 그 타입들의 코드 전체가 공격 범위에 들어간다는 뜻이다.
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    직렬화는 위험하니 피해야 한다.
+    시스템을 밑바닥부터 설계한다면 JSON이나 프로토콜 버퍼 같은 대안을 사용하자.
+    신뢰할 수 없는 데이터는 역직렬화하지 말자.
+    꼭 해야 한다면 객체 역직렬화 필터링을 사용하되, 이마저도 모든 공격을 막아줄 수는 없음을 기억하자.
+    클래스가 직렬화를 지원하도록 만들지 말고, 꼭 그렇게 만들어야 한다면 정말 신경써서 작성해야 한다.
+</p>
