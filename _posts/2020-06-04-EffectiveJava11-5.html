@@ -1,0 +1,21 @@
+---
+layout: post
+title: "[Effective Java]인스턴스 수를 통제해야 한다면 readResolve보다는 열거 타입을 사용하라"
+subtitle: "직렬화, 다섯 번째 아이템"
+date: 2020-06-04 23:59:00
+background: '/img/posts/EffectiveJava.jpg'
+---
+
+<h2 class="section-heading"></h2>
+
+<p style="font-family: NanumGothic">
+</p>
+
+<br>
+
+<h2 class="section-heading" style="color: red">핵심 정리</h2>
+
+<p style="font-family: NanumGothic">
+    불변식을 지키기 위해 인스턴스를 통제해야 한다면 가능한 한 열거 타입을 사용하자.
+    여의치 않은 상황에서 직렬화와 인스턴스 통제가 모두 필요하다면 readResolve 메소드를 작성해 넣어야 하고, 그 클래스에서 모든 참조 타입 인스턴스 필드를 transient로 선언해야 한다.
+</p>
