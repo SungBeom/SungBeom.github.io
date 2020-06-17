@@ -21,6 +21,41 @@ background: '/img/posts/EffectiveJava.jpg'
     이를 예외 번역(exception translation)이라 한다.
 </p>
 
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;예외&nbsp;번역</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">try</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;저수준&nbsp;추상화를&nbsp;이용한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}&nbsp;<span style="color:#ff3399">catch</span>&nbsp;(LowerLevelException&nbsp;e)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;추상화&nbsp;수준에&nbsp;맞게&nbsp;번역한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;HigherLevelException(...);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<h2 class="section-heading">예외 연쇄</h2>
+
+<p style="font-family: NanumGothic">
+    예외를 번역할 때, 저수준 예외가 디버깅에 도움이 된다면 예외 연쇄(exception chaining)를 사용하는 게 좋다.
+    예외 연쇄란 문제의 근본 원인(cause)인 저수준 예외를 고수준 예외에 실어 보내는 방식이다.
+    그러면 별도의 접근자 메소드(Throwable의 getCause)를 통해 필요하면 언제든 저수준 예외를 꺼내볼 수 있다.
+</p>
+
+<div class="colorscripter-code" style="color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important; position:relative !important;overflow:auto"><table class="colorscripter-code-table" style="margin:0;padding:0;border:none;background-color:#272727;border-radius:4px;" cellspacing="0" cellpadding="0"><tr><td style="padding:6px;border-right:2px solid #4f4f4f"><div style="margin:0;padding:0;word-break:normal;text-align:right;color:#aaa;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="line-height:130%">1</div><div style="line-height:130%">2</div><div style="line-height:130%">3</div><div style="line-height:130%">4</div><div style="line-height:130%">5</div><div style="line-height:130%">6</div><div style="line-height:130%">7</div><div style="line-height:130%">8</div><div style="line-height:130%">9</div></div></td><td style="padding:6px 0;text-align:left"><div style="margin:0;padding:0;color:#f0f0f0;font-family:Consolas, 'Liberation Mono', Menlo, Courier, monospace !important;line-height:130%"><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">/*</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*&nbsp;예외&nbsp;연쇄</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#999999">&nbsp;*/</span></div><div style="padding:0 6px; white-space:pre; line-height:130%"><span style="color:#ff3399">try</span>&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span style="color:#999999">//&nbsp;저수준&nbsp;추상화를&nbsp;이용한다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">}&nbsp;<span style="color:#ff3399">catch</span>&nbsp;(LowerLevelException&nbsp;cause)&nbsp;{</div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#999999">//&nbsp;저수준&nbsp;예외를&nbsp;고수준&nbsp;예외에&nbsp;실어&nbsp;보낸다.</span></div><div style="padding:0 6px; white-space:pre; line-height:130%">&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff3399">throw</span>&nbsp;<span style="color:#ff3399">new</span>&nbsp;HigherLevelException(cause);</div><div style="padding:0 6px; white-space:pre; line-height:130%">}</div></div><div style="text-align:right;margin-top:-13px;margin-right:5px;font-size:9px;font-style:italic"><a href="http://colorscripter.com/info#e" target="_blank" style="color:#4f4f4f;text-decoration:none">Colored by Color Scripter</a></div></td><td style="vertical-align:bottom;padding:0 2px 4px 0"><a href="http://colorscripter.com/info#e" target="_blank" style="text-decoration:none;color:white"><span style="font-size:9px;word-break:normal;background-color:#4f4f4f;color:white;border-radius:10px;padding:1px">cs</span></a></td></tr></table></div>
+
+<p style="font-family: NanumGothic">
+    고수준 예외의 생성자는 예외 연쇄용으로 설계된 상위 클래스의 생성자에 이 '원인'을 건네주어, 최종적으로 Throwable(Throwable) 생성자까지 건네지게 한다.
+</p>
+
+<p style="font-family: NanumGothic">
+    대부분의 표준 예외는 예외 연쇄용 생성자를 갖추고 있으며, 그렇지 않은 예외라도 Throwable의 initCause 메소드를 이용해 '원인'을 직접 못박을 수 있다.
+    예외 연쇄는 문제의 원인을 getCause 메소드로 프로그램에서 접근할 수 있게 해주며, 원인과 고수준 예외의 스택 추적 정보를 잘 통합해준다.
+</p>
+
+<h2 class="section-heading">바람직한 예외 던지기</h2>
+
+<p style="font-family: NanumGothic">
+    <strong>무턱대고 예외를 전파하는 것보다야 예외 번역이 우수한 방법이지만, 그렇다고 남용해서는 곤란하다.</strong>
+    가능하다면 저수준 메소드가 반드시 성공하도록 하여 아래 계층에서는 예외가 발생하지 않도록 하는 것이 최선이다.
+    때론 상위 계층 메소드의 매개변수 값을 아래 계층 메소드로 건네기 전에 미리 검사하는 방법을 쓸 수 있다.
+</p>
+
+<p style="font-family: NanumGothic">
+    아래 계층에서의 예외를 피할 수 없다면, 상위 계층에서 그 예외를 조용히 처리하여 문제를 API 호출자에까지 전파하지 않는 방법도 있다.
+    이 경우 발생한 예외는 java.util.logging 같은 적절한 로깅 기능을 활용하여 기록해두면 좋다.
+    그렇게 해두면 클라이언트 코드와 사용자에게 문제를 전파하지 않으면서도 프로그래머가 로그를 분석해 추가 조치를 취할 수 있게 해준다.
+</p>
+
 <br>
 
 <h2 class="section-heading" style="color: red">핵심 정리</h2>
